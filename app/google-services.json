@@ -1,0 +1,117 @@
+{
+  "project_info": {
+    "project_number": "910440027298",
+    "firebase_url": "https://mykabapp.firebaseio.com",
+    "project_id": "mykabapp",
+    "storage_bucket": "mykabapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:910440027298:android:5ba6aa73575434ec55f3fb",
+        "android_client_info": {
+          "package_name": "com.mykab.driver"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "910440027298-fg845unskqhs66ogl24p0pombq8krje7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mykab.driver",
+            "certificate_hash": "f4bd9adbd292b6e4ee6c7ee3540f6f75e10dbbe2"
+          }
+        },
+        {
+          "client_id": "910440027298-9loku07j4h5mv54bmu72ra4kl2s93pep.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mykab.driver",
+            "certificate_hash": "3270dc747b8e3dc8bcf75ae655077e715f613f2e"
+          }
+        },
+        {
+          "client_id": "910440027298-bil077hp33edc50bo21d1bdalu4b4j7o.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mykab.driver",
+            "certificate_hash": "9fe61e5fab4da0616b82a685933e00e4ed0eb427"
+          }
+        },
+        {
+          "client_id": "910440027298-hviejp49roqdppiem0vva785lqishvb6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCdCo3231lBBYA-mG3sPlZ2_f2bIvjNyyA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "910440027298-hviejp49roqdppiem0vva785lqishvb6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:910440027298:android:7f13f107fa884ac255f3fb",
+        "android_client_info": {
+          "package_name": "com.mykab.rider"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "910440027298-pum7gdfh9nl383m9frlsakdt9f4qcpm5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mykab.rider",
+            "certificate_hash": "f4bd9adbd292b6e4ee6c7ee3540f6f75e10dbbe2"
+          }
+        },
+        {
+          "client_id": "910440027298-5ce40ooatpifk5orr1c0s1smsm6aps8n.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mykab.rider",
+            "certificate_hash": "b2db684df7cc5388baf6d17d1236cc60dd684fe4"
+          }
+        },
+        {
+          "client_id": "910440027298-g8qhngfogk851aaluaaf7ma91f49beas.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mykab.rider",
+            "certificate_hash": "3270dc747b8e3dc8bcf75ae655077e715f613f2e"
+          }
+        },
+        {
+          "client_id": "910440027298-hviejp49roqdppiem0vva785lqishvb6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCdCo3231lBBYA-mG3sPlZ2_f2bIvjNyyA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "910440027298-hviejp49roqdppiem0vva785lqishvb6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
