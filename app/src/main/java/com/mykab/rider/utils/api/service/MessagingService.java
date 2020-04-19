@@ -189,7 +189,6 @@ public class MessagingService extends FirebaseMessagingService {
             case Constants.ACCEPT:
                 playSound1();
                 notificationOrderBuilderAccept(remoteMessage);
-
                 break;
             case Constants.START:
                 playSound();
@@ -212,7 +211,6 @@ public class MessagingService extends FirebaseMessagingService {
 
 
     private void notificationOrderBuilderCancel(RemoteMessage remoteMessage) {
-        playSound3();
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext(), "notify_001");
         Intent intent1 = new Intent(getApplicationContext(), ProgressActivity.class);
         intent1.addFlags(FLAG_ACTIVITY_NEW_TASK);
@@ -245,7 +243,6 @@ public class MessagingService extends FirebaseMessagingService {
     }
 
     private void notificationOrderBuilderStart(RemoteMessage remoteMessage) {
-        playSound3();
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext(), "notify_001");
         Intent intent1 = new Intent(getApplicationContext(), ProgressActivity.class);
         intent1.addFlags(FLAG_ACTIVITY_NEW_TASK);
@@ -278,7 +275,6 @@ public class MessagingService extends FirebaseMessagingService {
     }
 
     private void notificationOrderBuilderAccept(RemoteMessage remoteMessage) {
-        playSound3();
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext(), "notify_001");
         Intent intent1 = new Intent(getApplicationContext(), ProgressActivity.class);
         intent1.addFlags(FLAG_ACTIVITY_NEW_TASK);
@@ -311,7 +307,6 @@ public class MessagingService extends FirebaseMessagingService {
     }
 
     private void notificationOrderBuilderFinish(RemoteMessage remoteMessage) {
-        playSound3();
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(getApplicationContext(), "notify_001");
         Intent intent1 = new Intent(getApplicationContext(), ProgressActivity.class);
@@ -347,7 +342,11 @@ public class MessagingService extends FirebaseMessagingService {
     }
 
     private void chat(RemoteMessage remoteMessage){
-        playSound3();
+        MediaPlayer BG = MediaPlayer.create(getBaseContext(), R.raw.notification);
+        BG.setLooping(false);
+        BG.setVolume(100, 100);
+        BG.start();
+
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext(), "notify_001");
         Intent intent1 = new Intent(getApplicationContext(), ChatActivity.class);
         intent1.addFlags(FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP);

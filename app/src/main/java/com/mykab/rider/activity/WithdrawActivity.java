@@ -115,8 +115,8 @@ public class WithdrawActivity extends AppCompatActivity {
                     .toString()
                     .replace(",", "")
                     .replace(".", "")
-                    .replace(sp.getSetting()[0], "") + "00") > userLogin.getWalletSaldo()) {
-                notif("your balance is not enough!");
+                    .replace(sp.getSetting()[0], "")) > userLogin.getWalletSaldo()) {
+                notif("your balance is not enough! " + userLogin.getWalletSaldo());
             } else if (bank.getSelectedItemPosition() == 0) {
                 notif("please select bank!");
             } else if (accnumber.getText().toString().isEmpty()) {
@@ -264,7 +264,7 @@ public class WithdrawActivity extends AppCompatActivity {
                         if(!NetworkUtils.isConnected(context) || !NetworkUtils.isConnectedFast(context)){
                             notif("Please check your network");
                         } else {
-                            notif(t.getLocalizedMessage());
+                            notif("Error, request failed!");
                         }
                         progresshide();
 

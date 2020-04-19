@@ -151,6 +151,11 @@
         <meta-data
             android:name="co.paystack.android.PublicKey"
             android:value="@string/paystack_key" />
+
+        <meta-data
+            android:name="firebase_performance_logcat_enabled"
+            android:value="true" />
+
     </application>
 
 </manifest>

@@ -556,7 +556,7 @@ public class CreditcardActivity extends AppCompatActivity {
                 if (response.isSuccessful()){
                     Log.e(TAG, "RESPONSE MESG" + response.body().getMessage());
                     Log.e(TAG, "saveAuthCodeOnServer works!");
-                    Toast.makeText(CreditcardActivity.this, "saveAuthCodeOnServer works!", Toast.LENGTH_LONG).show();
+//                    Toast.makeText(CreditcardActivity.this, "saveAuthCodeOnServer works!", Toast.LENGTH_LONG).show();
 
                     AuthCodeModel authCodeModel = response.body().getData();
 

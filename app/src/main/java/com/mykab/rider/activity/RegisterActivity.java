@@ -2,10 +2,8 @@ package com.mykab.rider.activity;
 
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -19,14 +17,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.FileProvider;
-
 import android.provider.Settings;
 import android.text.Editable;
 import android.text.Html;
@@ -43,7 +33,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
-import com.bumptech.glide.Glide;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import com.esafirm.imagepicker.features.ImagePicker;
 import com.esafirm.imagepicker.features.ReturnMode;
 import com.esafirm.imagepicker.model.Image;
@@ -66,8 +61,8 @@ import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.karumi.dexter.listener.single.PermissionListener;
-import com.mykab.rider.constants.BaseApp;
 import com.mykab.rider.R;
+import com.mykab.rider.constants.BaseApp;
 import com.mykab.rider.constants.Constants;
 import com.mykab.rider.json.RegisterRequestJson;
 import com.mykab.rider.json.RegisterResponseJson;
@@ -76,9 +71,6 @@ import com.mykab.rider.models.User;
 import com.mykab.rider.utils.api.ServiceGenerator;
 import com.mykab.rider.utils.api.service.UserService;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
-import com.ybs.countrypicker.CountryPicker;
-import com.ybs.countrypicker.CountryPickerListener;
-
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -946,9 +938,7 @@ private void selectImage() {
         request.setFullNama(nama.getText().toString().trim());
         request.setEmail(email.getText().toString().trim());
         request.setPassword(password.getText().toString().trim());
-        if (!TextUtils.isEmpty(idCardNumber.getText().toString().trim()) ) {
-            request.setCardNumber(idCardNumber.getText().toString().trim());
-        }
+        request.setCardNumber(idCardNumber.getText().toString().trim());
         request.setNoTelepon(countryCode.getText().toString().trim().replace("+", "") + phone.getText().toString().trim());
         request.setPhone(phone.getText().toString().trim());
         request.setTglLahir(dateview);

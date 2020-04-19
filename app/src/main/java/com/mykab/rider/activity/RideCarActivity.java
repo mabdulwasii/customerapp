@@ -694,7 +694,19 @@ public class RideCarActivity extends AppCompatActivity
         String biaya = String.valueOf(biayaminimum);
 //        long biayaTotal = (long) (Double.valueOf(getbiaya) * km);
         String[] s = time.split(" ");
-        String trimTime = s[0].trim();
+        String trimTime;
+        if (s.length >= 3){
+
+            String trimTime1 = s[0].trim();
+            String trimTime2 = s[2].trim();
+
+            int timeString = Integer.parseInt(trimTime2) + (Integer.parseInt(trimTime1)) * 60;
+            trimTime = String.valueOf(timeString).trim();
+
+        }else {
+            trimTime = s[0].trim();
+        }
+
         biayaTotal = (long) (Double.valueOf(getbiaya) + (100 * km) + (10 * Double.valueOf(trimTime)) );//TODO total price
 
         if (biayaTotal % 1 != 0)

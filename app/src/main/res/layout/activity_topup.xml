@@ -351,7 +351,7 @@
                                         android:layout_height="20dp"
                                         android:layout_weight="1"
                                         android:singleLine="true"
-                                        android:text="TRANSFER BANK"
+                                        android:text="BANK TRANSFER"
                                         android:textColor="@color/black"
                                         android:textStyle="bold" />
 
