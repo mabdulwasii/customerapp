@@ -213,20 +213,35 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:background="@color/white"
-                android:orientation="vertical">
+                android:weightSum="4"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:orientation="horizontal">
+                <customfonts.TextViewSFProDisplayMedium
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:gravity="left"
+                    android:layout_marginBottom="8dp"
+                    android:layout_gravity="center"
+                    android:text="Choose your ride"
+                    android:textColor="@color/black"
+                    android:textSize="20dp" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/category"
-                    android:layout_width="match_parent"
+                    android:layout_weight="2"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
+                    android:layout_gravity="center"
                     android:layout_margin="10dp"
                     android:background="@color/white"
                     android:visibility="gone" />
 
                 <com.facebook.shimmer.ShimmerFrameLayout
+                    android:layout_weight="2"
                     android:id="@+id/shimmercat"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="10dp"

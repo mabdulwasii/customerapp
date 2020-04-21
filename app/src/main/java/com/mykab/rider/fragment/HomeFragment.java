@@ -45,6 +45,7 @@ import com.mykab.rider.utils.Utility;
 import com.mykab.rider.utils.api.ServiceGenerator;
 import com.mykab.rider.utils.api.service.UserService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
@@ -101,7 +102,7 @@ public class HomeFragment extends Fragment {
         shimberita = getView.findViewById(R.id.shimberita);
 
         rvCategory.setHasFixedSize(true);
-        rvCategory.setLayoutManager(new GridLayoutManager(getActivity(), 5));
+        rvCategory.setLayoutManager(new GridLayoutManager(getActivity(), 2));
 
 
         rvberita.setHasFixedSize(true);
@@ -316,14 +317,23 @@ public class HomeFragment extends Fragment {
                         }
 
                         List<FiturModel> fitur = response.body().getFitur();
+                        List<FiturModel> fiturList = new ArrayList<>();
 
                         Log.e("FITUR SIZE : ", String.valueOf(fitur.size()));
                         for (FiturModel fmodel :
                                 fitur) {
                             Log.e("FITUR : ", fmodel.getFitur());
+                            if (fmodel.getFitur().equalsIgnoreCase("Saloon") || fmodel.getFitur().equalsIgnoreCase("Towing Van") ){
+                                fiturList.add(fmodel);
+                            }
+
                         }
 
-                        fiturItem = new FiturItem(getActivity(), response.body().getFitur(), R.layout.item_fitur);
+                        if (fiturList.size() > 0) {
+                            fiturItem = new FiturItem(getActivity(), fiturList, R.layout.item_fitur);
+                        }
+//                        fiturItem = new FiturItem(getActivity(), response.body().getFitur(), R.layout.item_fitur);
+
                         Log.e("FEATURES", "List of features" + String.valueOf(fiturItem.getItemCount()));
                         rvCategory.setAdapter(fiturItem);
                         if (response.body().getRating().isEmpty()) {

@@ -163,22 +163,22 @@ public class RideCarActivity extends AppCompatActivity
     TextView saldotext;
     @BindView(R.id.checkedcash)
     ImageButton checkedcash;
-//    @BindView(R.id.checkedCard)
-//    ImageButton checkedCard;
+    @BindView(R.id.checkedCard)
+    ImageButton checkedCard;
     @BindView(R.id.checkedwallet)
     ImageButton checkedwallet;
     @BindView(R.id.cashPayment)
     TextView cashpayment;
     @BindView(R.id.walletpayment)
     TextView walletpayment;
-//    @BindView(R.id.cardPayment)
-//    TextView cardPayment;
+    @BindView(R.id.cardPayment)
+    TextView cardPayment;
     @BindView(R.id.llcheckedwallet)
     LinearLayout llcheckedwallet;
     @BindView(R.id.llcheckedcash)
     LinearLayout llcheckedcash;
-//    @BindView(R.id.llcheckedcard)
-//    LinearLayout llcheckedcard;
+    @BindView(R.id.llcheckedcard)
+    LinearLayout llcheckedcard;
     @BindView(R.id.back_btn)
     ImageView backbtn;
     @BindView(R.id.rlprogress)
@@ -214,7 +214,7 @@ public class RideCarActivity extends AppCompatActivity
     private double jarak;
     private long harga;
     private String saldoWallet, checkedpaywallet, checkedpaycash;
-//    private String checkedpayCard;
+    private String checkedpayCard;
     private boolean isMapReady = false;
     private DriverModel driver;
     private int fiturId;
@@ -672,18 +672,18 @@ public class RideCarActivity extends AppCompatActivity
 
         checkedpaycash = "1";
         checkedpaywallet = "0";
-//        checkedpayCard = "0";
+        checkedpayCard = "0";
         Log.e("CHECKEDWALLET", checkedpaywallet);
         checkedcash.setSelected(true);
         checkedwallet.setSelected(false);
-//        checkedCard.setSelected(false);
+        checkedCard.setSelected(false);
         cashpayment.setTextColor(getResources().getColor(R.color.colorgradient));
         walletpayment.setTextColor(getResources().getColor(R.color.gray));
-//        cardPayment.setTextColor(getResources().getColor(R.color.gray));
+        cardPayment.setTextColor(getResources().getColor(R.color.gray));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             checkedcash.setBackgroundTintList(getResources().getColorStateList(R.color.colorgradient));
             checkedwallet.setBackgroundTintList(getResources().getColorStateList(R.color.gray));
-//            checkedCard.setBackgroundTintList(getResources().getColorStateList(R.color.gray));
+            checkedCard.setBackgroundTintList(getResources().getColorStateList(R.color.gray));
         }
         float km = ((float) (distance)) / 1000f;
 
@@ -692,7 +692,7 @@ public class RideCarActivity extends AppCompatActivity
         String format = String.format(Locale.getDefault(), "%.2f", km);
         distanceText.setText(format);
         String biaya = String.valueOf(biayaminimum);
-//        long biayaTotal = (long) (Double.valueOf(getbiaya) * km);
+        long biayaTotal = (long) (Double.valueOf(getbiaya) * km);
         String[] s = time.split(" ");
         String trimTime;
         if (s.length >= 3){
@@ -735,23 +735,23 @@ public class RideCarActivity extends AppCompatActivity
                 public void onClick(View view) {
                     String minTotal = String.valueOf(minBiaya);
                     String maxTotal = String.valueOf(maxBiaya);
-                    biayaTotal = (long) (Math.floor(biayaTotal/100.0))*100;
+//                    biayaTotal = (long) (Math.floor(biayaTotal/100.0))*100;
                     Utility.currencyTXT(priceText, minTotal, maxTotal,context);
                     diskon.setText(Constants.CURRENCY + "0.00");
                     checkedcash.setSelected(true);
                     checkedwallet.setSelected(false);
-//                    checkedCard.setSelected(false);
+                    checkedCard.setSelected(false);
                     checkedpaycash = "1";
                     checkedpaywallet = "0";
-//                    checkedpayCard = "0";
+                    checkedpayCard = "0";
                     Log.e("CHECKEDWALLET", checkedpaywallet);
                     cashpayment.setTextColor(getResources().getColor(R.color.colorgradient));
                     walletpayment.setTextColor(getResources().getColor(R.color.gray));
-//                    cardPayment.setTextColor(getResources().getColor(R.color.gray));
+                    cardPayment.setTextColor(getResources().getColor(R.color.gray));
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         checkedcash.setBackgroundTintList(getResources().getColorStateList(R.color.colorgradient));
                         checkedwallet.setBackgroundTintList(getResources().getColorStateList(R.color.gray));
-//                        checkedCard.setBackgroundTintList(getResources().getColorStateList(R.color.gray));
+                        checkedCard.setBackgroundTintList(getResources().getColorStateList(R.color.gray));
                     }
                 }
             });
@@ -767,15 +767,15 @@ public class RideCarActivity extends AppCompatActivity
                     checkedwallet.setSelected(false);
                     checkedpaycash = "1";
                     checkedpaywallet = "0";
-//                    checkedpayCard = "0";
+                    checkedpayCard = "0";
                     Log.e("CHECKEDWALLET", checkedpaywallet);
                     cashpayment.setTextColor(getResources().getColor(R.color.colorgradient));
                     walletpayment.setTextColor(getResources().getColor(R.color.gray));
-//                    cardPayment.setTextColor(getResources().getColor(R.color.gray));
+                    cardPayment.setTextColor(getResources().getColor(R.color.gray));
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         checkedcash.setBackgroundTintList(getResources().getColorStateList(R.color.colorgradient));
                         checkedwallet.setBackgroundTintList(getResources().getColorStateList(R.color.gray));
-//                        checkedCard.setBackgroundTintList(getResources().getColorStateList(R.color.gray));
+                        checkedCard.setBackgroundTintList(getResources().getColorStateList(R.color.gray));
                     }
                 }
             });
@@ -797,29 +797,29 @@ public class RideCarActivity extends AppCompatActivity
 
                     String maxBiayaTotal = String.valueOf(lastPrice + 200);
                     maxBiayaTotal = String.valueOf((Math.floor(Long.parseLong(maxBiayaTotal)/100.0))*100);
-//                    Utility.currencyTXT(priceText, totalbiaya, context);
+                    Utility.currencyTXT(priceText, minBiayaTotal, maxBiayaTotal, context);
                     harga = lastPrice;
                     Utility.currencyTXT(priceText, minBiayaTotal, maxBiayaTotal, context);
                     checkedcash.setSelected(false);
-//                    checkedCard.setSelected(false);
+                    checkedCard.setSelected(false);
                     checkedwallet.setSelected(true);
                     checkedpaycash = "0";
                     checkedpaywallet = "1";
-//                    checkedpayCard = "2";
+                    checkedpayCard = "0";
                     Log.e("CHECKEDWALLET", checkedpaywallet);
                     walletpayment.setTextColor(getResources().getColor(R.color.colorgradient));
                     cashpayment.setTextColor(getResources().getColor(R.color.gray));
-//                    cardPayment.setTextColor(getResources().getColor(R.color.gray));
+                    cardPayment.setTextColor(getResources().getColor(R.color.gray));
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         checkedwallet.setBackgroundTintList(getResources().getColorStateList(R.color.colorgradient));
                         checkedcash.setBackgroundTintList(getResources().getColorStateList(R.color.gray));
-//                        checkedCard.setBackgroundTintList(getResources().getColorStateList(R.color.gray));
+                        checkedCard.setBackgroundTintList(getResources().getColorStateList(R.color.gray));
                     }
                 }
             });
 
             final long finalBiayaTotal2 = biayaTotal;
-          /*  llcheckedcard.setOnClickListener(new View.OnClickListener() {
+            llcheckedcard.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     String minBiayaTotal = String.valueOf(minBiaya);
@@ -842,7 +842,7 @@ public class RideCarActivity extends AppCompatActivity
                         checkedwallet.setBackgroundTintList(getResources().getColorStateList(R.color.gray));
                     }
                 }
-            });*/
+            });
         }
 
         orderButton.setOnClickListener(new View.OnClickListener() {
@@ -976,7 +976,7 @@ public class RideCarActivity extends AppCompatActivity
                 param.setPakaiWallet(1);
                 sendRequestTransaksi(param, driverAvailable);
             }
-        } /*else if (checkedpayCard.equals("1")) {
+        } else if (checkedpayCard.equals("1")) {
             if (driverAvailable.isEmpty()) {
                 notif("Sorry, there are no drivers around you.");
             } else {
@@ -997,7 +997,7 @@ public class RideCarActivity extends AppCompatActivity
                 param.setPakaiWallet(2);
                 sendRequestTransaksi(param, driverAvailable);
             }
-        }*/
+        }
         else {
             if (driverAvailable.isEmpty()) {
                 notif("Sorry, there are no drivers around you.");
@@ -1211,12 +1211,12 @@ public class RideCarActivity extends AppCompatActivity
                             intent.putExtra("id_driver", cDriver.getId());
                             intent.putExtra("id_transaksi", request.getIdTransaksi());
                             intent.putExtra("response", "2");
-//                            if (checkedCard.isSelected()) {
-//                                intent.putExtra("pakai", "2");
-//                            }
-//                            else {
-//                                intent.putExtra("pakai", "0");
-//                            }
+                            if (checkedCard.isSelected()) {
+                                intent.putExtra("pakai", "2");
+                            }
+                            else {
+                                intent.putExtra("pakai", "0");
+                            }
                             startActivity(intent);
                             finish();
                         }

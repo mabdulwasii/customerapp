@@ -124,6 +124,33 @@ public class ProgressActivity extends AppCompatActivity
     private String format;
     private Handler handler;
     Timer timer = new Timer();
+
+    private final Runnable updateMarker = new Runnable() {
+        @Override
+        public void run() {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    if (destinationMarker != null) destinationMarker.remove();
+                    destinationMarker = gMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(Double.parseDouble(latdriver), Double.parseDouble(londriver)))
+                            .title("Driver Location")
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.carmap)));
+
+                    timer.scheduleAtFixedRate(new TimerTask() {
+                        @Override
+                        public void run() {
+                            if (destinationMarker != null) destinationMarker.remove();
+                            destinationMarker = gMap.addMarker(new MarkerOptions()
+                                    .position(new LatLng(Double.parseDouble(latdriver), Double.parseDouble(londriver)))
+                                    .title("Driver Location")
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.carmap)));
+                        }
+                    }, 0, 4000);
+                }
+            }).start();
+        }
+    };
     private Runnable updateDriverRunnable = new Runnable() {
         @Override
         public void run() {
@@ -215,7 +242,7 @@ public class ProgressActivity extends AppCompatActivity
     TextView produk, sendername, receivername;
     Button senderphone, receiverphone;
     TextView textnotif, priceText;
-    TextView diskon, cost, distanceText, fiturtext, destinationText, pickUpText;
+    TextView diskon, cost, distanceText, fiturtext, destinationText, pickUpText, timeAway;
     ImageView foto, image, backbtn;
     TextView layanandesk, layanan;
     LinearLayout llpayment, bottomsheet, setDestinationContainer, setPickUpContainer, llchat, lldestination, lldistance, lldetailsend;
@@ -272,6 +299,7 @@ public class ProgressActivity extends AppCompatActivity
         textnotif = findViewById(R.id.textnotif);
         rlprogress = findViewById(R.id.rlprogress);
         textprogress = findViewById(R.id.textprogress);
+        timeAway = findViewById(R.id.timeAway);
 
         status.setVisibility(View.VISIBLE);
         image.setVisibility(View.GONE);
@@ -295,7 +323,7 @@ public class ProgressActivity extends AppCompatActivity
         orderButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (isCancelable) {
+//                if (isCancelable) {
                     final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ProgressActivity.this, R.style.DialogStyle);
                     alertDialogBuilder.setTitle("Cancel order");
                     alertDialogBuilder.setMessage("Do you want to cancel this order?");
@@ -316,9 +344,9 @@ public class ProgressActivity extends AppCompatActivity
 
                     AlertDialog alertDialog = alertDialogBuilder.create();
                     alertDialog.show();
-                } else {
+                /*} else {
                     notif("You cannot cancel the order, the trip has already begun!");
-                }
+                }*/
             }
         });
 
@@ -361,12 +389,16 @@ public class ProgressActivity extends AppCompatActivity
                             .title("Pick Up")
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.pickup)));
 
-
                     if (destinationMarker != null) destinationMarker.remove();
-                    destinationMarker = gMap.addMarker(new MarkerOptions()
-                            .position(destinationLatLng)
-                            .title("Destination")
-                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.destination)));
+                    if(response.equalsIgnoreCase("2")) {
+                        handler = new Handler();
+                        handler.postDelayed(updateMarker, 4000);
+                    }else {
+                        destinationMarker = gMap.addMarker(new MarkerOptions()
+                                .position(destinationLatLng)
+                                .title("Destination")
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.destination)));
+                    }
                     updateLastLocation(true);
 
                     fitur = transaksi.getOrderFitur();
@@ -376,7 +408,11 @@ public class ProgressActivity extends AppCompatActivity
                         lldistance.setVisibility(View.GONE);
                         fiturtext.setText(transaksi.getEstimasi());
                     } else if (fitur.equalsIgnoreCase("5")) {
-                        requestRoute();
+                        if (response.equals("2")){
+                            requestDriverRoute();
+                        }else {
+                            requestRoute();
+                        }
                         lldetailsend.setVisibility(View.VISIBLE);
                         produk.setText(transaksi.getNamaBarang());
                         sendername.setText(transaksi.namaPengirim);
@@ -453,7 +489,11 @@ public class ProgressActivity extends AppCompatActivity
                         });
 
                     } else {
-                        requestRoute();
+                        if(response.equals("2")){
+                            requestDriverRoute();
+                        }else {
+                            requestRoute();
+                        }
                     }
                     if(transaksi.status == 4){
                         /*if (pakai.equalsIgnoreCase("2")){
@@ -804,6 +844,35 @@ public class ProgressActivity extends AppCompatActivity
         }
     };
 
+    private okhttp3.Callback updateDriverRouteCallback = new okhttp3.Callback() {
+        @Override
+        public void onFailure(okhttp3.Call call, IOException e) {
+
+        }
+
+        @Override
+        public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
+            if (response.isSuccessful()) {
+                final String json = response.body().string();
+                final long distance = MapDirectionAPI.getDistance(ProgressActivity.this, json);
+                final String time = MapDirectionAPI.getTimeDistance(ProgressActivity.this, json);
+                if (distance >= 0) {
+                    ProgressActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            updateLineDestination(json);
+                            timeAway.setVisibility(View.VISIBLE);
+                            timeAway.setText(time);
+                        }
+                    });
+                }
+                if (distance < 200){
+
+                }
+            }
+        }
+    };
+
     private void updateLastLocation(boolean move) {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSION_LOCATION);
@@ -827,6 +896,12 @@ public class ProgressActivity extends AppCompatActivity
     private void requestRoute() {
         if (pickUpLatLng != null && destinationLatLng != null) {
             MapDirectionAPI.getDirection(pickUpLatLng, destinationLatLng).enqueue(updateRouteCallback);
+        }
+    }
+
+    private void requestDriverRoute() {
+        if (pickUpLatLng != null && destinationLatLng != null) {
+            MapDirectionAPI.getDirection(pickUpLatLng, destinationLatLng).enqueue(updateDriverRouteCallback);
         }
     }
 

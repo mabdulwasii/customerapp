@@ -573,8 +573,8 @@
 
                             </LinearLayout>
 
-                           <!-- <LinearLayout
-
+                            <LinearLayout
+                                android:visibility="gone"
                                 android:id="@+id/llcheckedcard"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -653,7 +653,7 @@
                                     </LinearLayout>
                                 </LinearLayout>
 
-                            </LinearLayout>-->
+                            </LinearLayout>
 
                             <LinearLayout
 
@@ -796,21 +796,41 @@
                         android:layout_weight="1"
                         android:orientation="vertical">
 
-                        <customfonts.TextViewSFProDisplayMedium
-                            android:id="@+id/layanan"
+                        <RelativeLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Service"
-                            android:textColor="@color/black"
-                            android:textSize="20dp" />
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal">
 
-                        <customfonts.TextViewSFProDisplayRegular
-                            android:id="@+id/layanandes"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Order service"
-                            android:textColor="@color/gray"
-                            android:textSize="15dp" />
+                            <customfonts.TextViewSFProDisplayMedium
+                                android:id="@+id/layanan"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Service"
+                                android:paddingEnd="4dp"
+                                android:textColor="@color/black"
+                                android:textSize="20dp" />
+
+                            <customfonts.TextViewSFProDisplayRegular
+                                android:id="@+id/layanandes"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Order service"
+                                android:layout_below="@+id/layanan"
+                                android:textColor="@color/gray"
+                                android:textSize="15dp" />
+
+                            <customfonts.TextViewSFProDisplayMedium
+                                android:visibility="gone"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerInParent="true"
+                                android:id="@+id/timeAway"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="5 min away"
+                                android:textColor="@color/black"
+                                android:textSize="20dp" />
+
+                        </RelativeLayout>
 
                     </LinearLayout>
 
