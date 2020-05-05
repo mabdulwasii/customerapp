@@ -14,14 +14,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-
-import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -32,15 +24,6 @@ import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.AbsListView;
 import android.widget.EditText;
-
-import com.downloader.Error;
-import com.downloader.OnCancelListener;
-import com.downloader.OnDownloadListener;
-import com.downloader.OnPauseListener;
-import com.downloader.OnProgressListener;
-import com.downloader.OnStartOrResumeListener;
-import com.downloader.PRDownloader;
-
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -49,6 +32,23 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.downloader.Error;
+import com.downloader.OnCancelListener;
+import com.downloader.OnDownloadListener;
+import com.downloader.OnPauseListener;
+import com.downloader.OnProgressListener;
+import com.downloader.OnStartOrResumeListener;
+import com.downloader.PRDownloader;
 import com.downloader.Progress;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -78,7 +78,6 @@ import com.mykab.rider.utils.SendAudio;
 import com.mykab.rider.utils.api.FCMHelper;
 import com.squareup.picasso.Picasso;
 
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -93,9 +92,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
 
 
@@ -136,6 +132,7 @@ public class ChatActivity extends AppCompatActivity {
     SendAudio sendAudio;
     EditText message;
     File direct;
+    private String response;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -149,6 +146,11 @@ public class ChatActivity extends AppCompatActivity {
         Receiverid = i.getStringExtra("receiverid");
         Receiver_name = i.getStringExtra("name");
         Receiver_pic = i.getStringExtra("pic");
+        response = i.getStringExtra("response");
+
+        if (response != null && response.equalsIgnoreCase("4")) {
+            finish();
+        }
 
         sendbtn = findViewById(R.id.sendbtn);
         takephoto = findViewById(R.id.takephoto);

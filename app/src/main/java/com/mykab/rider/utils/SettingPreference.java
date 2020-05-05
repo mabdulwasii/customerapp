@@ -19,6 +19,7 @@ public class SettingPreference {
     private static String PAYPALACTIVE = "PAYPALACTIVE";
     private static String CURRENCYTEXT = "CURRENCYTEXT";
     private static String AUTHCODE = "AUTHCODE";
+    private static String RATING = "RATING";
 
     private SharedPreferences pref;
 
@@ -94,9 +95,15 @@ public class SettingPreference {
         editor.apply();
     }
 
+    public void updateRateNumber(String string) {
+        editor = pref.edit();
+        editor.putString(RATING, string);
+        editor.apply();
+    }
+
     public String[] getSetting() {
 
-        String[] settingan = new String[11];
+        String[] settingan = new String[12];
         settingan[0] = pref.getString(CURRENCY, "U+20A6");
         settingan[1] = pref.getString(ABOUTUS, "");
         settingan[2] = pref.getString(EMAIL, "");
@@ -108,6 +115,7 @@ public class SettingPreference {
         settingan[8] = pref.getString(PAYPALMODE, "1");
         settingan[9] = pref.getString(CURRENCYTEXT, "U+20A6");
         settingan[10] = pref.getString(AUTHCODE, "AUTHCODE");
+        settingan[11] = pref.getString(RATING, "5.0");
         return settingan;
     }
 }

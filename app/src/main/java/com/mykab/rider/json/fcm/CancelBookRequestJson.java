@@ -9,16 +9,16 @@ import com.google.gson.annotations.SerializedName;
 
 public class CancelBookRequestJson {
     @Expose
-    @SerializedName("id")
+    @SerializedName("user_id")
     public String id;
 
     @Expose
     @SerializedName("id_transaksi")
     public String id_transaksi;
 
-    @Expose
+  /*  @Expose
     @SerializedName("id_driver")
-    public String id_driver;
+    public String id_driver;*/
 
 
 

@@ -87,7 +87,7 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="10dp"
                         android:gravity="center"
-                        android:text="#2,000"
+                        android:text=""
                         android:textSize="24dp"
                         android:visibility="visible" />
 

@@ -3,22 +3,19 @@ package com.mykab.rider.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.mykab.rider.R;
 import com.mykab.rider.json.LoginRequestJson;
+import com.mykab.rider.json.LoginResponseJson;
 import com.mykab.rider.utils.api.ServiceGenerator;
 import com.mykab.rider.utils.api.service.UserService;
-import com.mykab.rider.json.LoginResponseJson;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -82,15 +79,14 @@ public class LupapassActivity extends AppCompatActivity {
                 progresshide();
                 if (response.isSuccessful()) {
                     if (response.body().getMessage().equalsIgnoreCase("found")) {
-                        notif("email sent, please check tour email");
-                        Toast.makeText(LupapassActivity.this, "email sent, please check tour email", Toast.LENGTH_LONG).show();
+                        notif("Email sent, please check tour email");
                         Intent i = new Intent(LupapassActivity.this, LoginActivity.class);
                         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(i);
 
 
                     } else {
-                        notif(("Email Not Registered"));
+                        notif(getString(R.string.wrongemail));
                     }
                 }
             }
@@ -99,7 +95,7 @@ public class LupapassActivity extends AppCompatActivity {
             public void onFailure(Call<LoginResponseJson> call, Throwable t) {
                 progresshide();
                 t.printStackTrace();
-                notif("error");
+                notif("failed!");
             }
         });
     }

@@ -107,6 +107,12 @@ public class MessagingService extends FirebaseMessagingService {
         }
     }
 
+    private void intentCancel() {
+        Intent toMain = new Intent(getBaseContext(), MainActivity.class);
+        toMain.addFlags(FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(toMain);
+    }
+
     private void otherHandler(RemoteMessage remoteMessage){
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext(), "notify_001");
         Intent intent1 = new Intent(getApplicationContext(), MainActivity.class);
@@ -199,6 +205,11 @@ public class MessagingService extends FirebaseMessagingService {
                 playSound1();
                 notificationOrderBuilderFinish(remoteMessage);
                 break;
+
+            case Constants.UPDATE:
+                    playSound1();
+                    notificationOrderBuilderUpdate(remoteMessage);
+                    break;
         }
     }
 
@@ -315,6 +326,39 @@ public class MessagingService extends FirebaseMessagingService {
         intent1.putExtra("id_driver",remoteMessage.getData().get("id_driver"));
         intent1.putExtra("complete","true");
         intent1.putExtra("response",remoteMessage.getData().get("response"));
+        PendingIntent pIntent1 = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent1, 0);
+
+        mBuilder.setContentIntent(pIntent1);
+        mBuilder.setSmallIcon(R.drawable.logo);
+        mBuilder.setContentTitle("Finish");
+        mBuilder.setContentText(getString(R.string.notification_finish));
+        mBuilder.setPriority(Notification.PRIORITY_MAX);
+        mBuilder.setAutoCancel(true);
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        {
+            String channelId = "customer";
+            NotificationChannel channel = new NotificationChannel(
+                    channelId,
+                    "Channel customer",
+                    NotificationManager.IMPORTANCE_HIGH);
+            notificationManager.createNotificationChannel(channel);
+            mBuilder.setChannelId(channelId);
+        }
+
+        notificationManager.notify(0, mBuilder.build());
+
+    }
+
+    private void notificationOrderBuilderUpdate(RemoteMessage remoteMessage) {
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(getApplicationContext(), "notify_001");
+        Intent intent1 = new Intent(getApplicationContext(), ProgressActivity.class);
+        intent1.addFlags(FLAG_ACTIVITY_NEW_TASK);
+        intent1.putExtra("id_transaksi", remoteMessage.getData().get("transaction_id"));
+        intent1.putExtra("alamat_tujuan",remoteMessage.getData().get("alamat_tujuan"));
         PendingIntent pIntent1 = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent1, 0);
 
         mBuilder.setContentIntent(pIntent1);

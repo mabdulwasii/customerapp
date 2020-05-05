@@ -18,6 +18,7 @@ import com.mykab.rider.json.RateResponseJson;
 import com.mykab.rider.json.RegisterRequestJson;
 import com.mykab.rider.json.RegisterResponseJson;
 import com.mykab.rider.json.ResponseJson;
+import com.mykab.rider.json.SimpleResponse;
 import com.mykab.rider.json.TopupRequestJson;
 import com.mykab.rider.json.TopupResponseJson;
 import com.mykab.rider.json.WalletRequestJson;
@@ -26,6 +27,8 @@ import com.mykab.rider.json.WithdrawRequestJson;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 
@@ -82,6 +85,10 @@ public interface UserService {
 
     @POST("pelanggan/all_berita")
     Call<BeritaDetailResponseJson> allberita(@Body BeritaDetailRequestJson param);
+
+    @FormUrlEncoded
+    @POST("pelanggan/get_rider_rating")
+    Call<SimpleResponse> getRiderRating(@Field("user_id") String riderId);
 
 
 }

@@ -1,13 +1,17 @@
 package com.mykab.rider.utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.mykab.rider.models.Bank;
 
+import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
@@ -83,51 +87,58 @@ public class Utility {
 
     public static void currencyTXT(TextView text, String nomninal, Context context) {
         SettingPreference sp = new SettingPreference(context);
-        if (nomninal.length() == 1) {
-            text.setText(sp.getSetting()[0] + "0.0" + nomninal);
-        } else if (nomninal.length() == 2) {
-            text.setText(sp.getSetting()[0] + "0." + nomninal);
-        } else {
-            Double getprice = Double.valueOf(nomninal);
-            DecimalFormat formatter = new DecimalFormat("#,###,###,###");
-            String formattedString = formatter.format(getprice);
-            text.setText(sp.getSetting()[0] + formattedString);
+        if(nomninal != null) {
+            if (nomninal.length() == 1) {
+                text.setText(sp.getSetting()[0] + "0.0" + nomninal);
+            } else if (nomninal.length() == 2) {
+                text.setText(sp.getSetting()[0] + "0." + nomninal);
+            } else {
+                Double getprice = Double.valueOf(nomninal);
+                DecimalFormat formatter = new DecimalFormat("#,###,###,###");
+                String formattedString = formatter.format(getprice);
+                text.setText(sp.getSetting()[0] + formattedString);
+            }
         }
     }
 
     public static void currencyTXT(TextView text, String nomninal1, String nomninal2, Context context) {
         SettingPreference sp = new SettingPreference(context);
-        if (nomninal1.length() == 1 &&  nomninal2.length() == 1) {
-            text.setText(sp.getSetting()[0] + "0.0" + nomninal1 + " - " + "0.0" + nomninal2);
-        } else if (nomninal1.length() == 2 && nomninal2.length() == 2) {
-            text.setText(sp.getSetting()[0] + "0." + nomninal1 + " - " + "0." + nomninal2);
-        } else {
+        if(nomninal1 != null && nomninal2 != null) {
+            if (nomninal1.length() == 1 && nomninal2.length() == 1) {
+                text.setText(sp.getSetting()[0] + "0.0" + nomninal1 + " - " + "0.0" + nomninal2);
+            } else if (nomninal1.length() == 2 && nomninal2.length() == 2) {
+                text.setText(sp.getSetting()[0] + "0." + nomninal1 + " - " + "0." + nomninal2);
+            } else {
 
-            DecimalFormat formatter = new DecimalFormat("#,###,###,###");
+                DecimalFormat formatter = new DecimalFormat("#,###,###,###");
 
-            Double getprice = Double.valueOf(nomninal1);
-            String formattedString = formatter.format(getprice);
+                Double getprice = Double.valueOf(nomninal1);
+                String formattedString = formatter.format(getprice);
 
-            Double getprice2 = Double.valueOf(nomninal2);
-            String formattedString2 = formatter.format(getprice2);
+                Double getprice2 = Double.valueOf(nomninal2);
+                String formattedString2 = formatter.format(getprice2);
 
-            text.setText(sp.getSetting()[0] + " " + formattedString + " - " + formattedString2);
+                text.setText(sp.getSetting()[0] + " " + formattedString + " - " + formattedString2);
 
+            }
         }
     }
 
     public static String formatMoney( String nomninal, Context context) {
         SettingPreference sp = new SettingPreference(context);
-        if (nomninal.length() == 1) {
-            return  sp.getSetting()[0]+"0.0" + nomninal;
-        } else if (nomninal.length() == 2) {
-            return  sp.getSetting()[0]+"0." + nomninal;
-        } else {
-            Double getprice = Double.valueOf(nomninal);
-            DecimalFormat formatter = new DecimalFormat("#,###,###,###");
-            String formattedString = formatter.format(getprice);
-            return  sp.getSetting()[0] + formattedString;
+        if(nomninal != null) {
+            if (nomninal.length() == 1) {
+                return sp.getSetting()[0] + "0.0" + nomninal;
+            } else if (nomninal.length() == 2) {
+                return sp.getSetting()[0] + "0." + nomninal;
+            } else {
+                Double getprice = Double.valueOf(nomninal);
+                DecimalFormat formatter = new DecimalFormat("#,###,###,###");
+                String formattedString = formatter.format(getprice);
+                return sp.getSetting()[0] + formattedString;
+            }
         }
+        return "";
     }
     public static ArrayList<Bank> getData(){
 
@@ -174,4 +185,23 @@ public class Utility {
 
 
     }
+
+    public  static void handleOnfailureException(Throwable t, Activity activity){
+        if(t instanceof SocketTimeoutException){
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(activity, "We are unable to reach the server, please check your connection", Toast.LENGTH_LONG).show();
+                }
+            });
+        }else if (t instanceof IOException){
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(activity, "Please check your network connection.", Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+    }
+
 }

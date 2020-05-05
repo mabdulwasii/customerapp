@@ -5,8 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
@@ -69,6 +67,7 @@ import com.mykab.rider.models.FiturModel;
 import com.mykab.rider.models.TransaksiModel;
 import com.mykab.rider.models.User;
 import com.mykab.rider.utils.NetworkUtils;
+import com.mykab.rider.utils.SettingPreference;
 import com.mykab.rider.utils.Utility;
 import com.mykab.rider.utils.api.FCMHelper;
 import com.mykab.rider.utils.api.MapDirectionAPI;
@@ -118,8 +117,7 @@ public class RideCarActivity extends AppCompatActivity
     private int currentLoop;
     Context context = RideCarActivity.this;
 
-
-    private long biayaTotal;
+    SettingPreference sp;
 
     @BindView(R.id.pickUpContainer)
     LinearLayout setPickUpContainer;
@@ -194,9 +192,6 @@ public class RideCarActivity extends AppCompatActivity
 
     private String time;
 
-    private String errorMessage;
-    private List<Address> addresses;
-    private Geocoder geocoder;
     private String address;
 
     private GoogleMap gMap;
@@ -219,10 +214,12 @@ public class RideCarActivity extends AppCompatActivity
     private DriverModel driver;
     private int fiturId;
     String fitur, getbiaya, biayaminimum, biayaakhir;
+    private Handler handler;
+
     private okhttp3.Callback updateRouteCallback = new okhttp3.Callback() {
         @Override
         public void onFailure(okhttp3.Call call, IOException e) {
-            notif("error connection, please select destination again!");
+            Toast.makeText(context, "Error connection, please select destination again!", Toast.LENGTH_SHORT).show();
             setDestinationContainer.setVisibility(View.VISIBLE);
             rlprogress.setVisibility(View.GONE);
         }
@@ -259,6 +256,8 @@ public class RideCarActivity extends AppCompatActivity
         currentLoop = 0;
         BottomSheetBehavior behavior = BottomSheetBehavior.from(bottomsheet);
         behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+
+        sp = new SettingPreference(this);
 
         parent_view = findViewById(android.R.id.content);
         Places.initialize(getApplicationContext(), getString(R.string.google_maps_key));
@@ -569,7 +568,7 @@ public class RideCarActivity extends AppCompatActivity
                                     .flat(true)
                             )
                     );
-                } else {
+                } /*else {
                     if (!driver.getBearing().isEmpty()) {
                         driverMarkers.add(
                                 gMap.addMarker(new MarkerOptions()
@@ -590,7 +589,7 @@ public class RideCarActivity extends AppCompatActivity
                                 )
                         );
                     }
-                }
+                }*/
             }
         }
     }
@@ -692,7 +691,6 @@ public class RideCarActivity extends AppCompatActivity
         String format = String.format(Locale.getDefault(), "%.2f", km);
         distanceText.setText(format);
         String biaya = String.valueOf(biayaminimum);
-        long biayaTotal = (long) (Double.valueOf(getbiaya) * km);
         String[] s = time.split(" ");
         String trimTime;
         if (s.length >= 3){
@@ -707,10 +705,9 @@ public class RideCarActivity extends AppCompatActivity
             trimTime = s[0].trim();
         }
 
-        biayaTotal = (long) (Double.valueOf(getbiaya) + (100 * km) + (10 * Double.valueOf(trimTime)) );//TODO total price
+        long biayaTotal = (long) (700 + (100 * km) + (10 * Long.parseLong(trimTime)) );//TODO total price
 
-        if (biayaTotal % 1 != 0)
-            biayaTotal = (1 - (biayaTotal % 1)) + biayaTotal;
+
         if (biayaTotal < Double.valueOf(biayaminimum)) {
             this.harga = Long.parseLong(biayaminimum);
             biayaTotal = Long.parseLong(biayaminimum);
@@ -718,26 +715,27 @@ public class RideCarActivity extends AppCompatActivity
         } else {
             Utility.currencyTXT(cost, getbiaya, this);
         }
-        this.harga = biayaTotal;
 
         biayaTotal = (long) (Math.floor(biayaTotal/100.0))*100;
+        this.harga = biayaTotal;
+
         final long finalBiayaTotal = biayaTotal;
-        final long minBiaya = biayaTotal - 200;
-        final long maxBiaya = biayaTotal + 200;
+
+        final long minBiaya = finalBiayaTotal - 200;
+        final long maxBiaya = finalBiayaTotal + 200;
         String minBiayaTotal = String.valueOf(minBiaya);
         String maxBiayaTotal = String.valueOf(maxBiaya);
         Utility.currencyTXT(priceText, minBiayaTotal, maxBiayaTotal,this);
 
         long saldokini = Long.parseLong(saldoWallet);
-        if (saldokini < (biayaTotal - (harga * Double.valueOf(biayaakhir)))) {
+        if (saldokini < biayaTotal) {
             llcheckedcash.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    String minTotal = String.valueOf(minBiaya);
-                    String maxTotal = String.valueOf(maxBiaya);
-//                    biayaTotal = (long) (Math.floor(biayaTotal/100.0))*100;
-                    Utility.currencyTXT(priceText, minTotal, maxTotal,context);
+                    Utility.currencyTXT(priceText, minBiayaTotal, maxBiayaTotal,context);
+
                     diskon.setText(Constants.CURRENCY + "0.00");
+
                     checkedcash.setSelected(true);
                     checkedwallet.setSelected(false);
                     checkedCard.setSelected(false);
@@ -759,12 +757,11 @@ public class RideCarActivity extends AppCompatActivity
             llcheckedcash.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    String minBiayaT = String.valueOf(minBiaya);
-                    String maxBiayaT = String.valueOf(maxBiaya);
-                    Utility.currencyTXT(priceText, minBiayaT, maxBiayaT,context);
+                    Utility.currencyTXT(priceText, minBiayaTotal, maxBiayaTotal,context);
                     diskon.setText(Constants.CURRENCY + "0.00");
                     checkedcash.setSelected(true);
                     checkedwallet.setSelected(false);
+                    checkedCard.setSelected(false);
                     checkedpaycash = "1";
                     checkedpaywallet = "0";
                     checkedpayCard = "0";
@@ -780,50 +777,31 @@ public class RideCarActivity extends AppCompatActivity
                 }
             });
 
-            final long finalBiayaTotal1 = biayaTotal;
-            llcheckedwallet.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    long diskonwallet = (long) (Double.valueOf(biayaakhir) * harga);
-                    String totalwallet = String.valueOf(diskonwallet);
-                    Utility.currencyTXT(diskon, totalwallet,context);
-                    if (diskonwallet > 0){
-                        //diskonContainer.setVisibility(View.VISIBLE);
-                    }
-                    long lastPrice = finalBiayaTotal1 - diskonwallet;
-                    lastPrice = (long) (Math.floor(lastPrice/100.0))*100;
-                    String minBiayaTotal = String.valueOf(lastPrice - 200);
-                    minBiayaTotal = String.valueOf((Math.floor(Long.parseLong(minBiayaTotal)/100.0))*100);
 
-                    String maxBiayaTotal = String.valueOf(lastPrice + 200);
-                    maxBiayaTotal = String.valueOf((Math.floor(Long.parseLong(maxBiayaTotal)/100.0))*100);
-                    Utility.currencyTXT(priceText, minBiayaTotal, maxBiayaTotal, context);
-                    harga = lastPrice;
-                    Utility.currencyTXT(priceText, minBiayaTotal, maxBiayaTotal, context);
-                    checkedcash.setSelected(false);
-                    checkedCard.setSelected(false);
-                    checkedwallet.setSelected(true);
-                    checkedpaycash = "0";
-                    checkedpaywallet = "1";
-                    checkedpayCard = "0";
-                    Log.e("CHECKEDWALLET", checkedpaywallet);
-                    walletpayment.setTextColor(getResources().getColor(R.color.colorgradient));
-                    cashpayment.setTextColor(getResources().getColor(R.color.gray));
-                    cardPayment.setTextColor(getResources().getColor(R.color.gray));
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        checkedwallet.setBackgroundTintList(getResources().getColorStateList(R.color.colorgradient));
-                        checkedcash.setBackgroundTintList(getResources().getColorStateList(R.color.gray));
-                        checkedCard.setBackgroundTintList(getResources().getColorStateList(R.color.gray));
-                    }
+            final long finalBiayaTotal1 = biayaTotal;
+            llcheckedwallet.setOnClickListener(view -> {
+                Utility.currencyTXT(priceText, minBiayaTotal, maxBiayaTotal,context);
+                harga = finalBiayaTotal1;
+                checkedcash.setSelected(false);
+                checkedCard.setSelected(false);
+                checkedwallet.setSelected(true);
+                checkedpaycash = "0";
+                checkedpaywallet = "1";
+                checkedpayCard = "0";
+                Log.e("CHECKEDWALLET", checkedpaywallet);
+                walletpayment.setTextColor(getResources().getColor(R.color.colorgradient));
+                cashpayment.setTextColor(getResources().getColor(R.color.gray));
+                cardPayment.setTextColor(getResources().getColor(R.color.gray));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    checkedwallet.setBackgroundTintList(getResources().getColorStateList(R.color.colorgradient));
+                    checkedcash.setBackgroundTintList(getResources().getColorStateList(R.color.gray));
+                    checkedCard.setBackgroundTintList(getResources().getColorStateList(R.color.gray));
                 }
             });
 
-            final long finalBiayaTotal2 = biayaTotal;
             llcheckedcard.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    String minBiayaTotal = String.valueOf(minBiaya);
-                    String maxBiayaTotal = String.valueOf(maxBiaya);
                     Utility.currencyTXT(priceText, minBiayaTotal, maxBiayaTotal,context);
                     diskon.setText(Constants.CURRENCY + "0.00");
                     checkedCard.setSelected(true);//TODO for card payment
@@ -945,7 +923,6 @@ public class RideCarActivity extends AppCompatActivity
         }
     }
 
-
     private void onOrderButton() {
         fetchNearDriver(pickUpLatLang.latitude, pickUpLatLang.longitude);
 //        Toast.makeText(context, "Driver car available = " + driverAvailable.get(0).getTipe(), Toast.LENGTH_SHORT).show();
@@ -957,6 +934,7 @@ public class RideCarActivity extends AppCompatActivity
         if (checkedpaywallet.equals("1")) {
             if (driverAvailable.isEmpty()) {
                 notif("Sorry, there are no drivers around you.");
+                fetchNearDriver(pickUpLatLang.latitude, pickUpLatLang.longitude);
             } else {
                 RideCarRequestJson param = new RideCarRequestJson();
                 User userLogin = BaseApp.getInstance(this).getLoginUser();
@@ -979,6 +957,7 @@ public class RideCarActivity extends AppCompatActivity
         } else if (checkedpayCard.equals("1")) {
             if (driverAvailable.isEmpty()) {
                 notif("Sorry, there are no drivers around you.");
+                fetchNearDriver(pickUpLatLang.latitude, pickUpLatLang.longitude);
             } else {
                 RideCarRequestJson param = new RideCarRequestJson();
                 User userLogin = BaseApp.getInstance(this).getLoginUser();
@@ -1001,6 +980,7 @@ public class RideCarActivity extends AppCompatActivity
         else {
             if (driverAvailable.isEmpty()) {
                 notif("Sorry, there are no drivers around you.");
+                fetchNearDriver(pickUpLatLang.latitude, pickUpLatLang.longitude);
             } else {
                 RideCarRequestJson param = new RideCarRequestJson();
                 User userLogin = BaseApp.getInstance(this).getLoginUser();
@@ -1042,18 +1022,24 @@ public class RideCarActivity extends AppCompatActivity
                             }
 
                             try {
+                                Log.e(TAG, "Thread started sleeping");
                                 Thread.sleep(60000);
+                                Log.e(TAG, "Thread Sleeping");
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
 
                             if (threadRun) {
+                                Log.e(TAG, "ABOUT to call checkStatusTransaksi");
                                 CheckStatusTransaksiRequest param = new CheckStatusTransaksiRequest();
                                 param.setIdTransaksi(transaksi.getId());
                                 service.checkStatusTransaksi(param).enqueue(new Callback<CheckStatusTransaksiResponse>() {
                                     @Override
                                     public void onResponse(Call<CheckStatusTransaksiResponse> call, Response<CheckStatusTransaksiResponse> response) {
                                         if (response.isSuccessful()) {
+                                            Log.e(TAG, "checkStatusTransaksi successful");
+                                            Log.e(TAG,  new Gson().toJson(response.body()));
+
                                             CheckStatusTransaksiResponse checkStatus = response.body();
                                             if (!checkStatus.isStatus()) {
                                                 notif("Driver not found!");
@@ -1075,6 +1061,7 @@ public class RideCarActivity extends AppCompatActivity
 
                                     @Override
                                     public void onFailure(Call<CheckStatusTransaksiResponse> call, Throwable t) {
+                                        Log.e(TAG, t.getLocalizedMessage());
                                         if (NetworkUtils.isConnected(context)){
                                             notif("Please check your network service");
                                         }else {
@@ -1111,7 +1098,7 @@ public class RideCarActivity extends AppCompatActivity
                     notif("Connection error, Please check your network service");
                 }
                 t.printStackTrace();
-                Log.e(TAG, t.getLocalizedMessage());
+                Log.e(TAG, "ERROR MSG == " + t.getLocalizedMessage());
 //                notif("Your account has a problem, please contact customer service!");
                 notif("Error! Please try again");
                 new Handler().postDelayed(new Runnable() {
@@ -1125,7 +1112,7 @@ public class RideCarActivity extends AppCompatActivity
 
     private void buildDriverRequest(RideCarResponseJson response) {
         transaksi = response.getData().get(0);
-        Log.e("wallet", String.valueOf(transaksi.isPakaiWallet()));
+        Log.e("wallet", String.valueOf(transaksi.getPakaiWallet()));
         User loginUser = BaseApp.getInstance(this).getLoginUser();
         if (request == null) {
             request = new DriverRequest();
@@ -1144,23 +1131,24 @@ public class RideCarActivity extends AppCompatActivity
             request.setAlamatTujuan(transaksi.getAlamatTujuan());
             request.setKodePromo(transaksi.getKodePromo());
             request.setKreditPromo(transaksi.getKreditPromo());
-            request.setPakaiWallet(String.valueOf(transaksi.isPakaiWallet()));
-            request.setEstimasi(transaksi.getEstimasi());
+            request.setPakaiWallet(String.valueOf(transaksi.getPakaiWallet()));
+            request.setEstimasi(transaksi.getEstimasiTime());
             request.setLayanan(layanan.getText().toString());
             request.setLayanandesc(layanandesk.getText().toString());
             request.setIcon(ICONFITUR);
             request.setBiaya(cost.getText().toString());
             request.setDistance(distanceText.getText().toString());
 
-
             String namaLengkap = String.format("%s", loginUser.getFullnama());
             request.setNamaPelanggan(namaLengkap);
             request.setTelepon(loginUser.getNoTelepon());
             request.setType(ORDER);
+            request.setRate(sp.getSetting()[11]);
+
         }
     }
 
-    private void fcmBroadcast(int index, List<DriverModel> driverList) {
+        private void fcmBroadcast(int index, List<DriverModel> driverList) {
         DriverModel driverToSend = driverList.get(index);
         currentLoop++;
         request.setTime_accept(new Date().getTime() + "");
@@ -1211,12 +1199,6 @@ public class RideCarActivity extends AppCompatActivity
                             intent.putExtra("id_driver", cDriver.getId());
                             intent.putExtra("id_transaksi", request.getIdTransaksi());
                             intent.putExtra("response", "2");
-                            if (checkedCard.isSelected()) {
-                                intent.putExtra("pakai", "2");
-                            }
-                            else {
-                                intent.putExtra("pakai", "0");
-                            }
                             startActivity(intent);
                             finish();
                         }

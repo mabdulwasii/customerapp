@@ -13,8 +13,10 @@ import java.util.Locale;
 public class Constants {
 
 //    public static final String BASE_URL = "https://mykab.team/";
-    public static final String BASE_URL = "https://mykab.smaaptal.com/";
-    public static final String BASE_URL2 = "https://smaaptal.com/";
+//    public static final String BASE_URL = "https://mykab.smaaptal.com/";
+//    public static final String BASE_URL2 = "https://smaaptal.com/";
+    public static final String BASE_URL = "http://smaaptal.com/demokab/";
+    public static final String BASE_URL2 = "http://smaaptal.com/demokab/";
 //    public static final String FCM_KEY = "AIzaSyAHFune4I3bVRUfXonBCp7JhnSrbIeyfK0";
     public static final String FCM_KEY = "AAAA0_p0VKI:APA91bHHlSmz_wDjM2EmjanjjxwwGgdCGFwtKww8DFM8Rr-O9Kj3Gf1m8Wr0hXH0Gjnsr9vZmdPVgCSSBZyU2PcJkzBQ7SekPSDhYFlDrvRGV76eT6C6mCCMAV88fW1ce2NZp-JmVq5l";
     public static final String CONNECTION = BASE_URL + "api/";
@@ -26,6 +28,9 @@ public class Constants {
     public static final String IMAGESUSER = BASE_URL + "images/pelanggan/";
     public static final int REQUEST_IMAGE_CAPTURE = 12456;
     public static final String PAYSTACK_BASE_URL = "https://api.paystack.co/transaction/";
+    public static final String CONTACT_TELEPHONE = "08151938000";
+    public static final String CONTACT_EMAIL = "choice.iruh@bomzak.com";
+    public static final int MIN_TOP_UP = 100;
 
     public static String CURRENCY = "#";
 
@@ -34,6 +39,7 @@ public class Constants {
     public static final int CANCEL = 5;
     public static final int START = 3;
     public static final int FINISH = 4;
+    public static final int UPDATE = 6;
 
     public static Double LATITUDE;
     public static Double LONGITUDE;
@@ -58,4 +64,5 @@ public class Constants {
             new LatLng(-7.216001, 0), // southwest
             new LatLng(0, 107.903316)); // northeast
 
+    public static int MAX_TOP_UP = 1000000;
 }

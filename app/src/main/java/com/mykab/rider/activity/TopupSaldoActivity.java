@@ -104,14 +104,14 @@ public class TopupSaldoActivity extends AppCompatActivity {
 
         nominal.addTextChangedListener(Utility.currencyTW(nominal,this));
 
-        nominal.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus){
-                    nominal.setText("");
-                }
-            }
-        });
+//        nominal.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+//            @Override
+//            public void onFocusChange(View v, boolean hasFocus) {
+//                if (hasFocus){
+//                    nominal.setText("");
+//                }
+//            }
+//        });
 
         nominal.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -158,12 +158,20 @@ public class TopupSaldoActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (!nominal.getText().toString().isEmpty()) {
-                    Intent i = new Intent(TopupSaldoActivity.this, CreditcardActivity.class);
-                    i.putExtra("price", convertAngka(nominal.getText().toString()));
-                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(i);
+                    String price = convertAngka(nominal.getText().toString());
+                    int intPrice = Integer.parseInt(price);
+                    if (intPrice > Constants.MAX_TOP_UP){
+                        notif("Amount cannot be more than " + Constants.MAX_TOP_UP);
+                    }else if (intPrice < Constants.MIN_TOP_UP){
+                        notif("Amount cannot be less than " + Constants.MIN_TOP_UP);
+                    }else {
+                        Intent i = new Intent(TopupSaldoActivity.this, CreditcardActivity.class);
+                        i.putExtra("price", price);
+                        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(i);
+                    }
                 } else {
-                    notif("Account cannot be empty!");
+                    notif("Amount cannot be empty!");
                 }
             }
         });

@@ -135,7 +135,7 @@ public class HomeFragment extends Fragment {
             public void onClick(View v) {
                 Intent i = new Intent(context, TopupSaldoActivity.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(i);
+                context.startActivity(i);
 
             }
         });
@@ -145,7 +145,7 @@ public class HomeFragment extends Fragment {
             public void onClick(View v) {
                 Intent i = new Intent(context, WithdrawActivity.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(i);
+                context.startActivity(i);
 
             }
         });
@@ -155,7 +155,7 @@ public class HomeFragment extends Fragment {
             public void onClick(View v) {
                 Intent i = new Intent(context, AllBeritaActivity.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(i);
+                context.startActivity(i);
 
             }
         });
@@ -165,7 +165,7 @@ public class HomeFragment extends Fragment {
             public void onClick(View v) {
                 Intent i = new Intent(context, WalletActivity.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(i);
+                context.startActivity(i);
 
             }
         });
@@ -294,11 +294,6 @@ public class HomeFragment extends Fragment {
                         sp.updateemail(response.body().getEmail());
                         sp.updatephone(response.body().getPhone());
                         sp.updateweb(response.body().getWebsite());
-                        sp.updatePaypal(response.body().getPaypalkey());
-                        sp.updatepaypalmode(response.body().getPaypalmode());
-                        sp.updatepaypalactive(response.body().getPaypalactive());
-                        sp.updatestripeactive(response.body().getStripeactive());
-                        sp.updatecurrencytext(response.body().getCurrencytext());
 
                         if (response.body().getSaldo() != null) {
                             Utility.currencyTXT(saldo, response.body().getSaldo(), context);
@@ -365,7 +360,7 @@ public class HomeFragment extends Fragment {
                         realm.delete(User.class);
                         realm.commitTransaction();
                         BaseApp.getInstance(getContext()).setLoginUser(null);
-                        startActivity(new Intent(getContext(), IntroActivity.class)
+                        context.startActivity(new Intent(getContext(), IntroActivity.class)
                                 .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
                         getActivity().finish();
                     }

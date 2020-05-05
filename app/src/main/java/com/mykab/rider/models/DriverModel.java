@@ -4,7 +4,6 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import io.realm.RealmObject;
 
@@ -14,65 +13,52 @@ import io.realm.RealmObject;
 
 public class DriverModel extends RealmObject implements Serializable{
 
-    @Expose
     @SerializedName("id")
+    @Expose
     private String id;
-
-    @Expose
     @SerializedName("nama_driver")
+    @Expose
     private String namaDriver;
-
-    @Expose
     @SerializedName("latitude")
-    private double latitude;
-
     @Expose
-    @SerializedName("longitude")
-    private double longitude;
-
-    @Expose
-    @SerializedName("update_at")
-    private Date updateAt;
-
-    @Expose
+    private Double latitude;
     @SerializedName("no_telepon")
+    @Expose
     private String noTelepon;
-
+    @SerializedName("longitude")
     @Expose
+    private Double longitude;
+    @SerializedName("update_at")
+    @Expose
+    private String updateAt;
     @SerializedName("foto")
+    @Expose
     private String foto;
-
-    @Expose
     @SerializedName("reg_id")
+    @Expose
     private String regId;
-
-    @Expose
     @SerializedName("driver_job")
-    private String driverJob;
-
     @Expose
+    private String driverJob;
+    @SerializedName("tipe")
+    @Expose
+    private String tipe;
+    @SerializedName("merek")
+    @Expose
+    private String merek;
+    @SerializedName("warna")
+    @Expose
+    private String warna;
+    @SerializedName("nomor_kendaraan")
+    @Expose
+    private String nomorKendaraan;
+    @SerializedName("bearing")
+    @Expose
+    private String bearing;
     @SerializedName("distance")
+    @Expose
     private String distance;
 
-    @Expose
-    @SerializedName("merek")
-    private String merek;
-
-    @Expose
-    @SerializedName("nomor_kendaraan")
-    private String nomor_kendaraan;
-
-    @Expose
-    @SerializedName("warna")
-    private String warna;
-
-    @Expose
-    @SerializedName("tipe")
-    private String tipe;
-
-    @Expose
-    @SerializedName("bearing")
-    private String bearing;
 
 
 
@@ -99,14 +85,6 @@ public class DriverModel extends RealmObject implements Serializable{
 
     public void setLongitude(double longitude) {
         this.longitude = longitude;
-    }
-
-    public Date getUpdateAt() {
-        return updateAt;
-    }
-
-    public void setUpdateAt(Date updateAt) {
-        this.updateAt = updateAt;
     }
 
     public String getNoTelepon() {
@@ -157,14 +135,6 @@ public class DriverModel extends RealmObject implements Serializable{
         this.merek = merek;
     }
 
-    public String getNomor_kendaraan() {
-        return nomor_kendaraan;
-    }
-
-    public void setNomor_kendaraan(String nomor_kendaraan) {
-        this.nomor_kendaraan = nomor_kendaraan;
-    }
-
     public String getWarna() {
         return warna;
     }
@@ -197,5 +167,27 @@ public class DriverModel extends RealmObject implements Serializable{
         this.bearing = bearing;
     }
 
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
 
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getUpdateAt() {
+        return updateAt;
+    }
+
+    public void setUpdateAt(String updateAt) {
+        this.updateAt = updateAt;
+    }
+
+    public String getNomorKendaraan() {
+        return nomorKendaraan;
+    }
+
+    public void setNomorKendaraan(String nomorKendaraan) {
+        this.nomorKendaraan = nomorKendaraan;
+    }
 }

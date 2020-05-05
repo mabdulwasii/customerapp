@@ -4,7 +4,6 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -20,101 +19,78 @@ public class TransaksiModel extends RealmObject implements Serializable{
     @SerializedName("id")
     private String id;
 
+    @SerializedName("id_pelanggan")
     @Expose
-        @SerializedName("id_pelanggan")
     private String idPelanggan;
-
-    @Expose
     @SerializedName("id_driver")
+    @Expose
     private String idDriver;
-
-    @Expose
     @SerializedName("order_fitur")
+    @Expose
     private String orderFitur;
-
-    @Expose
     @SerializedName("start_latitude")
-    private double startLatitude;
-
     @Expose
+    private Double startLatitude;
     @SerializedName("start_longitude")
-    private double startLongitude;
-
     @Expose
+    private Double startLongitude;
     @SerializedName("end_latitude")
-    private double endLatitude;
-
     @Expose
+    private Double endLatitude;
     @SerializedName("end_longitude")
-    private double endLongitude;
-
     @Expose
+    private Double endLongitude;
     @SerializedName("jarak")
+    @Expose
     private double jarak;
-
-    @Expose
     @SerializedName("harga")
+    @Expose
     private long harga;
-
-    @Expose
     @SerializedName("waktu_order")
-    private Date waktuOrder;
-
     @Expose
+    private String waktuOrder;
     @SerializedName("waktu_selesai")
-    private Date waktuSelesai;
-
     @Expose
-    @SerializedName("alamat_asal")
-    private String alamatAsal;
-
-    @Expose
-    @SerializedName("alamat_tujuan")
-    private String alamatTujuan;
-
-    @Expose
-    @SerializedName("kode_promo")
-    private String kodePromo;
-
-    @Expose
-    @SerializedName("kredit_promo")
-    private String kreditPromo;
-
-    @Expose
-    @SerializedName("pakai_wallet")
-    private boolean pakaiWallet;
-
-    @Expose
-    @SerializedName("rate")
-    private String rate;
-
-    @Expose
-    @SerializedName("status")
-    public int status;
-
-    @Expose
+    private String waktuSelesai;
     @SerializedName("estimasi_time")
-    private String estimasi;
-
     @Expose
-    @SerializedName("nama_pengirim")
-    public String namaPengirim;
-
+    private String estimasiTime;
+    @SerializedName("alamat_asal")
     @Expose
-    @SerializedName("telepon_pengirim")
-    public String teleponPengirim;
-
+    private String alamatAsal;
+    @SerializedName("alamat_tujuan")
     @Expose
-    @SerializedName("nama_penerima")
-    public String namaPenerima;
-
+    private String alamatTujuan;
+    @SerializedName("kredit_promo")
     @Expose
-    @SerializedName("telepon_penerima")
-    public String teleponPenerima;
-
+    private String kreditPromo;
+    @SerializedName("pakai_wallet")
     @Expose
+    private String pakaiWallet;
+    @SerializedName("rate")
+    @Expose
+    private String rate;
+    @SerializedName("status")
+    @Expose
+    private Integer status;
     @SerializedName("nama_barang")
-    public String namaBarang;
+    @Expose
+    private String namaBarang;
+    @SerializedName("nama_pengirim")
+    @Expose
+    private String namaPengirim;
+    @SerializedName("nama_penerima")
+    @Expose
+    private String namaPenerima;
+    @SerializedName("telepon_pengirim")
+    @Expose
+    private String teleponPengirim;
+    @SerializedName("telepon_penerima")
+    @Expose
+    private String teleponPenerima;
+    @SerializedName("kode_promo")
+    @Expose
+    private String kodePromo;
 
 
 
@@ -198,22 +174,6 @@ public class TransaksiModel extends RealmObject implements Serializable{
         this.harga = harga;
     }
 
-    public Date getWaktuOrder() {
-        return waktuOrder;
-    }
-
-    public void setWaktuOrder(Date waktuOrder) {
-        this.waktuOrder = waktuOrder;
-    }
-
-    public Date getWaktuSelesai() {
-        return waktuSelesai;
-    }
-
-    public void setWaktuSelesai(Date waktuSelesai) {
-        this.waktuSelesai = waktuSelesai;
-    }
-
     public String getAlamatAsal() {
         return alamatAsal;
     }
@@ -246,28 +206,12 @@ public class TransaksiModel extends RealmObject implements Serializable{
         this.kreditPromo = kreditPromo;
     }
 
-    public boolean isPakaiWallet() {
-        return pakaiWallet;
-    }
-
-    public void setPakaiWallet(boolean pakaiWallet) {
-        this.pakaiWallet = pakaiWallet;
-    }
-
     public String getRate() {
         return rate;
     }
 
     public void setRate(String rate) {
         this.rate = rate;
-    }
-
-    public String getEstimasi() {
-        return estimasi;
-    }
-
-    public void setEstimasi(String estimasi) {
-        this.estimasi = estimasi;
     }
 
     public String getNamaPengirim() {
@@ -308,5 +252,61 @@ public class TransaksiModel extends RealmObject implements Serializable{
 
     public void setNamaBarang(String namaBarang) {
         this.namaBarang = namaBarang;
+    }
+
+    public void setStartLatitude(Double startLatitude) {
+        this.startLatitude = startLatitude;
+    }
+
+    public void setStartLongitude(Double startLongitude) {
+        this.startLongitude = startLongitude;
+    }
+
+    public void setEndLatitude(Double endLatitude) {
+        this.endLatitude = endLatitude;
+    }
+
+    public void setEndLongitude(Double endLongitude) {
+        this.endLongitude = endLongitude;
+    }
+
+    public String getWaktuOrder() {
+        return waktuOrder;
+    }
+
+    public void setWaktuOrder(String waktuOrder) {
+        this.waktuOrder = waktuOrder;
+    }
+
+    public String getWaktuSelesai() {
+        return waktuSelesai;
+    }
+
+    public void setWaktuSelesai(String waktuSelesai) {
+        this.waktuSelesai = waktuSelesai;
+    }
+
+    public String getEstimasiTime() {
+        return estimasiTime;
+    }
+
+    public void setEstimasiTime(String estimasiTime) {
+        this.estimasiTime = estimasiTime;
+    }
+
+    public String getPakaiWallet() {
+        return pakaiWallet;
+    }
+
+    public void setPakaiWallet(String pakaiWallet) {
+        this.pakaiWallet = pakaiWallet;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
     }
 }

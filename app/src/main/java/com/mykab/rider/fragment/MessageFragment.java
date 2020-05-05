@@ -6,16 +6,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.firebase.database.DataSnapshot;
@@ -50,11 +49,18 @@ public class MessageFragment extends Fragment {
     MessageItem inboxItem;
 
     boolean isviewCreated = false;
+    private String response = "1";
 
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         getView = inflater.inflate(R.layout.fragment_recycle, container, false);
         context = getContext();
+
+        Bundle bundle = getArguments();
+
+        if (bundle != null){
+            response = bundle.getString("response");
+        }
 
         rootRef = FirebaseDatabase.getInstance().getReference();
 
@@ -77,7 +83,8 @@ public class MessageFragment extends Fragment {
                     intent.putExtra("tokendriver", item.getTokendriver());
                     intent.putExtra("tokenku", Constants.TOKEN);
                     intent.putExtra("pic", item.getPicture());
-                    getActivity().startActivity(intent);
+                    intent.putExtra("response", response);
+                    context.startActivity(intent);
                 }
 
 

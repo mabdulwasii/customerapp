@@ -39,10 +39,6 @@ public class User extends RealmObject implements Serializable {
     @Expose
     private String password;
 
-    @SerializedName("alamat")
-    @Expose
-    private String alamat;
-
     @SerializedName("created_on")
     @Expose
     private String createdOn;
@@ -66,6 +62,10 @@ public class User extends RealmObject implements Serializable {
     @SerializedName("fotopelanggan")
     @Expose
     private String fotopelanggan;
+
+    @SerializedName("alamat")
+    @Expose
+    private String alamat;
 
     @SerializedName("countrycode")
     @Expose

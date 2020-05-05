@@ -58,7 +58,7 @@ public class TransaksiSendModel extends RealmObject implements Serializable{
 
     @Expose
     @SerializedName("waktu_order")
-    private Date waktuOrder;
+    private String waktuOrder;
 
     @Expose
     @SerializedName("waktu_selesai")
@@ -198,11 +198,11 @@ public class TransaksiSendModel extends RealmObject implements Serializable{
         this.harga = harga;
     }
 
-    public Date getWaktuOrder() {
+    public String getWaktuOrder() {
         return waktuOrder;
     }
 
-    public void setWaktuOrder(Date waktuOrder) {
+    public void setWaktuOrder(String waktuOrder) {
         this.waktuOrder = waktuOrder;
     }
 

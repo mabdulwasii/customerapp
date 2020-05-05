@@ -4,7 +4,6 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * Created by Ourdevelops Team on 10/19/2019.
@@ -58,11 +57,11 @@ public class DriverRequest implements Serializable {
 
     @Expose
     @SerializedName("waktu_order")
-    private Date waktuOrder;
+    private String waktuOrder;
 
     @Expose
     @SerializedName("waktu_selesai")
-    private Date waktuSelesai;
+    private String waktuSelesai;
 
     @Expose
     @SerializedName("alamat_asal")
@@ -261,19 +260,19 @@ public class DriverRequest implements Serializable {
         this.harga = harga;
     }
 
-    public Date getWaktuOrder() {
+    public String getWaktuOrder() {
         return waktuOrder;
     }
 
-    public void setWaktuOrder(Date waktuOrder) {
+    public void setWaktuOrder(String waktuOrder) {
         this.waktuOrder = waktuOrder;
     }
 
-    public Date getWaktuSelesai() {
+    public String getWaktuSelesai() {
         return waktuSelesai;
     }
 
-    public void setWaktuSelesai(Date waktuSelesai) {
+    public void setWaktuSelesai(String waktuSelesai) {
         this.waktuSelesai = waktuSelesai;
     }
 
@@ -478,4 +477,45 @@ public class DriverRequest implements Serializable {
     public void setDistance(String distance) {
         this.distance = distance;
     }
+
+    public String getPakaiWallet() {
+        return pakaiWallet;
+    }
+
+    public String getNamaPengirim() {
+        return namaPengirim;
+    }
+
+    public void setNamaPengirim(String namaPengirim) {
+        this.namaPengirim = namaPengirim;
+    }
+
+    public String getTeleponPengirim() {
+        return teleponPengirim;
+    }
+
+    public void setTeleponPengirim(String teleponPengirim) {
+        this.teleponPengirim = teleponPengirim;
+    }
+
+    public String getNamaPenerima() {
+        return namaPenerima;
+    }
+
+    public void setNamaPenerima(String namaPenerima) {
+        this.namaPenerima = namaPenerima;
+    }
+
+    public String getTeleponPenerima() {
+        return teleponPenerima;
+    }
+
+    public void setTeleponPenerima(String teleponPenerima) {
+        this.teleponPenerima = teleponPenerima;
+    }
+
+    public void setNamaBarang(String namaBarang) {
+        this.namaBarang = namaBarang;
+    }
+
 }

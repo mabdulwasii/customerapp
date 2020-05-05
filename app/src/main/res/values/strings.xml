@@ -75,5 +75,7 @@
     <string name="notification_finish">Thank you for using our services</string>
     <string name="pass_mismatch">Password mismatch</string>
     <string name="confirm_empty">Confirm password cannot be empty!</string>
+    <string name="connection_error">Error connecting, please check your network</string>
+    <string name="wrongemail">Email Not Registered</string>
 
 </resources>

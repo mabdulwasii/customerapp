@@ -12,11 +12,6 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.appcompat.app.AlertDialog;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +22,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 
 import com.mykab.rider.BuildConfig;
 import com.mykab.rider.R;
@@ -40,7 +40,6 @@ import com.mykab.rider.models.User;
 import com.mykab.rider.utils.SettingPreference;
 import com.squareup.picasso.Picasso;
 
-import androidx.fragment.app.Fragment;
 import io.realm.Realm;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
@@ -49,10 +48,12 @@ import static android.content.Context.NOTIFICATION_SERVICE;
 public class ProfileFragment extends Fragment {
     View getView;
     Context context;
-    ImageView foto;
-    TextView nama, email;
+    ImageView foto, contactPhone, contactEmail;
+    TextView nama, email, rate;
     LinearLayout aboutus, privacy, shareapp, rateapp, editprofile, logout, llpassword;
     SettingPreference sp;
+    private static final int REQUEST_PERMISSION_CALL = 992;
+
 
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -68,6 +69,9 @@ public class ProfileFragment extends Fragment {
         editprofile = getView.findViewById(R.id.lleditprofile);
         logout = getView.findViewById(R.id.lllogout);
         llpassword = getView.findViewById(R.id.llpassword);
+        contactPhone = getView.findViewById(R.id.contactPhone);
+        contactEmail = getView.findViewById(R.id.contactEmail);
+        rate = getView.findViewById(R.id.rate);
         sp = new SettingPreference(context);
 
 
@@ -76,8 +80,33 @@ public class ProfileFragment extends Fragment {
             public void onClick(View v) {
                 Intent i = new Intent(context, PrivacyActivity.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(i);
+                context.startActivity(i);
 
+            }
+        });
+        rate.setText(sp.getSetting()[11]);
+
+        contactPhone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CALL_PHONE}, REQUEST_PERMISSION_CALL);
+                    return;
+                }
+
+                Intent callIntent = new Intent(Intent.ACTION_CALL);
+                callIntent.setData(Uri.parse("tel:" + Constants.CONTACT_TELEPHONE));
+                context.startActivity(callIntent);
+            }
+        });
+
+
+        contactEmail.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_SENDTO);
+            intent.setData(Uri.parse("mailto:"+ Constants.CONTACT_EMAIL)); // only email apps should handle this
+            intent.putExtra(Intent.EXTRA_SUBJECT, "Support required");
+            if (intent.resolveActivity(context.getPackageManager()) != null) {
+                context.startActivity(Intent.createChooser(intent, "Send via"));
             }
         });
 
@@ -97,7 +126,7 @@ public class ProfileFragment extends Fragment {
                 String shareMessage = "Let me recommend you this application";
                 shareMessage = shareMessage + "https://play.google.com/store/apps/details?id=" + BuildConfig.APPLICATION_ID + "\n\n";
                 shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage);
-                startActivity(Intent.createChooser(shareIntent, "choose one"));
+                context.startActivity(Intent.createChooser(shareIntent, "choose one"));
 
             }
         });
@@ -111,9 +140,9 @@ public class ProfileFragment extends Fragment {
                         Intent.FLAG_ACTIVITY_NEW_DOCUMENT |
                         Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
                 try {
-                    startActivity(goToMarket);
+                    context.startActivity(goToMarket);
                 } catch (ActivityNotFoundException e) {
-                    startActivity(new Intent(Intent.ACTION_VIEW,
+                    context.startActivity(new Intent(Intent.ACTION_VIEW,
                             Uri.parse("http://play.google.com/store/apps/details?id=" + getActivity().getPackageName())));
                 }
             }
@@ -124,7 +153,7 @@ public class ProfileFragment extends Fragment {
             public void onClick(View v) {
                 Intent i = new Intent(context, EditProfileActivity.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(i);
+                context.startActivity(i);
             }
         });
 
@@ -133,7 +162,7 @@ public class ProfileFragment extends Fragment {
             public void onClick(View v) {
                 Intent i = new Intent(context, ChangepassActivity.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(i);
+                context.startActivity(i);
             }
         });
 
@@ -163,7 +192,7 @@ public class ProfileFragment extends Fragment {
                         realm.commitTransaction();
                         removeNotif();
                         BaseApp.getInstance(getContext()).setLoginUser(null);
-                        startActivity(new Intent(getContext(), IntroActivity.class)
+                        context.startActivity(new Intent(getContext(), IntroActivity.class)
                                 .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
                         getActivity().finish();
                     }
@@ -233,7 +262,7 @@ public class ProfileFragment extends Fragment {
                 emailIntent.putExtra(Intent.EXTRA_SUBJECT, "halo");
                 emailIntent.putExtra(Intent.EXTRA_TEXT, "email" + "\n");
                 try {
-                    startActivity(Intent.createChooser(emailIntent, "Send mail..."));
+                    context.startActivity(Intent.createChooser(emailIntent, "Send mail..."));
                 } catch (android.content.ActivityNotFoundException ex) {
                     Toast.makeText(getActivity(),
                             "There is no email client installed.", Toast.LENGTH_SHORT).show();
@@ -247,7 +276,7 @@ public class ProfileFragment extends Fragment {
                 String url = (sp.getSetting()[4]);
                 Intent i = new Intent(Intent.ACTION_VIEW);
                 i.setData(Uri.parse(url));
-                startActivity(i);
+                context.startActivity(i);
             }
         });
 

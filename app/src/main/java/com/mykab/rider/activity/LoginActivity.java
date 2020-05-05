@@ -1,15 +1,10 @@
 package com.mykab.rider.activity;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextUtils;
@@ -23,7 +18,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
-import com.google.firebase.auth.FirebaseUser;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
@@ -31,23 +28,22 @@ import com.google.firebase.FirebaseTooManyRequestsException;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
-
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.Gson;
-import com.mykab.rider.constants.BaseApp;
 import com.mykab.rider.R;
+import com.mykab.rider.constants.BaseApp;
 import com.mykab.rider.constants.Constants;
+import com.mykab.rider.json.LoginRequestJson;
+import com.mykab.rider.json.LoginResponseJson;
 import com.mykab.rider.models.FirebaseToken;
 import com.mykab.rider.models.User;
 import com.mykab.rider.utils.NetworkUtils;
+import com.mykab.rider.utils.Utility;
 import com.mykab.rider.utils.api.ServiceGenerator;
 import com.mykab.rider.utils.api.service.UserService;
-import com.mykab.rider.json.LoginRequestJson;
-import com.mykab.rider.json.LoginResponseJson;
-import com.ybs.countrypicker.CountryPicker;
-import com.ybs.countrypicker.CountryPickerListener;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -511,7 +507,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onFailure(Call<LoginResponseJson> call, Throwable t) {
                 progresshide();
                 t.printStackTrace();
-                notif("error");
+                Utility.handleOnfailureException(t, LoginActivity.this);
             }
         });
     }

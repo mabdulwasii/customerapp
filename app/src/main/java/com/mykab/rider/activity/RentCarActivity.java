@@ -21,6 +21,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
@@ -79,10 +84,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.Realm;
@@ -900,8 +901,8 @@ public class RentCarActivity extends AppCompatActivity
             request.setAlamatTujuan(transaksi.getAlamatTujuan());
             request.setKodePromo(transaksi.getKodePromo());
             request.setKreditPromo(transaksi.getKreditPromo());
-            request.setPakaiWallet(String.valueOf(transaksi.isPakaiWallet()));
-            request.setEstimasi(transaksi.getEstimasi());
+            request.setPakaiWallet(String.valueOf(transaksi.getPakaiWallet()));
+            request.setEstimasi(transaksi.getEstimasiTime());
             request.setLayanan(layanan.getText().toString());
             request.setLayanandesc(layanandesk.getText().toString());
             request.setIcon(ICONFITUR);

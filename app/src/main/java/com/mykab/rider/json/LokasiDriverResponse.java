@@ -13,6 +13,9 @@ import java.util.List;
  */
 
 public class LokasiDriverResponse {
+    @SerializedName("status")
+    @Expose
+    private boolean status;
 
     @SerializedName("data")
     @Expose
@@ -22,4 +25,15 @@ public class LokasiDriverResponse {
         return data;
     }
 
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
+    }
+
+    public void setData(List<LokasiDriverModel> data) {
+        this.data = data;
+    }
 }

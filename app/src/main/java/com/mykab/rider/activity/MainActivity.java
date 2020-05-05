@@ -4,14 +4,17 @@ import android.content.DialogInterface;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.view.Menu;
-import android.view.MenuItem;
-import android.widget.LinearLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomnavigation.LabelVisibilityMode;
@@ -23,17 +26,15 @@ import com.mykab.rider.fragment.HistoryFragment;
 import com.mykab.rider.fragment.HomeFragment;
 import com.mykab.rider.fragment.MessageFragment;
 import com.mykab.rider.fragment.ProfileFragment;
-import com.mykab.rider.models.User;
-import com.mykab.rider.utils.api.ServiceGenerator;
-import com.mykab.rider.utils.api.service.UserService;
+import com.mykab.rider.json.GetFiturResponseJson;
+import com.mykab.rider.json.SimpleResponse;
 import com.mykab.rider.models.DiskonWalletModel;
 import com.mykab.rider.models.FiturModel;
-import com.mykab.rider.json.GetFiturResponseJson;
+import com.mykab.rider.models.User;
+import com.mykab.rider.utils.SettingPreference;
+import com.mykab.rider.utils.api.ServiceGenerator;
+import com.mykab.rider.utils.api.service.UserService;
 
-
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -48,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
     LinearLayout mAdViewLayout;
 
+    SettingPreference sp;
     public static MainActivity mainActivity;
     private FragmentManager fragmentManager;
     BottomNavigationView navigation;
@@ -125,6 +127,8 @@ public class MainActivity extends AppCompatActivity {
         Constants.USERID = loginUser.getId();
         apikey = getString(R.string.google_maps_key);
 
+        sp = new SettingPreference(this);
+
         PackageInfo packageInfo = null;
         try {
             packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
@@ -133,6 +137,32 @@ public class MainActivity extends AppCompatActivity {
         }
         Constants.versionname = packageInfo.versionName;
 
+    }
+
+    private void getUserRating() {
+        User loginUser = BaseApp.getInstance(this).getLoginUser();
+        UserService service = ServiceGenerator.createService(UserService.class, loginUser.getEmail(), loginUser.getPassword());
+        service.getRiderRating(loginUser.getId())
+                .enqueue(new Callback<SimpleResponse>() {
+                    @Override
+                    public void onResponse(Call<SimpleResponse> call, Response<SimpleResponse> response) {
+                        if (response.isSuccessful() && response.code() == 200){
+                            if (response.body() != null){
+                                String rating = response.body().getData();
+                                sp.updateRateNumber(rating);
+
+                            }
+
+                            Log.e("RIDER RATING", response.body().getData());
+
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<SimpleResponse> call, Throwable t) {
+
+                    }
+                });
 
     }
 
@@ -147,6 +177,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         update();
+        getUserRating();
     }
 
     @Override

@@ -34,6 +34,7 @@ import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -46,6 +47,10 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.AutocompleteActivity;
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.mykab.rider.R;
 import com.mykab.rider.constants.BaseApp;
@@ -56,6 +61,8 @@ import com.mykab.rider.json.DetailRequestJson;
 import com.mykab.rider.json.DetailTransResponseJson;
 import com.mykab.rider.json.LokasiDriverRequest;
 import com.mykab.rider.json.LokasiDriverResponse;
+import com.mykab.rider.json.NewSimpleResponse;
+import com.mykab.rider.json.UpdateDestinationRequestJson;
 import com.mykab.rider.json.fcm.CancelBookRequestJson;
 import com.mykab.rider.json.fcm.CancelBookResponseJson;
 import com.mykab.rider.json.fcm.DriverResponse;
@@ -66,9 +73,11 @@ import com.mykab.rider.models.Notif;
 import com.mykab.rider.models.TransaksiModel;
 import com.mykab.rider.models.User;
 import com.mykab.rider.utils.NetworkManager;
+import com.mykab.rider.utils.NetworkUtils;
 import com.mykab.rider.utils.Utility;
 import com.mykab.rider.utils.api.FCMHelper;
 import com.mykab.rider.utils.api.MapDirectionAPI;
+import com.mykab.rider.utils.api.PaystackServiceGenerator;
 import com.mykab.rider.utils.api.ServiceGenerator;
 import com.mykab.rider.utils.api.service.BookService;
 import com.squareup.picasso.Picasso;
@@ -76,10 +85,15 @@ import com.squareup.picasso.Picasso;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -87,6 +101,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.mykab.rider.constants.Constants.UPDATE;
 import static com.mykab.rider.json.fcm.FCMType.ORDER;
 import static com.mykab.rider.utils.MapsUtils.getBearing;
 import static com.mykab.rider.utils.api.service.MessagingService.BROADCAST_ORDER;
@@ -124,33 +139,18 @@ public class ProgressActivity extends AppCompatActivity
     private String format;
     private Handler handler;
     Timer timer = new Timer();
+    private int cancelCount = 0;
+    private User loginUser;
+    private Context context;
+    private LokasiDriverModel latlang;
+    private String address;
+    private LatLng driverLocation;
+    private UpdateDestinationRequestJson param;
 
-    private final Runnable updateMarker = new Runnable() {
-        @Override
-        public void run() {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    if (destinationMarker != null) destinationMarker.remove();
-                    destinationMarker = gMap.addMarker(new MarkerOptions()
-                            .position(new LatLng(Double.parseDouble(latdriver), Double.parseDouble(londriver)))
-                            .title("Driver Location")
-                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.carmap)));
 
-                    timer.scheduleAtFixedRate(new TimerTask() {
-                        @Override
-                        public void run() {
-                            if (destinationMarker != null) destinationMarker.remove();
-                            destinationMarker = gMap.addMarker(new MarkerOptions()
-                                    .position(new LatLng(Double.parseDouble(latdriver), Double.parseDouble(londriver)))
-                                    .title("Driver Location")
-                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.carmap)));
-                        }
-                    }, 0, 4000);
-                }
-            }).start();
-        }
-    };
+    private TransaksiModel transaksi;
+
+
     private Runnable updateDriverRunnable = new Runnable() {
         @Override
         public void run() {
@@ -166,15 +166,16 @@ public class ProgressActivity extends AppCompatActivity
                             public void onResponse(Call<LokasiDriverResponse> call, Response<LokasiDriverResponse> response) {
                                 if (response.isSuccessful()) {
                                     final LokasiDriverModel latlang = response.body().getData().get(0);
-                                    final LatLng location = new LatLng(latlang.getLatitude(), latlang.getLongitude());
+                                    final LatLng location = new LatLng(Double.parseDouble(latlang.getLatitude()), Double.parseDouble(latlang.getLongitude()));
                                     updateDriverMarker(location);
                                 }
                             }
 
                             @Override
                             public void onFailure(Call<LokasiDriverResponse> call, Throwable t) {
-
-
+                                if (t.getLocalizedMessage() != null) {
+                                    Log.e("updateDriverRunnable", Objects.requireNonNull(t.getLocalizedMessage()));
+                                }
                             }
                         });
                     } catch (Exception e) {
@@ -193,14 +194,13 @@ public class ProgressActivity extends AppCompatActivity
                                         public void onResponse(Call<LokasiDriverResponse> call, Response<LokasiDriverResponse> response) {
                                             if (response.isSuccessful()) {
                                                 final LokasiDriverModel latlang = response.body().getData().get(0);
-                                                final LatLng location = new LatLng(latlang.getLatitude(), latlang.getLongitude());
+                                                final LatLng location = new LatLng(Double.parseDouble(latlang.getLatitude()), Double.parseDouble(latlang.getLongitude()));
                                                 updateDriverMarker(location);
                                             }
                                         }
 
                                         @Override
                                         public void onFailure(Call<LokasiDriverResponse> call, Throwable t) {
-
 
                                         }
                                     });
@@ -214,6 +214,9 @@ public class ProgressActivity extends AppCompatActivity
             }).start();
         }
     };
+    private String time;
+    private String namaDriver;
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -255,17 +258,42 @@ public class ProgressActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ride);
         handler = new Handler();
+        context = this;
+
+        loginUser = BaseApp.getInstance(context).getLoginUser();
+        BookService service = ServiceGenerator.createService(BookService.class, loginUser.getEmail(), loginUser.getPassword());
+        service.getUserCancelCount(loginUser.getId())
+                .enqueue(new Callback<NewSimpleResponse>() {
+                    @Override
+                    public void onResponse(Call<NewSimpleResponse> call, Response<NewSimpleResponse> response) {
+
+                        if (response.isSuccessful() && response.body().isSuccess()){
+                            cancelCount = response.body().getData();
+                        }else {
+                            cancelCount = 0;
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<NewSimpleResponse> call, Throwable t) {
+                        if (!NetworkUtils.isConnectedFast(context) || !NetworkUtils.isConnected(context)) {
+                            Toast.makeText(context, R.string.connection_error, Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(context, "Request Failed!", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
 
         Intent intent = getIntent();
         iddriver = intent.getStringExtra("id_driver");
         idtrans = intent.getStringExtra("id_transaksi");
         response = intent.getStringExtra("response");
-//        pakai = intent.getStringExtra("pakai");
         if (intent.getStringExtra("complete") == null) {
             complete = "false";
         } else {
             complete = intent.getStringExtra("complete");
         }
+
         receiverphone = findViewById(R.id.receiverphone);
         senderphone = findViewById(R.id.senderphone);
         receivername = findViewById(R.id.receivername);
@@ -310,6 +338,15 @@ public class ProgressActivity extends AppCompatActivity
         setDestinationContainer.setVisibility(View.GONE);
         llpayment.setVisibility(View.GONE);
 
+        destinationText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setDestinationContainer.setVisibility(View.GONE);
+                setPickUpContainer.setVisibility(View.GONE);
+                openAutocompleteActivity();
+            }
+        });
+
         backbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -323,7 +360,7 @@ public class ProgressActivity extends AppCompatActivity
         orderButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                if (isCancelable) {
+                if (isCancelable) {
                     final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ProgressActivity.this, R.style.DialogStyle);
                     alertDialogBuilder.setTitle("Cancel order");
                     alertDialogBuilder.setMessage("Do you want to cancel this order?");
@@ -331,7 +368,7 @@ public class ProgressActivity extends AppCompatActivity
                             new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface arg0, int arg1) {
-                                    cancelOrder();
+                                    checkCount();
                                 }
                             });
 
@@ -344,16 +381,18 @@ public class ProgressActivity extends AppCompatActivity
 
                     AlertDialog alertDialog = alertDialogBuilder.create();
                     alertDialog.show();
-                /*} else {
+                } else {
                     notif("You cannot cancel the order, the trip has already begun!");
-                }*/
+                }
             }
         });
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.mapView);
-        mapFragment.getMapAsync(this);
 
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(this);
+        }
 
         if (googleApiClient == null) {
             googleApiClient = new GoogleApiClient.Builder(this)
@@ -368,6 +407,36 @@ public class ProgressActivity extends AppCompatActivity
 
     }
 
+    private void checkCount(){
+
+        if (cancelCount == 2){
+            final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context, R.style.DialogStyle);
+            alertDialogBuilder.setTitle("Charges Alert!");
+            alertDialogBuilder.setMessage("You wont be able to order for the next 24 hours, if you continue with this action, Do you really want to continue");
+            alertDialogBuilder.setPositiveButton("Continue", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    cancelOrder();
+                }
+            });
+
+            alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+
+        } else if (cancelCount == 1) {
+            Notif notif = new Notif();
+            notif.title = "Maximum cancel reached";
+            notif.message = "You just cancelled an order, you will be banned the next time you cancel";
+            sendNotif(loginUser.getToken(), notif);
+            cancelOrder();
+        }else {
+            cancelOrder();
+        }
+    }
     private void getData(final String idtrans, final String iddriver) {
         User loginUser = BaseApp.getInstance(this).getLoginUser();
         BookService service = ServiceGenerator.createService(BookService.class, loginUser.getEmail(), loginUser.getPassword());
@@ -378,11 +447,15 @@ public class ProgressActivity extends AppCompatActivity
             @Override
             public void onResponse(Call<DetailTransResponseJson> call, Response<DetailTransResponseJson> responsedata) {
                 if (responsedata.isSuccessful()) {
-                    final TransaksiModel transaksi = responsedata.body().getData().get(0);
+                    transaksi = responsedata.body().getData().get(0);
                     DriverModel driver = responsedata.body().getDriver().get(0);
                     parsedata(transaksi, driver);
                     regdriver = driver.getRegId();
                     imagedriver = Constants.IMAGESDRIVER + driver.getFoto();
+
+                    pickUpLatLng = new LatLng(transaksi.getStartLatitude(), transaksi.getStartLongitude());
+                    destinationLatLng = new LatLng(transaksi.getEndLatitude(), transaksi.getEndLongitude());
+
                     if (pickUpMarker != null) pickUpMarker.remove();
                     pickUpMarker = gMap.addMarker(new MarkerOptions()
                             .position(pickUpLatLng)
@@ -390,40 +463,34 @@ public class ProgressActivity extends AppCompatActivity
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.pickup)));
 
                     if (destinationMarker != null) destinationMarker.remove();
-                    if(response.equalsIgnoreCase("2")) {
-                        handler = new Handler();
-                        handler.postDelayed(updateMarker, 4000);
-                    }else {
                         destinationMarker = gMap.addMarker(new MarkerOptions()
                                 .position(destinationLatLng)
                                 .title("Destination")
                                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.destination)));
-                    }
-                    updateLastLocation(true);
+
+                        updateLastLocation(true);
 
                     fitur = transaksi.getOrderFitur();
+                    fiturtext.setText(transaksi.getEstimasiTime());
+                    distanceText.setText(String.valueOf(transaksi.getJarak()));
 
                     if (fitur.equalsIgnoreCase("6")) {
                         lldestination.setVisibility(View.GONE);
                         lldistance.setVisibility(View.GONE);
-                        fiturtext.setText(transaksi.getEstimasi());
+                        fiturtext.setText(transaksi.getEstimasiTime());
                     } else if (fitur.equalsIgnoreCase("5")) {
-                        if (response.equals("2")){
-                            requestDriverRoute();
-                        }else {
-                            requestRoute();
-                        }
+                        requestRoute();
                         lldetailsend.setVisibility(View.VISIBLE);
                         produk.setText(transaksi.getNamaBarang());
-                        sendername.setText(transaksi.namaPengirim);
-                        receivername.setText(transaksi.namaPenerima);
+                        sendername.setText(transaksi.getNamaPengirim());
+                        receivername.setText(transaksi.getNamaPenerima());
 
                         senderphone.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ProgressActivity.this, R.style.DialogStyle);
                                 alertDialogBuilder.setTitle("Call Driver");
-                                alertDialogBuilder.setMessage("You want to call " + transaksi.getNamaPengirim() + "(" + transaksi.teleponPengirim + ")?");
+                                alertDialogBuilder.setMessage("You want to call " + transaksi.getNamaPengirim() + "(" + transaksi.getTeleponPengirim() + ")?");
                                 alertDialogBuilder.setPositiveButton("yes",
                                         new DialogInterface.OnClickListener() {
                                             @Override
@@ -434,7 +501,7 @@ public class ProgressActivity extends AppCompatActivity
                                                 }
 
                                                 Intent callIntent = new Intent(Intent.ACTION_CALL);
-                                                callIntent.setData(Uri.parse("tel:" + transaksi.teleponPengirim));
+                                                callIntent.setData(Uri.parse("tel:" + transaksi.getTeleponPengirim()));
                                                 startActivity(callIntent);
                                             }
                                         });
@@ -458,7 +525,7 @@ public class ProgressActivity extends AppCompatActivity
                             public void onClick(View v) {
                                 final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ProgressActivity.this, R.style.DialogStyle);
                                 alertDialogBuilder.setTitle("Call Driver");
-                                alertDialogBuilder.setMessage("You want to call " + transaksi.getNamaPenerima() + "(" + transaksi.teleponPenerima + ")?");
+                                alertDialogBuilder.setMessage("You want to call " + transaksi.getNamaPenerima() + "(" + transaksi.getTeleponPenerima() + ")?");
                                 alertDialogBuilder.setPositiveButton("yes",
                                         new DialogInterface.OnClickListener() {
                                             @Override
@@ -469,7 +536,7 @@ public class ProgressActivity extends AppCompatActivity
                                                 }
 
                                                 Intent callIntent = new Intent(Intent.ACTION_CALL);
-                                                callIntent.setData(Uri.parse("tel:" + transaksi.teleponPenerima));
+                                                callIntent.setData(Uri.parse("tel:" + transaksi.getTeleponPenerima()));
                                                 startActivity(callIntent);
                                             }
                                         });
@@ -488,47 +555,17 @@ public class ProgressActivity extends AppCompatActivity
                             }
                         });
 
-                    } else {
-                        if(response.equals("2")){
-                            requestDriverRoute();
-                        }else {
-                            requestRoute();
-                        }
+                    }else {
+                        requestRoute();
                     }
-                    if(transaksi.status == 4){
-                        /*if (pakai.equalsIgnoreCase("2")){
-                            Intent intent = new Intent(ProgressActivity.this, CreditcardActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            intent.putExtra("id_driver", iddriver);
-                            intent.putExtra("id_transaksi", idtrans);
-                            intent.putExtra("response", response);
-                            intent.putExtra("pakai", pakai);
-                            intent.putExtra("price", harga);
-                            startActivity(intent);
-                            finish();
-                        } else*/
-
-                        Toast.makeText(ProgressActivity.this, "Your trip price is " + Utility.formatMoney(String.valueOf(harga), ProgressActivity.this) , Toast.LENGTH_LONG).show();
-
-                        Notif notif = new Notif();
-                        notif.title = "Trip final price";
-                        if(transaksi.isPakaiWallet()) {
-                            notif.message = "Your trip has completed and " + Utility.formatMoney(String.valueOf(harga), ProgressActivity.this) + " has been deducted from your wallet!";
-                        } else {
-                            notif.message = "Your trip has completed, Pay " + Utility.formatMoney(String.valueOf(harga), ProgressActivity.this) + " in cash to driver!";
-                        }
-                        sendNotif(loginUser.getToken(), notif);
-
-                        if (transaksi.getRate().isEmpty()) {
+                    if(transaksi.getStatus() == 4 && transaksi.getRate().isEmpty()) {
                             Intent intent = new Intent(ProgressActivity.this, RateActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             intent.putExtra("id_driver", iddriver);
                             intent.putExtra("id_transaksi", idtrans);
                             intent.putExtra("response", response);
-                            intent.putExtra("price", String.valueOf(harga));
                             startActivity(intent);
                             finish();
-                        }
                     }
                 }
             }
@@ -552,7 +589,7 @@ public class ProgressActivity extends AppCompatActivity
                 .placeholder(R.drawable.image_placeholder)
                 .into(foto);
 
-        layanandesk.setText(driver.getNomor_kendaraan()+" "+getString(R.string.text_with_bullet)+" "+driver.getTipe());
+        layanandesk.setText(driver.getNomorKendaraan()+" "+getString(R.string.text_with_bullet)+" "+driver.getTipe());
 
         if (response.equals("2")) {
             llchat.setVisibility(View.VISIBLE);
@@ -573,22 +610,19 @@ public class ProgressActivity extends AppCompatActivity
             orderButton.setVisibility(View.GONE);
             status.setText(getString(R.string.notification_cancel));
         }
-        layanan.setText(driver.getNamaDriver());
+        namaDriver = driver.getNamaDriver();
+        String[] s = namaDriver.split(" ");
+        namaDriver = s[0];
+        layanan.setText(namaDriver);
         pickUpText.setText(request.getAlamatAsal());
         destinationText.setText(request.getAlamatTujuan());
         Utility.currencyTXT(cost, String.valueOf(request.getHarga()), this);
         Utility.currencyTXT(diskon, request.getKreditPromo(), this);
-        harga = request.getHarga() - Double.valueOf(request.getKreditPromo());
-        format = String.format(Locale.getDefault(), "%.2f", harga);
-        String formatMin = String.format(Locale.getDefault(), "%.2f", harga - 200);
-        String formatMax = String.format(Locale.getDefault(), "%.2f", harga + 200);
-        if (request.isPakaiWallet()) {
-            Utility.currencyTXT(priceText, formatMin, formatMax, this);
-//            Utility.currencyTXT(priceText, format, this);
-        } else {
-            Utility.currencyTXT(priceText, String.valueOf(request.getHarga() - 200), String.valueOf(request.getHarga() + 200), this);
-//            Utility.currencyTXT(priceText, String.valueOf(request.getHarga()), this);
-        }
+        harga = request.getHarga();
+        String minHarga = String.valueOf( harga - 200);
+        String maxHarga = String.valueOf(harga + 200);
+
+        Utility.currencyTXT(priceText, minHarga, maxHarga, this);
 
         phone.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -633,11 +667,20 @@ public class ProgressActivity extends AppCompatActivity
                 intent.putExtra("receiverid", driver.getId());
                 intent.putExtra("tokendriver", driver.getRegId());
                 intent.putExtra("tokenku", loginUser.getToken());
-                intent.putExtra("name", driver.getNamaDriver());
+                intent.putExtra("name", namaDriver);
                 intent.putExtra("pic", driver.getFoto());
                 startActivity(intent);
             }
         });
+    }
+
+    private void openAutocompleteActivity() {
+        List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.ADDRESS, Place.Field.LAT_LNG);
+        Intent intent = new Autocomplete.IntentBuilder(
+                AutocompleteActivityMode.FULLSCREEN, fields)
+                .build(this);
+        startActivityForResult(intent, 2);
+
     }
 
     private void removeNotif() {
@@ -673,8 +716,30 @@ public class ProgressActivity extends AppCompatActivity
                 t.printStackTrace();
             }
         });
+    }
+
+    private void fcmUpdateDestination() {
+        DriverResponse response = new DriverResponse();
+        response.type = UPDATE;
+        response.setIdTransaksi(idtrans);
+        response.setResponse(String.valueOf(UPDATE));
+        response.setId(loginUser.getId());
+
+        FCMMessage message = new FCMMessage();
+        message.setTo(regdriver);
+        message.setData(response);
 
 
+        FCMHelper.sendMessage(Constants.FCM_KEY, message).enqueue(new okhttp3.Callback() {
+            @Override
+            public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
+            }
+
+            @Override
+            public void onFailure(okhttp3.Call call, IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     private void fcmcancel() {
@@ -741,9 +806,9 @@ public class ProgressActivity extends AppCompatActivity
         mCurrentLocation = new Location(LocationManager.NETWORK_PROVIDER);
         mCurrentLocation.setLatitude(Double.parseDouble(latdriver));
         mCurrentLocation.setLongitude(Double.parseDouble(londriver));
-        int iconRes = R.drawable.drivermap;
+        int iconRes = R.drawable.carmap;
         if (fitur.equalsIgnoreCase("1") || fitur.equalsIgnoreCase("5")) {
-            iconRes = R.drawable.drivermap;
+            iconRes = R.drawable.carmap;
         } else if (fitur.equalsIgnoreCase("2") || fitur.equalsIgnoreCase("6")) {
             iconRes = R.drawable.carmap;
         }
@@ -762,7 +827,6 @@ public class ProgressActivity extends AppCompatActivity
                 return;
             }
         }
-
     }
 
     public void animateMarker(final Location destination, final Marker marker) {
@@ -819,24 +883,27 @@ public class ProgressActivity extends AppCompatActivity
     private okhttp3.Callback updateRouteCallback = new okhttp3.Callback() {
         @Override
         public void onFailure(okhttp3.Call call, IOException e) {
-
+            if (e.getLocalizedMessage() != null) {
+                Log.e(" Callback ", Objects.requireNonNull(e.getLocalizedMessage()));
+            }
         }
 
         @Override
         public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
             if (response.isSuccessful()) {
+//                Log.e("RESPONSE 1", new Gson().toJson(response.body()));
                 final String json = response.body().string();
                 final long distance = MapDirectionAPI.getDistance(ProgressActivity.this, json);
-                final String time = MapDirectionAPI.getTimeDistance(ProgressActivity.this, json);
+                time = MapDirectionAPI.getTimeDistance(ProgressActivity.this, json);
                 if (distance >= 0) {
                     ProgressActivity.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             updateLineDestination(json);
                             float km = ((float) (distance)) / 1000f;
-                            String format = String.format(Locale.US, "%.1f", km);
-                            distanceText.setText(format);
-                            fiturtext.setText(time);
+                            format = String.format(Locale.US, "%.2f", km);
+                            //distanceText.setText(format);
+                            //fiturtext.setText(time);
                         }
                     });
                 }
@@ -844,15 +911,48 @@ public class ProgressActivity extends AppCompatActivity
         }
     };
 
-    private okhttp3.Callback updateDriverRouteCallback = new okhttp3.Callback() {
+    private okhttp3.Callback updateRouteCallback2 = new okhttp3.Callback() {
         @Override
         public void onFailure(okhttp3.Call call, IOException e) {
-
+            if (e.getLocalizedMessage() != null) {
+                Log.e(" Callback ", Objects.requireNonNull(e.getLocalizedMessage()));
+            }
         }
 
         @Override
         public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
             if (response.isSuccessful()) {
+//                Log.e("RESPONSE 1", new Gson().toJson(response.body()));
+                final String json = response.body().string();
+                final long distance = MapDirectionAPI.getDistance(ProgressActivity.this, json);
+                final String time = MapDirectionAPI.getTimeDistance(ProgressActivity.this, json);
+                if (distance >= 0) {
+                    ProgressActivity.this.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            float km = ((float) (distance)) / 1000f;
+                            String format = String.format(Locale.US, "%.1f", km);
+                            //distanceText.setText(format);
+                            //fiturtext.setText(time);
+                        }
+                    });
+                }
+            }
+        }
+    };
+
+    private okhttp3.Callback updatePickupRouteCallback = new okhttp3.Callback() {
+        @Override
+        public void onFailure(okhttp3.Call call, IOException e) {
+            if (e.getLocalizedMessage() != null) {
+                Log.e(" Callback ", e.getLocalizedMessage());
+            }
+        }
+
+        @Override
+        public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
+            if (response.isSuccessful()) {
+//                Log.e("RESPONSE 1", new Gson().toJson(response.body()));
                 final String json = response.body().string();
                 final long distance = MapDirectionAPI.getDistance(ProgressActivity.this, json);
                 final String time = MapDirectionAPI.getTimeDistance(ProgressActivity.this, json);
@@ -861,13 +961,9 @@ public class ProgressActivity extends AppCompatActivity
                         @Override
                         public void run() {
                             updateLineDestination(json);
-                            timeAway.setVisibility(View.VISIBLE);
                             timeAway.setText(time);
                         }
                     });
-                }
-                if (distance < 200){
-
                 }
             }
         }
@@ -880,28 +976,26 @@ public class ProgressActivity extends AppCompatActivity
         }
         lastKnownLocation = LocationServices.FusedLocationApi.getLastLocation(
                 googleApiClient);
+
         gMap.setMyLocationEnabled(true);
 
         if (pickUpLatLng != null) {
             if (move) {
-                gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                        pickUpLatLng, 15f)
-                );
-
-                gMap.animateCamera(CameraUpdateFactory.zoomTo(15f));
+                gMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(lastKnownLocation
+                        .getLatitude(), lastKnownLocation.getLongitude())));
             }
         }
     }
-
     private void requestRoute() {
         if (pickUpLatLng != null && destinationLatLng != null) {
             MapDirectionAPI.getDirection(pickUpLatLng, destinationLatLng).enqueue(updateRouteCallback);
         }
     }
 
-    private void requestDriverRoute() {
-        if (pickUpLatLng != null && destinationLatLng != null) {
-            MapDirectionAPI.getDirection(pickUpLatLng, destinationLatLng).enqueue(updateDriverRouteCallback);
+    private void requestDriverPickupRoute(LatLng driverLatLng) {
+        if (pickUpLatLng != null && driverLatLng != null) {
+            MapDirectionAPI.getDirection(destinationLatLng, pickUpLatLng).enqueue(updateRouteCallback2);
+            MapDirectionAPI.getDirection(driverLatLng, pickUpLatLng).enqueue(updatePickupRouteCallback);
         }
     }
 
@@ -949,6 +1043,13 @@ public class ProgressActivity extends AppCompatActivity
                 orderButton.setVisibility(View.GONE);
                 llchat.setVisibility(View.GONE);
                 status.setText(getString(R.string.notification_cancel));
+
+                new Handler().postDelayed(new Runnable() {
+                    public void run() {
+                        finish();
+                    }
+                }, 3000);
+
                 break;
             case Constants.ACCEPT:
                 llchat.setVisibility(View.VISIBLE);
@@ -966,7 +1067,19 @@ public class ProgressActivity extends AppCompatActivity
                 orderButton.setVisibility(View.GONE);
                 status.setText(getString(R.string.notification_finish));
                 getData(idtrans, iddriver);
-
+                break;
+            case UPDATE:
+                isCancelable = false;
+                llchat.setVisibility(View.GONE);
+                orderButton.setVisibility(View.GONE);
+                String statusText = this.status.getText().toString();
+                status.setText("Destination change by driver");
+                new Handler().postDelayed(new Runnable() {
+                    public void run() {
+                        status.setText(statusText);
+                    }
+                }, 3000);
+                getData(idtrans, iddriver);
                 break;
         }
     }
@@ -1013,7 +1126,7 @@ public class ProgressActivity extends AppCompatActivity
     @SuppressWarnings("unused")
     @Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
     public void onMessageEvent(final DriverResponse response) {
-        Log.e("IN PROGRESS", response.getResponse() + " " + response.getId() + " " + response.getIdTransaksi());
+//        Log.e("IN PROGRESS", response.getResponse() + " " + response.getId() + " " + response.getIdTransaksi());
         if (complete.equals("false")) {
             orderHandler(Integer.parseInt(response.getResponse()));
         }
@@ -1036,5 +1149,131 @@ public class ProgressActivity extends AppCompatActivity
                 e.printStackTrace();
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 2) {
+            if (resultCode == RESULT_OK) {
+                Place place = Autocomplete.getPlaceFromIntent(data);
+                LatLng latLng = place.getLatLng();
+                if (latLng != null) {
+                    /*gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                            new LatLng(latLng.latitude, latLng.longitude), 15f)
+                    );*/
+                    onDestination(latLng, place.getAddress());
+                }
+            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
+                // TODO: Handle the error.
+                Status status = Autocomplete.getStatusFromIntent(data);
+                Log.i("ProgressActivity", status.getStatusMessage());
+            }
+        }
+    }
+
+    private void onDestination(LatLng centerPos, String destination) {
+        if (destinationMarker != null) destinationMarker.remove();
+        destinationMarker = gMap.addMarker(new MarkerOptions()
+                .position(centerPos)
+                .title("Destination")
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.destination)));
+        destinationLatLng = centerPos;
+        requestAddress(destinationLatLng, destinationText);
+
+        requestRoute();
+
+        long biaya = 700;
+        if (transaksi != null){
+            String orderFitur = transaksi.getOrderFitur();
+            if (orderFitur.equals("10")){
+                biaya = 700;
+            }
+        }
+
+        String time = fiturtext.getText().toString();
+        String[] s = time.split(" ");
+        String trimTime;
+        if (s.length >= 3){
+
+            String trimTime1 = s[0].trim();
+            String trimTime2 = s[2].trim();
+
+            int timeString = Integer.parseInt(trimTime2) + (Integer.parseInt(trimTime1)) * 60;
+            trimTime = String.valueOf(timeString).trim();
+
+        }else {
+            trimTime = s[0].trim();
+        }
+
+        String distance = distanceText.getText().toString();
+
+        long newHarga = (long) (biaya + (100 * Float.parseFloat(distance)) + (10 * Long.parseLong(trimTime)));
+
+        String minHarga = String.valueOf(newHarga - 200);
+        String maxHarga = String.valueOf(newHarga + 200);
+
+        Utility.currencyTXT(priceText, minHarga, maxHarga, this);
+
+        param = new UpdateDestinationRequestJson();
+        param.setTransaction_id(idtrans);
+        param.setDestinationText(destination);
+        param.setEndLatitude(String.valueOf(centerPos.latitude));
+        param.setEndLongitude(String.valueOf(centerPos.longitude));
+
+        BookService service = PaystackServiceGenerator.createService(BookService.class, loginUser.getEmail(), loginUser.getPassword());
+        service.updateDestination(param).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                if (response.isSuccessful()){
+                    fcmUpdateDestination();
+                    Toast.makeText(ProgressActivity.this, "Destination updated successfully", Toast.LENGTH_SHORT).show();
+                }else {
+                    Toast.makeText(ProgressActivity.this, "Failed to update destination", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+
+            }
+        });
+
+    }
+
+    private okhttp3.Callback updateAddressCallback;
+
+    private void requestAddress(LatLng latlang, final TextView textView) {
+        if (latlang != null) {
+            MapDirectionAPI.getAddress(latlang).enqueue(updateAddressCallback = new okhttp3.Callback() {
+                @Override
+                public void onFailure(okhttp3.Call call, IOException e) {
+
+                }
+
+                @Override
+                public void onResponse(okhttp3.Call call, final okhttp3.Response response) throws IOException {
+                    if (response.isSuccessful()) {
+                        final String json = response.body().string();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    JSONObject Jobject = new JSONObject(json);
+                                    JSONArray Jarray = Jobject.getJSONArray("results");
+                                    JSONObject userdata = Jarray.getJSONObject(0);
+                                    address = userdata.getString("formatted_address");
+                                    textView.setText(address);
+                                    Log.e("TESTER", userdata.getString("formatted_address"));
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+        }
     }
 }

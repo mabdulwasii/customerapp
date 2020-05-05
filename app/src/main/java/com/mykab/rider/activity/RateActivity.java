@@ -3,17 +3,20 @@ package com.mykab.rider.activity;
 import android.app.NotificationManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.github.ornolfr.ratingview.RatingView;
+import com.google.gson.Gson;
 import com.mykab.rider.R;
 import com.mykab.rider.constants.BaseApp;
 import com.mykab.rider.constants.Constants;
@@ -22,6 +25,7 @@ import com.mykab.rider.json.DetailTransResponseJson;
 import com.mykab.rider.json.RateRequestJson;
 import com.mykab.rider.json.RateResponseJson;
 import com.mykab.rider.models.DriverModel;
+import com.mykab.rider.models.TransaksiModel;
 import com.mykab.rider.models.User;
 import com.mykab.rider.utils.Utility;
 import com.mykab.rider.utils.api.ServiceGenerator;
@@ -62,10 +66,9 @@ public class RateActivity extends AppCompatActivity {
         iddriver = intent.getStringExtra("id_driver");
         idtrans = intent.getStringExtra("id_transaksi");
         response = intent.getStringExtra("response");
-        priceText = intent.getStringExtra("price");
+        //Todo getPrice of transaction using idtrans from server
         getData(idtrans, iddriver);
         submit = "true";
-        Utility.currencyTXT(price, priceText, this);
         shimmeractive();
         removeNotif();
     }
@@ -95,9 +98,11 @@ public class RateActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<DetailTransResponseJson> call, Response<DetailTransResponseJson> response) {
                 if (response.isSuccessful()) {
+                    TransaksiModel transaksiModel = response.body().getData().get(0);
+                    priceText = String.valueOf(transaksiModel.getHarga());
+                    Utility.currencyTXT(price, priceText, RateActivity.this);
                     DriverModel driver = response.body().getDriver().get(0);
                     parsedata(driver);
-
                 }
             }
 
@@ -149,7 +154,20 @@ public class RateActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<RateResponseJson> call, Response<RateResponseJson> response) {
                 if (response.isSuccessful()) {
-                    if (response.body().mesage.equals("success")) {
+                    if (response.body() != null && response.code() == 200) {
+                        if (response.body().mesage.equals("success")) {
+                            Toast.makeText(RateActivity.this, "Successful", Toast.LENGTH_SHORT).show();
+                            Intent i = new Intent(RateActivity.this, MainActivity.class);
+                            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(i);
+                        }else {
+                            Log.e("Rating Activity", new Gson().toJson(response.body()));
+                            Intent i = new Intent(RateActivity.this, MainActivity.class);
+                            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(i);
+                        }
+                    }else {
+                        Log.e("Rating Activity", new Gson().toJson(response.body()));
                         Intent i = new Intent(RateActivity.this, MainActivity.class);
                         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(i);

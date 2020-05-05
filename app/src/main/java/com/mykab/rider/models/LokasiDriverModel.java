@@ -14,20 +14,20 @@ public class LokasiDriverModel {
     private String idDriver;
     @SerializedName("latitude")
     @Expose
-    private double latitude;
+    private String latitude;
     @SerializedName("longitude")
     @Expose
-    private double longitude;
+    private String longitude;
 
     public String getIdDriver() {
         return idDriver;
     }
 
-    public double getLatitude() {
+    public String getLatitude() {
         return latitude;
     }
 
-    public double getLongitude() {
+    public String getLongitude() {
         return longitude;
     }
 }

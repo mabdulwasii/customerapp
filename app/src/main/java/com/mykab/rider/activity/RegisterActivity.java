@@ -238,19 +238,19 @@ public class RegisterActivity extends AppCompatActivity {
 
                     notif("wrong email format!");
 
-                } else if (TextUtils.isEmpty(password.getText().toString().trim())) {
+                } else if (TextUtils.isEmpty(password.getText().toString())) {
 
                     notif(getString(R.string.passempty));
 
-                } else if (TextUtils.isEmpty(confirmPassword.getText().toString().trim())) {
+                } else if (TextUtils.isEmpty(confirmPassword.getText().toString())) {
 
                     notif(getString(R.string.confirm_empty));
 
-                }else if (!confirmPassword.getText().toString().trim().equals(password.getText().toString().trim())) {
+                } else if (!confirmPassword.getText().toString().equals(password.getText().toString())) {
 
                     notif(getString(R.string.pass_mismatch));
 
-                } /*else if (TextUtils.isEmpty(idCardNumber.getText().toString().trim())) {
+                } /*else if (TextUtils.isEmpty(idCardNumber.getText().toString())) {
 
                     notif(getString(R.string.idCardNumberEmpty));
 
@@ -331,7 +331,7 @@ public class RegisterActivity extends AppCompatActivity {
         phoneNumber = countryCode.getText().toString() + phone.getText().toString();
         String ccode = countryCode.getText().toString();
 
-        if ((!TextUtils.isEmpty(phoneNumber) && !TextUtils.isEmpty(ccode)) && phone.getText().toString().trim().length() == 10) {
+        if ((!TextUtils.isEmpty(phoneNumber) && !TextUtils.isEmpty(ccode)) && phone.getText().toString().length() == 10) {
             progressshow();
             Send_Number_tofirebase(phoneNumber);
             Log.e(TAG, "Sending phone number " + phoneNumber);
@@ -402,7 +402,7 @@ public class RegisterActivity extends AppCompatActivity {
             startActivityForResult(intent, 2);
         }
     }*/
-private void selectImage() {
+    private void selectImage() {
         if (check_ReadCameraPermission() && check_ReadStoragepermission()) {
            /* Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             // Ensure that there's a camera activity to handle the intent
@@ -424,31 +424,31 @@ private void selectImage() {
                     startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
                 }
             }*/
-           Dexter.withActivity(this)
-                   .withPermissions(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                   .withListener(new MultiplePermissionsListener() {
-                       @Override
-                       public void onPermissionsChecked(MultiplePermissionsReport report) {
-                           if (report.areAllPermissionsGranted()) {
-                               uploadImage();
-                           }else {
-                                   AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                                   builder.setTitle("Permission denied")
-                                           .setMessage("Permission to access storage is permanently denied, you need to go to settings to allow permission")
-                                           .setNegativeButton("Cancel", null)
-                                           .setPositiveButton("Ok", (dialog, which) -> {
-                                               Intent intent = new Intent();
-                                               intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                               intent.setData(Uri.fromParts("package", getPackageName(), null));
-                                           }).show();
-                           }
-                       }
+            Dexter.withActivity(this)
+                    .withPermissions(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    .withListener(new MultiplePermissionsListener() {
+                        @Override
+                        public void onPermissionsChecked(MultiplePermissionsReport report) {
+                            if (report.areAllPermissionsGranted()) {
+                                uploadImage();
+                            } else {
+                                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                                builder.setTitle("Permission denied")
+                                        .setMessage("Permission to access storage is permanently denied, you need to go to settings to allow permission")
+                                        .setNegativeButton("Cancel", null)
+                                        .setPositiveButton("Ok", (dialog, which) -> {
+                                            Intent intent = new Intent();
+                                            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                            intent.setData(Uri.fromParts("package", getPackageName(), null));
+                                        }).show();
+                            }
+                        }
 
-                       @Override
-                       public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
-                           token.continuePermissionRequest();
-                       }
-                   }).check();
+                        @Override
+                        public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
+                            token.continuePermissionRequest();
+                        }
+                    }).check();
         }
     }
 
@@ -524,7 +524,7 @@ private void selectImage() {
             imagePath = image.getPath();
             if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                 loadProfileImage();
-            }else {
+            } else {
                 requestPermission();
             }
         }
@@ -662,10 +662,10 @@ private void selectImage() {
     }
 
     private Bitmap getBitmapFromFile(String imagePath) {
-    Log.e(TAG, imagePath);
+        Log.e(TAG, imagePath);
         File image = new File(imagePath);
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath(),bmOptions);
+        Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath(), bmOptions);
         return bitmap;
     }
 
@@ -782,11 +782,10 @@ private void selectImage() {
 
 
     public void verifyCode(View view) {
-        Log.e(TAG, "Inside verifyCode");
-        String code = numOne.getText().toString().trim() + numTwo.getText().toString().trim() + numThree.getText().toString().trim() + numFour.getText().toString().trim() + numFive.getText().toString().trim() + numSix.getText().toString().trim();
-        if (!code.trim().equals("") && code.trim().length() == 6) {
+        String code = "" + numOne.getText().toString() + numTwo.getText().toString() + numThree.getText().toString() + numFour.getText().toString() + numFive.getText().toString() + numSix.getText().toString();
+        if (!code.equals("")) {
             progressshow();
-            PhoneAuthCredential credential = PhoneAuthProvider.getCredential(phoneVerificationId, code.trim());
+            PhoneAuthCredential credential = PhoneAuthProvider.getCredential(phoneVerificationId, code);
             signInWithPhoneAuthCredential(credential);
 
         } else {
@@ -935,16 +934,20 @@ private void selectImage() {
     private void upload(final String check) {
         progressshow();
         RegisterRequestJson request = new RegisterRequestJson();
-        request.setFullNama(nama.getText().toString().trim());
-        request.setEmail(email.getText().toString().trim());
-        request.setPassword(password.getText().toString().trim());
-        request.setCardNumber(idCardNumber.getText().toString().trim());
-        request.setNoTelepon(countryCode.getText().toString().trim().replace("+", "") + phone.getText().toString().trim());
-        request.setPhone(phone.getText().toString().trim());
+        request.setFullNama(nama.getText().toString());
+        request.setEmail(email.getText().toString());
+        request.setPassword(password.getText().toString());
+        if (!idCardNumber.getText().toString().isEmpty()) {
+            request.setCardNumber(idCardNumber.getText().toString());
+        } else {
+            request.setCardNumber(null);
+        }
+        request.setNoTelepon(countryCode.getText().toString().replace("+", "") + phone.getText().toString());
+        request.setPhone(phone.getText().toString());
         request.setTglLahir(dateview);
         request.setFotopelanggan(getStringImage(decoded));
-        Log.i(TAG,getStringImage(decoded));
-        request.setCountrycode(countryCode.getText().toString().trim());
+        Log.i(TAG, getStringImage(decoded));
+        request.setCountrycode(countryCode.getText().toString());
         request.setChecked(check);
 
         FirebaseInstanceId token = FirebaseInstanceId.getInstance();

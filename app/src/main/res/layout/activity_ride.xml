@@ -459,7 +459,6 @@
                                 android:textSize="18dp" />
 
                             <customfonts.TextViewSFProDisplayMedium
-                                android:text="NGN 10,000 - 20,000"
                                 android:id="@+id/price"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
@@ -796,19 +795,20 @@
                         android:layout_weight="1"
                         android:orientation="vertical">
 
-                        <RelativeLayout
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:orientation="horizontal">
+                            android:orientation="vertical">
 
                             <customfonts.TextViewSFProDisplayMedium
-                                android:id="@+id/layanan"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Service"
-                                android:paddingEnd="4dp"
-                                android:textColor="@color/black"
-                                android:textSize="20dp" />
+                                    android:id="@+id/layanan"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="0dp"
+                                    android:text="Service"
+                                    android:paddingEnd="4dp"
+                                    android:layout_weight="1"
+                                    android:textColor="@color/black"
+                                    android:textSize="20dp" />
 
                             <customfonts.TextViewSFProDisplayRegular
                                 android:id="@+id/layanandes"
@@ -821,16 +821,14 @@
 
                             <customfonts.TextViewSFProDisplayMedium
                                 android:visibility="gone"
-                                android:layout_alignParentEnd="true"
-                                android:layout_centerInParent="true"
                                 android:id="@+id/timeAway"
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="5 min away"
                                 android:textColor="@color/black"
-                                android:textSize="20dp" />
+                                android:textSize="15dp" />
 
-                        </RelativeLayout>
+                        </LinearLayout>
 
                     </LinearLayout>
 

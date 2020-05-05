@@ -5,7 +5,6 @@ import com.google.gson.annotations.SerializedName;
 import com.mykab.rider.models.DriverModel;
 import com.mykab.rider.models.TransaksiModel;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,24 +13,22 @@ import java.util.List;
 
 public class DetailTransResponseJson {
 
+    @SerializedName("status")
     @Expose
-    @SerializedName("message")
-    private String message;
-
-    @Expose
+    private Boolean status;
     @SerializedName("data")
-    private List<TransaksiModel> data = new ArrayList<>();
-
     @Expose
+    private List<TransaksiModel> data = null;
     @SerializedName("driver")
-    private List<DriverModel> driver = new ArrayList<>();
+    @Expose
+    private List<DriverModel> driver = null;
 
-    public String getMessage() {
-        return message;
+    public boolean getStatus() {
+        return status;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setStatus(boolean status) {
+        this.status = status;
     }
 
     public List<TransaksiModel> getData() {

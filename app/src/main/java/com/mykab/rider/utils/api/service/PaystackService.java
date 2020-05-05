@@ -108,9 +108,9 @@ public interface PaystackService {
     Call<SimpleResponse> getTransactionByRefNum(@Path("ref_num") String refNumber);
 
 
-
-
-
+    @FormUrlEncoded
+    @POST("pelanggan/get_rider_rating")
+    Call<SimpleResponse> getRiderRating(@Field("user_id") String riderId);
 
 
 
