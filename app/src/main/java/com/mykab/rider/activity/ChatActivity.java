@@ -132,7 +132,6 @@ public class ChatActivity extends AppCompatActivity {
     SendAudio sendAudio;
     EditText message;
     File direct;
-    private String response;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,11 +145,6 @@ public class ChatActivity extends AppCompatActivity {
         Receiverid = i.getStringExtra("receiverid");
         Receiver_name = i.getStringExtra("name");
         Receiver_pic = i.getStringExtra("pic");
-        response = i.getStringExtra("response");
-
-        if (response != null && response.equalsIgnoreCase("4")) {
-            finish();
-        }
 
         sendbtn = findViewById(R.id.sendbtn);
         takephoto = findViewById(R.id.takephoto);

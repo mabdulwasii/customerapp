@@ -113,6 +113,8 @@ import static com.mykab.rider.utils.api.service.MessagingService.BROADCAST_ORDER
 public class ProgressActivity extends AppCompatActivity
         implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
+    long mBackPressed;
+
     private GoogleMap gMap;
     private boolean isMapReady = false;
     private Location lastKnownLocation;
@@ -136,7 +138,6 @@ public class ProgressActivity extends AppCompatActivity
     private Location mCurrentLocation = new Location("test");
     String complete;
     private double harga;
-    private String format;
     private Handler handler;
     Timer timer = new Timer();
     private int cancelCount = 0;
@@ -216,6 +217,7 @@ public class ProgressActivity extends AppCompatActivity
     };
     private String time;
     private String namaDriver;
+    private View mapView;
 
     @Override
     protected void onDestroy() {
@@ -229,11 +231,11 @@ public class ProgressActivity extends AppCompatActivity
         stopDriverLocationUpdate();
     }
 
-    @Override
+   /* @Override
     public void onBackPressed() {
         super.onBackPressed();
         stopDriverLocationUpdate();
-    }
+    }*/
 
     private void stopDriverLocationUpdate() {
         handler.removeCallbacks(updateDriverRunnable);
@@ -346,13 +348,14 @@ public class ProgressActivity extends AppCompatActivity
                 openAutocompleteActivity();
             }
         });
+        backbtn.setVisibility(View.GONE);
 
-        backbtn.setOnClickListener(new View.OnClickListener() {
+       /* backbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();
             }
-        });
+        });*/
 
         orderButton.setText(getString(R.string.text_cancel));
         orderButton.setBackground(getResources().getDrawable(R.drawable.rounded_corners_button_red));
@@ -392,6 +395,7 @@ public class ProgressActivity extends AppCompatActivity
 
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
+            mapView = mapFragment.getView();
         }
 
         if (googleApiClient == null) {
@@ -452,6 +456,7 @@ public class ProgressActivity extends AppCompatActivity
                     parsedata(transaksi, driver);
                     regdriver = driver.getRegId();
                     imagedriver = Constants.IMAGESDRIVER + driver.getFoto();
+                    Log.e("IMAGESDRIVER", imagedriver);
 
                     pickUpLatLng = new LatLng(transaksi.getStartLatitude(), transaksi.getStartLongitude());
                     destinationLatLng = new LatLng(transaksi.getEndLatitude(), transaksi.getEndLongitude());
@@ -585,7 +590,7 @@ public class ProgressActivity extends AppCompatActivity
         destinationLatLng = new LatLng(request.getEndLatitude(), request.getEndLongitude());
 
         Picasso.with(this)
-                .load(Constants.IMAGESDRIVER + driver.getFoto())
+                .load(driver.getFoto())
                 .placeholder(R.drawable.image_placeholder)
                 .into(foto);
 
@@ -780,6 +785,16 @@ public class ProgressActivity extends AppCompatActivity
     public void onMapReady(GoogleMap googleMap) {
         gMap = googleMap;
         gMap.getUiSettings().setMyLocationButtonEnabled(true);
+
+        if (mapView != null && mapView.findViewById(Integer.parseInt("1")) != null) {
+            View locationButton = ((View) mapView.findViewById(Integer.parseInt("1")).getParent()).findViewById(Integer.parseInt("2"));
+            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) locationButton.getLayoutParams();
+            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
+            layoutParams.setMargins(100, 32, 0, 0);
+
+            locationButton.setOnClickListener(v -> updateLastLocation(true));
+        }
+
         try {
             boolean success = googleMap.setMapStyle(
                     MapStyleOptions.loadRawResourceStyle(
@@ -901,7 +916,7 @@ public class ProgressActivity extends AppCompatActivity
                         public void run() {
                             updateLineDestination(json);
                             float km = ((float) (distance)) / 1000f;
-                            format = String.format(Locale.US, "%.2f", km);
+                            String format = String.format(Locale.US, "%.2f", km);
                             //distanceText.setText(format);
                             //fiturtext.setText(time);
                         }
@@ -969,6 +984,22 @@ public class ProgressActivity extends AppCompatActivity
         }
     };
 
+    @Override
+    public void onBackPressed() {
+        int count = this.getSupportFragmentManager().getBackStackEntryCount();
+        if (count == 0) {
+            if (mBackPressed + 2000 > System.currentTimeMillis()) {
+                super.onBackPressed();
+            } else {
+                //clickDone();
+                //moveTaskToBack(true);
+
+            }
+        } else {
+            super.onBackPressed();
+        }
+    }
+
     private void updateLastLocation(boolean move) {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSION_LOCATION);
@@ -979,12 +1010,17 @@ public class ProgressActivity extends AppCompatActivity
 
         gMap.setMyLocationEnabled(true);
 
-        if (pickUpLatLng != null) {
+        if (lastKnownLocation != null) {
             if (move) {
-                gMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(lastKnownLocation
-                        .getLatitude(), lastKnownLocation.getLongitude())));
+                gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                        new LatLng(lastKnownLocation
+                                .getLatitude(), lastKnownLocation.getLongitude()), 15f)
+                );
+                gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastKnownLocation
+                        .getLatitude(), lastKnownLocation.getLongitude()), 15f));
             }
         }
+
     }
     private void requestRoute() {
         if (pickUpLatLng != null && destinationLatLng != null) {
@@ -1117,9 +1153,10 @@ public class ProgressActivity extends AppCompatActivity
         super.onStop();
 
         unregisterReceiver(broadcastReceiver);
-        if (response.equals("5") || response.equals("4")) {
+        /*if (response.equals("5") || response.equals("4")) {
             stopDriverLocationUpdate();
-        }
+        }*/
+        stopDriverLocationUpdate();
     }
 
 
@@ -1181,40 +1218,7 @@ public class ProgressActivity extends AppCompatActivity
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.destination)));
         destinationLatLng = centerPos;
         requestAddress(destinationLatLng, destinationText);
-
         requestRoute();
-
-        long biaya = 700;
-        if (transaksi != null){
-            String orderFitur = transaksi.getOrderFitur();
-            if (orderFitur.equals("10")){
-                biaya = 700;
-            }
-        }
-
-        String time = fiturtext.getText().toString();
-        String[] s = time.split(" ");
-        String trimTime;
-        if (s.length >= 3){
-
-            String trimTime1 = s[0].trim();
-            String trimTime2 = s[2].trim();
-
-            int timeString = Integer.parseInt(trimTime2) + (Integer.parseInt(trimTime1)) * 60;
-            trimTime = String.valueOf(timeString).trim();
-
-        }else {
-            trimTime = s[0].trim();
-        }
-
-        String distance = distanceText.getText().toString();
-
-        long newHarga = (long) (biaya + (100 * Float.parseFloat(distance)) + (10 * Long.parseLong(trimTime)));
-
-        String minHarga = String.valueOf(newHarga - 200);
-        String maxHarga = String.valueOf(newHarga + 200);
-
-        Utility.currencyTXT(priceText, minHarga, maxHarga, this);
 
         param = new UpdateDestinationRequestJson();
         param.setTransaction_id(idtrans);

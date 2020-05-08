@@ -22,10 +22,11 @@ import com.mykab.rider.constants.BaseApp;
 import com.mykab.rider.constants.Constants;
 import com.mykab.rider.json.DetailRequestJson;
 import com.mykab.rider.json.DetailTransResponseJson;
+import com.mykab.rider.json.DistanceTimeJson;
+import com.mykab.rider.json.GetDistanceResponse;
 import com.mykab.rider.json.RateRequestJson;
 import com.mykab.rider.json.RateResponseJson;
 import com.mykab.rider.models.DriverModel;
-import com.mykab.rider.models.TransaksiModel;
 import com.mykab.rider.models.User;
 import com.mykab.rider.utils.Utility;
 import com.mykab.rider.utils.api.ServiceGenerator;
@@ -66,11 +67,31 @@ public class RateActivity extends AppCompatActivity {
         iddriver = intent.getStringExtra("id_driver");
         idtrans = intent.getStringExtra("id_transaksi");
         response = intent.getStringExtra("response");
+        getPriceDetails();
         //Todo getPrice of transaction using idtrans from server
         getData(idtrans, iddriver);
         submit = "true";
         shimmeractive();
         removeNotif();
+    }
+
+    private void getPriceDetails() {
+        User loginUser = BaseApp.getInstance(this).getLoginUser();
+        UserService service = ServiceGenerator.createService(UserService.class, loginUser.getEmail(), loginUser.getPassword());
+        service.getRequestDistanceTimePrice(idtrans)
+                .enqueue(new Callback<GetDistanceResponse>() {
+                    @Override
+                    public void onResponse(Call<GetDistanceResponse> call, Response<GetDistanceResponse> response) {
+                        DistanceTimeJson distanceTimeJson = response.body().getData().get(0);
+                        priceText = String.valueOf(distanceTimeJson.getPrice());
+                        Utility.currencyTXT(price, priceText, RateActivity.this);
+                    }
+
+                    @Override
+                    public void onFailure(Call<GetDistanceResponse> call, Throwable t) {
+
+                    }
+                });
     }
 
     private void shimmeractive() {
@@ -98,9 +119,6 @@ public class RateActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<DetailTransResponseJson> call, Response<DetailTransResponseJson> response) {
                 if (response.isSuccessful()) {
-                    TransaksiModel transaksiModel = response.body().getData().get(0);
-                    priceText = String.valueOf(transaksiModel.getHarga());
-                    Utility.currencyTXT(price, priceText, RateActivity.this);
                     DriverModel driver = response.body().getDriver().get(0);
                     parsedata(driver);
                 }

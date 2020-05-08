@@ -49,18 +49,11 @@ public class MessageFragment extends Fragment {
     MessageItem inboxItem;
 
     boolean isviewCreated = false;
-    private String response = "1";
 
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         getView = inflater.inflate(R.layout.fragment_recycle, container, false);
         context = getContext();
-
-        Bundle bundle = getArguments();
-
-        if (bundle != null){
-            response = bundle.getString("response");
-        }
 
         rootRef = FirebaseDatabase.getInstance().getReference();
 
@@ -83,8 +76,7 @@ public class MessageFragment extends Fragment {
                     intent.putExtra("tokendriver", item.getTokendriver());
                     intent.putExtra("tokenku", Constants.TOKEN);
                     intent.putExtra("pic", item.getPicture());
-                    intent.putExtra("response", response);
-                    context.startActivity(intent);
+                    getActivity().startActivity(intent);
                 }
 
 

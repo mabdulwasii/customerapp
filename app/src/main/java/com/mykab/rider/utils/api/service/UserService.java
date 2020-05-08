@@ -6,6 +6,7 @@ import com.mykab.rider.json.BeritaDetailResponseJson;
 import com.mykab.rider.json.ChangePassRequestJson;
 import com.mykab.rider.json.DetailRequestJson;
 import com.mykab.rider.json.EditprofileRequestJson;
+import com.mykab.rider.json.GetDistanceResponse;
 import com.mykab.rider.json.GetFiturResponseJson;
 import com.mykab.rider.json.GetHomeRequestJson;
 import com.mykab.rider.json.GetHomeResponseJson;
@@ -31,6 +32,8 @@ import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 /**
  * Created by Ourdevelops Team on 10/13/2019.
@@ -90,5 +93,16 @@ public interface UserService {
     @POST("pelanggan/get_rider_rating")
     Call<SimpleResponse> getRiderRating(@Field("user_id") String riderId);
 
+    @GET("pelanggan/get_distance_time_price/{id}")
+    Call<GetDistanceResponse> getRequestDistanceTimePrice(@Path("id") String id);
+
+    @GET("pelanggan/get_order_params")
+    Call<GetDistanceResponse> getOrderDetails(
+            @Query("start_latitude") Double startLatitude,
+            @Query("start_longitude") Double startLongitude,
+            @Query("end_latitude") Double endLatitude,
+            @Query("end_longitude") Double endLongitude,
+            @Query("order_fitur") String orderFitur
+            );
 
 }

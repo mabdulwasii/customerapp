@@ -55,6 +55,8 @@ import com.mykab.rider.gmap.directions.Directions;
 import com.mykab.rider.gmap.directions.Route;
 import com.mykab.rider.json.CheckStatusTransaksiRequest;
 import com.mykab.rider.json.CheckStatusTransaksiResponse;
+import com.mykab.rider.json.DistanceTimeJson;
+import com.mykab.rider.json.GetDistanceResponse;
 import com.mykab.rider.json.GetNearRideCarRequestJson;
 import com.mykab.rider.json.GetNearRideCarResponseJson;
 import com.mykab.rider.json.RideCarRequestJson;
@@ -73,6 +75,7 @@ import com.mykab.rider.utils.api.FCMHelper;
 import com.mykab.rider.utils.api.MapDirectionAPI;
 import com.mykab.rider.utils.api.ServiceGenerator;
 import com.mykab.rider.utils.api.service.BookService;
+import com.mykab.rider.utils.api.service.UserService;
 import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
@@ -87,7 +90,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -215,21 +217,31 @@ public class RideCarActivity extends AppCompatActivity
     private int fiturId;
     String fitur, getbiaya, biayaminimum, biayaakhir;
     private Handler handler;
+    private User loginUser;
+
 
     private okhttp3.Callback updateRouteCallback = new okhttp3.Callback() {
         @Override
         public void onFailure(okhttp3.Call call, IOException e) {
-            Toast.makeText(context, "Error connection, please select destination again!", Toast.LENGTH_SHORT).show();
-            setDestinationContainer.setVisibility(View.VISIBLE);
-            rlprogress.setVisibility(View.GONE);
+//            Toast.makeText(context, "Error connection, please select destination again!", Toast.LENGTH_SHORT).show();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    setDestinationContainer.setVisibility(View.VISIBLE);
+                    rlprogress.setVisibility(View.GONE);
+                }
+            });
+
         }
 
         @Override
         public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
             if (response.isSuccessful()) {
                 final String json = response.body().string();
+
+                getRequestDetails();
                 final long distance = MapDirectionAPI.getDistance(RideCarActivity.this, json);
-                 time = MapDirectionAPI.getTimeDistance(RideCarActivity.this, json);
+                 //time = MapDirectionAPI.getTimeDistance(RideCarActivity.this, json);
                 if (distance >= 0) {
                     RideCarActivity.this.runOnUiThread(new Runnable() {
                         @Override
@@ -237,8 +249,6 @@ public class RideCarActivity extends AppCompatActivity
                             rlprogress.setVisibility(View.GONE);
                             updateLineDestination(json);
                             updateDistance(distance);
-                            fiturtext.setText(time);
-                            diskon.setText(Constants.CURRENCY + "0.00");
 
                         }
                     });
@@ -246,6 +256,40 @@ public class RideCarActivity extends AppCompatActivity
             }
         }
     };
+    private void getRequestDetails() {
+
+        UserService service = ServiceGenerator.createService(UserService.class, loginUser.getEmail(), loginUser.getPassword());
+        if (pickUpLatLang != null && destinationLatLang != null){
+
+            service.getOrderDetails(pickUpLatLang.latitude, pickUpLatLang.longitude, destinationLatLang.latitude, destinationLatLang.longitude, fitur)
+                    .enqueue(new Callback<GetDistanceResponse>() {
+                        @Override
+                        public void onResponse(Call<GetDistanceResponse> call, Response<GetDistanceResponse> response) {
+                            if (response.body() != null && response.isSuccessful() && response.body().getMessage().equalsIgnoreCase("found")) {
+                                DistanceTimeJson distanceTimeJson = response.body().getData().get(0);
+                                fiturtext.setText(distanceTimeJson.getTimeUsed());
+                                jarak = Double.parseDouble(distanceTimeJson.getDistance());
+                                distanceText.setText(jarak + "");
+                                harga = Long.parseLong(distanceTimeJson.getPrice());
+                                if (harga < Long.parseLong(biayaminimum)){
+                                    harga = Long.parseLong(biayaminimum);
+                                }
+
+                                long minHarga = harga - 200;
+                                long maxHarga = harga + 200;
+
+                                Utility.currencyTXT(priceText, String.valueOf(minHarga), String.valueOf(maxHarga),context);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<GetDistanceResponse> call, Throwable t) {
+
+                        }
+                    });
+
+        }
+    }
 
 
     @Override
@@ -254,6 +298,7 @@ public class RideCarActivity extends AppCompatActivity
         setContentView(R.layout.activity_ride);
         ButterKnife.bind(this);
         currentLoop = 0;
+        loginUser = BaseApp.getInstance(context).getLoginUser();
         BottomSheetBehavior behavior = BottomSheetBehavior.from(bottomsheet);
         behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 
@@ -686,9 +731,9 @@ public class RideCarActivity extends AppCompatActivity
         }
         float km = ((float) (distance)) / 1000f;
 
-        this.jarak = km;
+//        this.jarak = km;
 
-        String format = String.format(Locale.getDefault(), "%.2f", km);
+        /*String format = String.format(Locale.getDefault(), "%.2f", km);
         distanceText.setText(format);
         String biaya = String.valueOf(biayaminimum);
         String[] s = time.split(" ");
@@ -709,7 +754,7 @@ public class RideCarActivity extends AppCompatActivity
 
 
         if (biayaTotal < Double.valueOf(biayaminimum)) {
-            this.harga = Long.parseLong(biayaminimum);
+//            this.harga = Long.parseLong(biayaminimum);
             biayaTotal = Long.parseLong(biayaminimum);
             Utility.currencyTXT(cost, biaya, this);
         } else {
@@ -717,7 +762,7 @@ public class RideCarActivity extends AppCompatActivity
         }
 
         biayaTotal = (long) (Math.floor(biayaTotal/100.0))*100;
-        this.harga = biayaTotal;
+//        this.harga = biayaTotal;
 
         final long finalBiayaTotal = biayaTotal;
 
@@ -725,16 +770,16 @@ public class RideCarActivity extends AppCompatActivity
         final long maxBiaya = finalBiayaTotal + 200;
         String minBiayaTotal = String.valueOf(minBiaya);
         String maxBiayaTotal = String.valueOf(maxBiaya);
-        Utility.currencyTXT(priceText, minBiayaTotal, maxBiayaTotal,this);
+//        Utility.currencyTXT(priceText, minBiayaTotal, maxBiayaTotal,this);*/
 
         long saldokini = Long.parseLong(saldoWallet);
-        if (saldokini < biayaTotal) {
+       if (saldokini < harga) {
             llcheckedcash.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Utility.currencyTXT(priceText, minBiayaTotal, maxBiayaTotal,context);
+//                    Utility.currencyTXT(priceText, minBiayaTotal, maxBiayaTotal,context);
 
-                    diskon.setText(Constants.CURRENCY + "0.00");
+//                    diskon.setText(Constants.CURRENCY + "0.00");
 
                     checkedcash.setSelected(true);
                     checkedwallet.setSelected(false);
@@ -757,8 +802,8 @@ public class RideCarActivity extends AppCompatActivity
             llcheckedcash.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Utility.currencyTXT(priceText, minBiayaTotal, maxBiayaTotal,context);
-                    diskon.setText(Constants.CURRENCY + "0.00");
+//                    Utility.currencyTXT(priceText, minBiayaTotal, maxBiayaTotal,context);
+//                    diskon.setText(Constants.CURRENCY + "0.00");
                     checkedcash.setSelected(true);
                     checkedwallet.setSelected(false);
                     checkedCard.setSelected(false);
@@ -778,10 +823,10 @@ public class RideCarActivity extends AppCompatActivity
             });
 
 
-            final long finalBiayaTotal1 = biayaTotal;
+//            final long finalBiayaTotal1 = biayaTotal;
             llcheckedwallet.setOnClickListener(view -> {
-                Utility.currencyTXT(priceText, minBiayaTotal, maxBiayaTotal,context);
-                harga = finalBiayaTotal1;
+//                Utility.currencyTXT(priceText, minBiayaTotal, maxBiayaTotal,context);
+//                harga = finalBiayaTotal1;
                 checkedcash.setSelected(false);
                 checkedCard.setSelected(false);
                 checkedwallet.setSelected(true);
@@ -802,8 +847,8 @@ public class RideCarActivity extends AppCompatActivity
             llcheckedcard.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Utility.currencyTXT(priceText, minBiayaTotal, maxBiayaTotal,context);
-                    diskon.setText(Constants.CURRENCY + "0.00");
+//                    Utility.currencyTXT(priceText, minBiayaTotal, maxBiayaTotal,context);
+//                    diskon.setText(Constants.CURRENCY + "0.00");
                     checkedCard.setSelected(true);//TODO for card payment
                     checkedcash.setSelected(false);
                     checkedwallet.setSelected(false);
@@ -968,6 +1013,7 @@ public class RideCarActivity extends AppCompatActivity
                 param.setEndLatitude(destinationLatLang.latitude);
                 param.setEndLongitude(destinationLatLang.longitude);
                 param.setJarak(this.jarak);
+                harga = (long) (Math.floor(harga/100.0))*100;
                 param.setHarga(this.harga);
                 param.setEstimasi(fiturtext.getText().toString());
                 param.setKreditpromo("0");
@@ -1012,7 +1058,17 @@ public class RideCarActivity extends AppCompatActivity
         service.requestTransaksi(param).enqueue(new Callback<RideCarResponseJson>() {
             @Override
             public void onResponse(Call<RideCarResponseJson> call, Response<RideCarResponseJson> response) {
-                if (response.isSuccessful()) {
+                if (response.isSuccessful() && response.body() != null) {
+
+                    if (response.body().getMessage().equalsIgnoreCase("Already in an active trip")){
+                        notif("Already in an active trip");
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                finish();
+                            }
+                        }, 3000);
+                    }
                     buildDriverRequest(response.body());
                     thread = new Thread(new Runnable() {
                         @Override
@@ -1124,15 +1180,15 @@ public class RideCarActivity extends AppCompatActivity
             request.setStartLongitude(transaksi.getStartLongitude());
             request.setEndLatitude(transaksi.getEndLatitude());
             request.setEndLongitude(transaksi.getEndLongitude());
-            request.setJarak(transaksi.getJarak());
-            request.setHarga(transaksi.getHarga());
+            request.setJarak(Double.parseDouble(distanceText.getText().toString()));
+            request.setHarga(harga);
             request.setWaktuOrder(transaksi.getWaktuOrder());
             request.setAlamatAsal(transaksi.getAlamatAsal());
             request.setAlamatTujuan(transaksi.getAlamatTujuan());
             request.setKodePromo(transaksi.getKodePromo());
             request.setKreditPromo(transaksi.getKreditPromo());
             request.setPakaiWallet(String.valueOf(transaksi.getPakaiWallet()));
-            request.setEstimasi(transaksi.getEstimasiTime());
+            request.setEstimasi(fiturtext.getText().toString());
             request.setLayanan(layanan.getText().toString());
             request.setLayanandesc(layanandesk.getText().toString());
             request.setIcon(ICONFITUR);
