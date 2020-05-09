@@ -822,11 +822,6 @@ public class ProgressActivity extends AppCompatActivity
         mCurrentLocation.setLatitude(Double.parseDouble(latdriver));
         mCurrentLocation.setLongitude(Double.parseDouble(londriver));
         int iconRes = R.drawable.carmap;
-        if (fitur.equalsIgnoreCase("1") || fitur.equalsIgnoreCase("5")) {
-            iconRes = R.drawable.carmap;
-        } else if (fitur.equalsIgnoreCase("2") || fitur.equalsIgnoreCase("6")) {
-            iconRes = R.drawable.carmap;
-        }
 
         if (markerCount == 1) {
             animateMarker(mCurrentLocation, driverMarker);

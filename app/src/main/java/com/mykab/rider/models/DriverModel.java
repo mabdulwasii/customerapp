@@ -59,9 +59,6 @@ public class DriverModel extends RealmObject implements Serializable{
     @Expose
     private String distance;
 
-
-
-
     public String getNamaDriver() {
         return namaDriver;
     }

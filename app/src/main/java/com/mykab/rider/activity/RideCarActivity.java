@@ -990,10 +990,9 @@ public class RideCarActivity extends AppCompatActivity
                 param.setEndLatitude(destinationLatLang.latitude);
                 param.setEndLongitude(destinationLatLang.longitude);
                 param.setJarak(this.jarak);
-                harga = (long) (Math.floor(harga/100.0))*100;
                 param.setHarga(this.harga);
                 param.setEstimasi(fiturtext.getText().toString());
-                param.setKreditpromo(String.valueOf(Double.valueOf(biayaakhir) * this.harga));
+                param.setKreditpromo("0");
                 param.setAlamatAsal(pickUpText.getText().toString());
                 param.setAlamatTujuan(destinationText.getText().toString());
                 param.setPakaiWallet(1);
@@ -1013,7 +1012,6 @@ public class RideCarActivity extends AppCompatActivity
                 param.setEndLatitude(destinationLatLang.latitude);
                 param.setEndLongitude(destinationLatLang.longitude);
                 param.setJarak(this.jarak);
-                harga = (long) (Math.floor(harga/100.0))*100;
                 param.setHarga(this.harga);
                 param.setEstimasi(fiturtext.getText().toString());
                 param.setKreditpromo("0");
@@ -1037,7 +1035,6 @@ public class RideCarActivity extends AppCompatActivity
                 param.setEndLatitude(destinationLatLang.latitude);
                 param.setEndLongitude(destinationLatLang.longitude);
                 param.setJarak(this.jarak);
-                harga = (long) (Math.floor(harga/100.0))*100;
                 param.setHarga(this.harga);
                 param.setEstimasi(fiturtext.getText().toString());
                 param.setKreditpromo("0");

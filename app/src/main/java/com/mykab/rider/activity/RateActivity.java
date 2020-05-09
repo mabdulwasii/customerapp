@@ -19,7 +19,6 @@ import com.github.ornolfr.ratingview.RatingView;
 import com.google.gson.Gson;
 import com.mykab.rider.R;
 import com.mykab.rider.constants.BaseApp;
-import com.mykab.rider.constants.Constants;
 import com.mykab.rider.json.DetailRequestJson;
 import com.mykab.rider.json.DetailTransResponseJson;
 import com.mykab.rider.json.DistanceTimeJson;
@@ -136,7 +135,7 @@ public class RateActivity extends AppCompatActivity {
     private void parsedata(final DriverModel driver) {
 
         Picasso.with(this)
-                .load(Constants.IMAGESDRIVER + driver.getFoto())
+                .load(driver.getFoto())
                 .placeholder(R.drawable.image_placeholder)
                 .into(image);
         nama.setText(driver.getNamaDriver());
