@@ -1,6 +1,7 @@
 package com.mykab.rider.fragment;
 
 import android.animation.ArgbEvaluator;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -72,6 +73,7 @@ public class HomeFragment extends Fragment {
     TextView saldo, showall, riderName;
     RelativeLayout topup, withdraw, detail;
     SettingPreference sp;
+    private Activity activity;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -95,6 +97,7 @@ public class HomeFragment extends Fragment {
         showall = getView.findViewById(R.id.showall);
         riderName = getView.findViewById(R.id.riderName);
         sp = new SettingPreference(context);
+        activity = getActivity();
 
         mShimmerCat = getView.findViewById(R.id.shimmercat);
         shimerPromo = getView.findViewById(R.id.shimmepromo);
@@ -102,12 +105,12 @@ public class HomeFragment extends Fragment {
         shimberita = getView.findViewById(R.id.shimberita);
 
         rvCategory.setHasFixedSize(true);
-        rvCategory.setLayoutManager(new GridLayoutManager(getActivity(), 2));
+        rvCategory.setLayoutManager(new GridLayoutManager(activity, 2));
 
 
         rvberita.setHasFixedSize(true);
         rvberita.setNestedScrollingEnabled(false);
-        rvberita.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+        rvberita.setLayoutManager(new LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false));
 
         User user = BaseApp.getInstance(getContext()).getLoginUser();
         if (user != null) {
@@ -229,7 +232,7 @@ public class HomeFragment extends Fragment {
         });
 
         FusedLocationProviderClient mFusedLocation = LocationServices.getFusedLocationProviderClient(context);
-        mFusedLocation.getLastLocation().addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
+        mFusedLocation.getLastLocation().addOnSuccessListener(activity, new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
                 if (location != null) {
@@ -305,7 +308,7 @@ public class HomeFragment extends Fragment {
                             llslider.setVisibility(View.GONE);
                         } else {
                             promoslider.setVisibility(View.VISIBLE);
-                            adapter = new SliderItem(response.body().getSlider(), getActivity());
+                            adapter = new SliderItem(response.body().getSlider(), activity);
                             viewPager.setAdapter(adapter);
                             circleIndicator.setViewPager(viewPager);
                             viewPager.setPadding(50, 0, 50, 0);
@@ -325,9 +328,9 @@ public class HomeFragment extends Fragment {
                         }
 
                         if (fiturList.size() > 0) {
-                            fiturItem = new FiturItem(getActivity(), fiturList, R.layout.item_fitur);
+                            fiturItem = new FiturItem(activity, fiturList, R.layout.item_fitur);
                         }
-//                        fiturItem = new FiturItem(getActivity(), response.body().getFitur(), R.layout.item_fitur);
+//                        fiturItem = new FiturItem(activity, response.body().getFitur(), R.layout.item_fitur);
 
                         Log.e("FEATURES", "List of features" + String.valueOf(fiturItem.getItemCount()));
                         rvCategory.setAdapter(fiturItem);
@@ -342,14 +345,14 @@ public class HomeFragment extends Fragment {
                         if (response.body().getBerita().isEmpty()) {
                             llberita.setVisibility(View.GONE);
                         } else {
-                            beritaItem = new BeritaItem(getActivity(), response.body().getBerita(), R.layout.item_grid);
+                            beritaItem = new BeritaItem(activity, response.body().getBerita(), R.layout.item_grid);
                             rvberita.setAdapter(beritaItem);
                         }
                         User user = response.body().getData().get(0);
                         saveUser(user);
-                        if (HomeFragment.this.getActivity() != null) {
-                            Realm realm = BaseApp.getInstance(HomeFragment.this.getActivity()).getRealmInstance();
-                            User loginUser = BaseApp.getInstance(HomeFragment.this.getActivity()).getLoginUser();
+                        if (HomeFragment.this.activity != null) {
+                            Realm realm = BaseApp.getInstance(HomeFragment.this.activity).getRealmInstance();
+                            User loginUser = BaseApp.getInstance(HomeFragment.this.activity).getLoginUser();
                             realm.beginTransaction();
                             loginUser.setWalletSaldo(Long.parseLong(response.body().getSaldo()));
                             realm.commitTransaction();
@@ -362,14 +365,14 @@ public class HomeFragment extends Fragment {
                         BaseApp.getInstance(getContext()).setLoginUser(null);
                         context.startActivity(new Intent(getContext(), IntroActivity.class)
                                 .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
-                        getActivity().finish();
+                        activity.finish();
                     }
                 }
             }
 
             @Override
             public void onFailure(Call<GetHomeResponseJson> call, Throwable t) {
-
+                Utility.handleOnfailureException(t, activity);
             }
         });
     }

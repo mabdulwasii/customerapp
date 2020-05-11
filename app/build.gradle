@@ -4,25 +4,29 @@ apply plugin: 'realm-android'
 apply plugin: 'com.google.firebase.firebase-perf'
 
 android {
+
     signingConfigs {
         config {
-            storeFile file('mykabrider.jks')
-            storePassword 'mykabrider'
-            keyAlias = 'mykabrider'
-            keyPassword 'mykabrider'
+            storeFile file('/Users/princely/StudioProjects/keystores/mykabrider-keystore.jks')
+            storePassword '#Hardetuneji1M@'
+            keyAlias = 'mykabRider'
+            keyPassword '#Hardetuneji1M@'
+            v2SigningEnabled false
         }
     }
+
     compileSdkVersion 29
     defaultConfig {
         applicationId "com.mykab.rider"
         minSdkVersion 17
         targetSdkVersion 29
-        versionCode 1
-        versionName "1.0.1"
+        versionCode 2
+        versionName '0.0.1'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         signingConfig signingConfigs.config
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8

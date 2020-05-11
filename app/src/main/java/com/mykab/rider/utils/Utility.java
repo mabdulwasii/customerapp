@@ -2,12 +2,14 @@ package com.mykab.rider.utils;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.mykab.rider.models.Bank;
 
 import java.io.IOException;
@@ -187,6 +189,7 @@ public class Utility {
     }
 
     public  static void handleOnfailureException(Throwable t, Activity activity){
+        FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(activity);
         if(t instanceof SocketTimeoutException){
             activity.runOnUiThread(new Runnable() {
                 @Override
@@ -201,7 +204,40 @@ public class Utility {
                     Toast.makeText(activity, "Please check your network connection.", Toast.LENGTH_LONG).show();
                 }
             });
+        }else {
+            Bundle bundle = new Bundle();
+            bundle.putString("throwable", t.getLocalizedMessage());
+            bundle.putString("activity", activity.getLocalClassName());
+            firebaseAnalytics.logEvent("throwable" , bundle);
         }
+    }
+
+    public  static void handleOnfailureException(Exception t, Activity activity){
+
+        if(activity != null) {
+            FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(activity);
+            if (t instanceof SocketTimeoutException) {
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(activity, "We are unable to reach the server, please check your connection", Toast.LENGTH_LONG).show();
+                    }
+                });
+            } else if (t instanceof IOException) {
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(activity, "Please check your network connection.", Toast.LENGTH_LONG).show();
+                    }
+                });
+            } else {
+                Bundle bundle = new Bundle();
+                bundle.putString("throwable", t.getLocalizedMessage());
+                bundle.putString("activity", activity.getLocalClassName());
+                firebaseAnalytics.logEvent("exception" , bundle);
+            }
+        }
+
     }
 
 }

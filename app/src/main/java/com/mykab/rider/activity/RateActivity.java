@@ -147,7 +147,9 @@ public class RateActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     RateRequestJson request = new RateRequestJson();
                     request.id_transaksi = idtrans;
-                    request.id_pelanggan = userLogin.getId();
+                    if (userLogin != null) {
+                        request.id_pelanggan = userLogin.getId();
+                    }
                     request.id_driver = iddriver;
                     request.rating = String.valueOf(ratingview.getRating());
                     request.catatan = comment.getText().toString();

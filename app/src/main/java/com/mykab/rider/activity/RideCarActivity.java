@@ -239,25 +239,13 @@ public class RideCarActivity extends AppCompatActivity
             if (response.isSuccessful()) {
                 final String json = response.body().string();
 
-                getRequestDetails();
-                final long distance = MapDirectionAPI.getDistance(RideCarActivity.this, json);
-                 //time = MapDirectionAPI.getTimeDistance(RideCarActivity.this, json);
-                if (distance >= 0) {
-                    RideCarActivity.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            rlprogress.setVisibility(View.GONE);
-                            updateLineDestination(json);
-                            updateDistance(distance);
-
-                        }
-                    });
-                }
+                getRequestDetails(json);
             }
         }
     };
-    private void getRequestDetails() {
+    private void getRequestDetails(String json) {
 
+        User loginUser = BaseApp.getInstance(context).getLoginUser();
         UserService service = ServiceGenerator.createService(UserService.class, loginUser.getEmail(), loginUser.getPassword());
         if (pickUpLatLang != null && destinationLatLang != null){
 
@@ -279,6 +267,20 @@ public class RideCarActivity extends AppCompatActivity
                                 long maxHarga = harga + 200;
 
                                 Utility.currencyTXT(priceText, String.valueOf(minHarga), String.valueOf(maxHarga),context);
+
+                                final long distance = MapDirectionAPI.getDistance(RideCarActivity.this, json);
+                                //time = MapDirectionAPI.getTimeDistance(RideCarActivity.this, json);
+                                if (distance >= 0) {
+                                    RideCarActivity.this.runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            rlprogress.setVisibility(View.GONE);
+                                            updateLineDestination(json);
+                                            updateDistance(distance);
+
+                                        }
+                                    });
+                                }
                             }
                         }
 
@@ -298,6 +300,12 @@ public class RideCarActivity extends AppCompatActivity
         setContentView(R.layout.activity_ride);
         ButterKnife.bind(this);
         currentLoop = 0;
+        Places.initialize(getApplicationContext(), getString(R.string.google_maps_key));
+        PlacesClient placesClient = Places.createClient(this);
+
+        if (!Places.isInitialized()) {
+            Places.initialize(getApplicationContext(), getString(R.string.google_maps_key));
+        }
         loginUser = BaseApp.getInstance(context).getLoginUser();
         BottomSheetBehavior behavior = BottomSheetBehavior.from(bottomsheet);
         behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
@@ -305,12 +313,6 @@ public class RideCarActivity extends AppCompatActivity
         sp = new SettingPreference(this);
 
         parent_view = findViewById(android.R.id.content);
-        Places.initialize(getApplicationContext(), getString(R.string.google_maps_key));
-        PlacesClient placesClient = Places.createClient(this);
-
-        if (!Places.isInitialized()) {
-            Places.initialize(getApplicationContext(), getString(R.string.google_maps_key));
-        }
 
         setPickUpContainer.setVisibility(View.VISIBLE);
         setDestinationContainer.setVisibility(View.GONE);
@@ -773,7 +775,8 @@ public class RideCarActivity extends AppCompatActivity
 //        Utility.currencyTXT(priceText, minBiayaTotal, maxBiayaTotal,this);*/
 
         long saldokini = Long.parseLong(saldoWallet);
-       if (saldokini < harga) {
+        Log.e("SALDOKINI = ", saldokini + " " + " HARGA =  " + this.harga );
+       if (saldokini < this.harga + 200) {
             llcheckedcash.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -798,12 +801,38 @@ public class RideCarActivity extends AppCompatActivity
                     }
                 }
             });
+
+           llcheckedcard.setOnClickListener(new View.OnClickListener() {
+               @Override
+               public void onClick(View view) {
+//                    Utility.currencyTXT(priceText, minBiayaTotal, maxBiayaTotal,context);
+//                    diskon.setText(Constants.CURRENCY + "0.00");
+
+                   checkedCard.setSelected(true);//TODO for card payment
+                   checkedcash.setSelected(false);
+                   checkedwallet.setSelected(false);
+                   checkedpayCard = "1";
+                   checkedpaycash = "0";
+                   checkedpaywallet = "0";
+                   Log.e("CHECKEDWALLET", checkedpaywallet);
+                   cardPayment.setTextColor(getResources().getColor(R.color.colorgradient));
+                   cashpayment.setTextColor(getResources().getColor(R.color.gray));
+                   walletpayment.setTextColor(getResources().getColor(R.color.gray));
+                   if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                       checkedCard.setBackgroundTintList(getResources().getColorStateList(R.color.colorgradient));
+                       checkedcash.setBackgroundTintList(getResources().getColorStateList(R.color.gray));
+                       checkedwallet.setBackgroundTintList(getResources().getColorStateList(R.color.gray));
+                   }
+               }
+           });
+
         } else {
             llcheckedcash.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
 //                    Utility.currencyTXT(priceText, minBiayaTotal, maxBiayaTotal,context);
 //                    diskon.setText(Constants.CURRENCY + "0.00");
+
                     checkedcash.setSelected(true);
                     checkedwallet.setSelected(false);
                     checkedCard.setSelected(false);

@@ -2,6 +2,7 @@ package com.mykab.rider.fragment;
 
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,11 +13,6 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings;
-
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,15 +20,18 @@ import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
+
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.labo.kaji.fragmentanimations.MoveAnimation;
-
-import com.mykab.rider.activity.MainActivity;
-import com.mykab.rider.constants.BaseApp;
 import com.mykab.rider.R;
 import com.mykab.rider.activity.IntroActivity;
+import com.mykab.rider.activity.MainActivity;
+import com.mykab.rider.constants.BaseApp;
 import com.mykab.rider.constants.Constants;
 import com.mykab.rider.models.User;
 
@@ -50,12 +49,13 @@ public class EnableLlocationFragment extends Fragment {
     Context context;
     Button enableLocation;
     SharedPreferences sharedPreferences;
+    private Activity activity;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         getView = inflater.inflate(R.layout.fragment_enablelocation, container, false);
         context = getContext();
-
+        activity = getActivity();
 
         sharedPreferences = context.getSharedPreferences(Constants.PREF_NAME, MODE_PRIVATE);
 
@@ -128,13 +128,15 @@ public class EnableLlocationFragment extends Fragment {
 
 
     public void GPSStatus() {
-        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        boolean GpsStatus = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        if (!GpsStatus) {
-            Toast.makeText(context, "On Location in High Accuracy", Toast.LENGTH_SHORT).show();
-            startActivityForResult(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS), 2);
-        } else {
-            GetCurrentlocation();
+        if(activity != null && isAdded()) {
+            LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+            boolean GpsStatus = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            if (!GpsStatus) {
+                Toast.makeText(context, "On Location in High Accuracy", Toast.LENGTH_SHORT).show();
+                startActivityForResult(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS), 2);
+            } else {
+                GetCurrentlocation();
+            }
         }
     }
 

@@ -1,6 +1,7 @@
 package com.mykab.rider.activity;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
@@ -11,28 +12,30 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
-
-import androidx.core.app.ActivityCompat;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentTransaction;
-
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.FragmentTransaction;
+
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.mykab.rider.constants.BaseApp;
 import com.mykab.rider.R;
+import com.mykab.rider.constants.BaseApp;
 import com.mykab.rider.constants.Constants;
 import com.mykab.rider.fragment.EnableLlocationFragment;
 import com.mykab.rider.models.User;
+
+import java.lang.ref.WeakReference;
 
 
 public class SplashActivity extends AppCompatActivity {
 
     SharedPreferences sharedPreferences;
+    private static WeakReference<SplashActivity> wrActivity = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +43,7 @@ public class SplashActivity extends AppCompatActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_splash);
+        wrActivity = new WeakReference<SplashActivity>(this);
         removeNotif();
         final User user = BaseApp.getInstance(this).getLoginUser();
         sharedPreferences = getSharedPreferences(Constants.PREF_NAME, MODE_PRIVATE);
@@ -145,11 +149,14 @@ public class SplashActivity extends AppCompatActivity {
 
 
     private void enable_location() {
-        EnableLlocationFragment enable_llocationFragment = new EnableLlocationFragment();
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.setCustomAnimations(R.anim.from_right, R.anim.to_left, R.anim.from_left, R.anim.to_right);
-        getSupportFragmentManager().popBackStackImmediate();
-        transaction.replace(R.id.splash, enable_llocationFragment).addToBackStack(null).commit();
+        final Activity activity = wrActivity.get();
+        if (activity != null && !activity.isFinishing()) {
+            EnableLlocationFragment enable_llocationFragment = new EnableLlocationFragment();
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.setCustomAnimations(R.anim.from_right, R.anim.to_left, R.anim.from_left, R.anim.to_right);
+            getSupportFragmentManager().popBackStackImmediate();
+            transaction.replace(R.id.splash, enable_llocationFragment).addToBackStack(null).commitAllowingStateLoss();
+        }
 
     }
 

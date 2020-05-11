@@ -219,6 +219,9 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void loadFrag(Fragment f1, String name, FragmentManager fm) {
+        if(f1.isAdded()){
+            return;
+        }
         for (int i = 0; i < fm.getBackStackEntryCount(); ++i) {
             fm.popBackStack();
         }

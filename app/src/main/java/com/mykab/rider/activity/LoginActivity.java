@@ -505,6 +505,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<LoginResponseJson> call, Throwable t) {
+                notif("Failed!");
                 progresshide();
                 t.printStackTrace();
                 Utility.handleOnfailureException(t, LoginActivity.this);

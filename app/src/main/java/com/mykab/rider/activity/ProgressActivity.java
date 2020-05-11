@@ -47,7 +47,9 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
@@ -261,6 +263,13 @@ public class ProgressActivity extends AppCompatActivity
         setContentView(R.layout.activity_ride);
         handler = new Handler();
         context = this;
+
+        Places.initialize(getApplicationContext(), getString(R.string.google_maps_key));
+        PlacesClient placesClient = Places.createClient(this);
+
+        if (!Places.isInitialized()) {
+            Places.initialize(getApplicationContext(), getString(R.string.google_maps_key));
+        }
 
         loginUser = BaseApp.getInstance(context).getLoginUser();
         BookService service = ServiceGenerator.createService(BookService.class, loginUser.getEmail(), loginUser.getPassword());

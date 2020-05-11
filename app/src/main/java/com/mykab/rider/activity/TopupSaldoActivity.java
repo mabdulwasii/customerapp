@@ -237,7 +237,7 @@ public class TopupSaldoActivity extends AppCompatActivity {
 
     public String convertAngka(String value) {
         String newValue = ((((((value + "")
-                .replaceAll("Rp", ""))
+                .replaceAll("U+20A6", ""))
                 .replaceAll(" ", ""))
                 .replaceAll(",", ""))
                 .replaceAll(sp.getSetting()[0], ""))

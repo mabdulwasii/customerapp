@@ -104,7 +104,7 @@ public class SettingPreference {
     public String[] getSetting() {
 
         String[] settingan = new String[12];
-        settingan[0] = pref.getString(CURRENCY, "U+20A6");
+        settingan[0] = pref.getString(CURRENCY, "");
         settingan[1] = pref.getString(ABOUTUS, "");
         settingan[2] = pref.getString(EMAIL, "");
         settingan[3] = pref.getString(PHONE, "");
