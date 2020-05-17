@@ -194,14 +194,16 @@ public class Utility {
             activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Toast.makeText(activity, "We are unable to reach the server, please check your connection", Toast.LENGTH_LONG).show();
+                    Toast.makeText(activity, "Oops, please try again", Toast.LENGTH_LONG).show();
+                    Log.e("ERROR", t.getLocalizedMessage() );
                 }
             });
         }else if (t instanceof IOException){
             activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Toast.makeText(activity, "Please check your network connection.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(activity, "Oops, please try again", Toast.LENGTH_LONG).show();
+                    Log.e("ERROR", t.getLocalizedMessage() );
                 }
             });
         }else {
@@ -221,12 +223,14 @@ public class Utility {
                     @Override
                     public void run() {
                         Toast.makeText(activity, "We are unable to reach the server, please check your connection", Toast.LENGTH_LONG).show();
+                        Log.e("ERROR", t.getLocalizedMessage() );
                     }
                 });
             } else if (t instanceof IOException) {
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        Log.e("ERROR", t.getLocalizedMessage() );
                         Toast.makeText(activity, "Please check your network connection.", Toast.LENGTH_LONG).show();
                     }
                 });

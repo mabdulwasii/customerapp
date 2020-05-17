@@ -9,4 +9,5 @@ public class FCMType {
     public static final int CHAT = 2;
     public static final int OTHER = 3;
     public static final int OTHER2 = 4;
+    public static final int OTHER3 = 5;
 }

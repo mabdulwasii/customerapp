@@ -4,7 +4,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 public class UpdateDestinationRequestJson {
-    @SerializedName("transaction_id")
+    @SerializedName("id_transaksi")
     @Expose
     private String transaction_id;
 
@@ -19,6 +19,14 @@ public class UpdateDestinationRequestJson {
     @SerializedName("alamat_tujuan")
     @Expose
     private String destinationText;
+
+    @SerializedName("id_pelanggan")
+    @Expose
+    private String idPelanggan;
+
+    @SerializedName("type")
+    @Expose
+    private int type;
 
 
     public String getTransaction_id() {
@@ -51,5 +59,21 @@ public class UpdateDestinationRequestJson {
 
     public void setDestinationText(String destinationText) {
         this.destinationText = destinationText;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
+    public String getIdPelanggan() {
+        return idPelanggan;
+    }
+
+    public void setIdPelanggan(String idPelanggan) {
+        this.idPelanggan = idPelanggan;
     }
 }

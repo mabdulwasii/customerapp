@@ -72,10 +72,12 @@ import com.mykab.rider.json.fcm.FCMMessage;
 import com.mykab.rider.models.DriverModel;
 import com.mykab.rider.models.LokasiDriverModel;
 import com.mykab.rider.models.Notif;
+import com.mykab.rider.models.OrderFCM;
 import com.mykab.rider.models.TransaksiModel;
 import com.mykab.rider.models.User;
 import com.mykab.rider.utils.NetworkManager;
 import com.mykab.rider.utils.NetworkUtils;
+import com.mykab.rider.utils.SettingPreference;
 import com.mykab.rider.utils.Utility;
 import com.mykab.rider.utils.api.FCMHelper;
 import com.mykab.rider.utils.api.MapDirectionAPI;
@@ -131,7 +133,7 @@ public class ProgressActivity extends AppCompatActivity
     private Marker driverMarker;
     Bundle orderBundle;
     private boolean isCancelable = true;
-    String idtrans, iddriver, response;
+    String idtrans, iddriver, response, history;
 //    String pakai;
     String regdriver, fitur, imagedriver;
     private int markerCount;
@@ -149,6 +151,8 @@ public class ProgressActivity extends AppCompatActivity
     private String address;
     private LatLng driverLocation;
     private UpdateDestinationRequestJson param;
+
+    SettingPreference sp;
 
 
     private TransaksiModel transaksi;
@@ -171,6 +175,9 @@ public class ProgressActivity extends AppCompatActivity
                                     final LokasiDriverModel latlang = response.body().getData().get(0);
                                     final LatLng location = new LatLng(Double.parseDouble(latlang.getLatitude()), Double.parseDouble(latlang.getLongitude()));
                                     updateDriverMarker(location);
+                                    if (ProgressActivity.this.response != null && ProgressActivity.this.response.equals("2")) {
+                                        requestDriverPickupRoute(location);
+                                    }
                                 }
                             }
 
@@ -199,6 +206,10 @@ public class ProgressActivity extends AppCompatActivity
                                                 final LokasiDriverModel latlang = response.body().getData().get(0);
                                                 final LatLng location = new LatLng(Double.parseDouble(latlang.getLatitude()), Double.parseDouble(latlang.getLongitude()));
                                                 updateDriverMarker(location);
+                                                if (ProgressActivity.this.response != null && ProgressActivity.this.response.equals("2")) {
+                                                    requestDriverPickupRoute(location);
+                                                }
+
                                             }
                                         }
 
@@ -263,6 +274,7 @@ public class ProgressActivity extends AppCompatActivity
         setContentView(R.layout.activity_ride);
         handler = new Handler();
         context = this;
+        sp = new SettingPreference(context);
 
         Places.initialize(getApplicationContext(), getString(R.string.google_maps_key));
         PlacesClient placesClient = Places.createClient(this);
@@ -299,11 +311,17 @@ public class ProgressActivity extends AppCompatActivity
         iddriver = intent.getStringExtra("id_driver");
         idtrans = intent.getStringExtra("id_transaksi");
         response = intent.getStringExtra("response");
+        history = intent.getStringExtra("history");
         if (intent.getStringExtra("complete") == null) {
             complete = "false";
         } else {
             complete = intent.getStringExtra("complete");
         }
+
+        sp.updateTripComplete(complete);
+        sp.updateDriverId(iddriver);
+        sp.updateTransaksiId(idtrans);
+        sp.updateResponse(response);
 
         receiverphone = findViewById(R.id.receiverphone);
         senderphone = findViewById(R.id.senderphone);
@@ -357,14 +375,19 @@ public class ProgressActivity extends AppCompatActivity
                 openAutocompleteActivity();
             }
         });
+
         backbtn.setVisibility(View.GONE);
 
-       /* backbtn.setOnClickListener(new View.OnClickListener() {
+        if (history != null && history.equalsIgnoreCase("history")){
+            backbtn.setVisibility(View.VISIBLE);
+        }
+
+        backbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finish();
             }
-        });*/
+        });
 
         orderButton.setText(getString(R.string.text_cancel));
         orderButton.setBackground(getResources().getDrawable(R.drawable.rounded_corners_button_red));
@@ -450,6 +473,7 @@ public class ProgressActivity extends AppCompatActivity
             cancelOrder();
         }
     }
+
     private void getData(final String idtrans, final String iddriver) {
         User loginUser = BaseApp.getInstance(this).getLoginUser();
         BookService service = ServiceGenerator.createService(BookService.class, loginUser.getEmail(), loginUser.getPassword());
@@ -578,6 +602,9 @@ public class ProgressActivity extends AppCompatActivity
                             intent.putExtra("id_driver", iddriver);
                             intent.putExtra("id_transaksi", idtrans);
                             intent.putExtra("response", response);
+                            sp.updateResponse(String.valueOf(Constants.FINISH));
+                            sp.updateTripComplete("true");
+                            sp.updateActiveTrip("false");
                             startActivity(intent);
                             finish();
                     }
@@ -608,21 +635,37 @@ public class ProgressActivity extends AppCompatActivity
         if (response.equals("2")) {
             llchat.setVisibility(View.VISIBLE);
             status.setText(getString(R.string.notification_accept));
+            sp.updateResponse("2");
+            sp.updateActiveTrip("true");
+            sp.updateTripComplete("false");
         } else if (response.equals("3")) {
             llchat.setVisibility(View.VISIBLE);
             isCancelable = false;
             orderButton.setVisibility(View.GONE);
+            timeAway.setVisibility(View.GONE);
             status.setText(getString(R.string.notification_start));
+            sp.updateResponse("3");
+            sp.updateActiveTrip("true");
+            sp.updateTripComplete("false");
         } else if (response.equals("4")) {
             isCancelable = false;
             llchat.setVisibility(View.GONE);
             orderButton.setVisibility(View.GONE);
+            timeAway.setVisibility(View.GONE);
             status.setText(getString(R.string.notification_finish));
+            sp.updateResponse("4");
+            sp.updateActiveTrip("false");
+            sp.updateTripComplete("true");
         } else if (response.equals("5")) {
             isCancelable = false;
+            timeAway.setVisibility(View.GONE);
             llchat.setVisibility(View.GONE);
             orderButton.setVisibility(View.GONE);
             status.setText(getString(R.string.notification_cancel));
+            sp.updateResponse("5");
+            sp.updateActiveTrip("false");
+            sp.updateTripComplete("true");
+            requestRoute();
         }
         namaDriver = driver.getNamaDriver();
         String[] s = namaDriver.split(" ");
@@ -681,7 +724,7 @@ public class ProgressActivity extends AppCompatActivity
                 intent.putExtra("receiverid", driver.getId());
                 intent.putExtra("tokendriver", driver.getRegId());
                 intent.putExtra("tokenku", loginUser.getToken());
-                intent.putExtra("name", namaDriver);
+                intent.putExtra("name", driver.getNamaDriver());
                 intent.putExtra("pic", driver.getFoto());
                 startActivity(intent);
             }
@@ -732,21 +775,18 @@ public class ProgressActivity extends AppCompatActivity
         });
     }
 
-    private void fcmUpdateDestination() {
-        DriverResponse response = new DriverResponse();
-        response.type = UPDATE;
-        response.setIdTransaksi(idtrans);
-        response.setResponse(String.valueOf(UPDATE));
-        response.setId(loginUser.getId());
+    private void fcmUpdateDestination(final String regdriver, final OrderFCM orderFCM){
+        Log.e("DESTINATION_UPDATE", "Inside fcmUpdateDestination");
 
         FCMMessage message = new FCMMessage();
         message.setTo(regdriver);
-        message.setData(response);
+        message.setData(orderFCM);
 
 
         FCMHelper.sendMessage(Constants.FCM_KEY, message).enqueue(new okhttp3.Callback() {
             @Override
             public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
+                Log.e("", response.message());
             }
 
             @Override
@@ -755,6 +795,33 @@ public class ProgressActivity extends AppCompatActivity
             }
         });
     }
+
+    /*private void fcmUpdateDestination() {
+        User loginUser = BaseApp.getInstance(this).getLoginUser();
+
+        FCMMessage message = new FCMMessage();
+        param.setType(UPDATE);
+        param.setIdPelanggan(loginUser.getId());
+        message.setTo(regdriver);
+        message.setData(param);
+
+
+        FCMHelper.sendMessage(Constants.FCM_KEY, message).enqueue(new okhttp3.Callback() {
+            @Override
+            public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
+                if(response.isSuccessful()){
+                    Log.e("UPDATEDEST", response.message());
+                }else {
+                    Log.e("UPDATEDEST", "NOT SUCCESSFUL " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(okhttp3.Call call, IOException e) {
+                e.printStackTrace();
+            }
+        });
+    }*/
 
     private void fcmcancel() {
         DriverResponse response = new DriverResponse();
@@ -979,8 +1046,8 @@ public class ProgressActivity extends AppCompatActivity
                     ProgressActivity.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            updateLineDestination(json);
-                            timeAway.setText(time);
+                            timeAway.setVisibility(View.VISIBLE);
+                            timeAway.setText(String.format("%s away", time));
                         }
                     });
                 }
@@ -1077,34 +1144,53 @@ public class ProgressActivity extends AppCompatActivity
             case Constants.REJECT:
                 isCancelable = false;
                 orderButton.setVisibility(View.GONE);
+                sp.updateResponse(String.valueOf(Constants.REJECT));
+                sp.updateActiveTrip("false");
+                sp.updateTripComplete("true");
                 break;
             case Constants.CANCEL:
                 isCancelable = false;
                 orderButton.setVisibility(View.GONE);
                 llchat.setVisibility(View.GONE);
+                sp.updateResponse(String.valueOf(Constants.CANCEL));
+                sp.updateActiveTrip("false");
+                sp.updateTripComplete("true");
                 status.setText(getString(R.string.notification_cancel));
-
                 new Handler().postDelayed(new Runnable() {
                     public void run() {
                         finish();
                     }
                 }, 3000);
-
                 break;
             case Constants.ACCEPT:
                 llchat.setVisibility(View.VISIBLE);
+                if (Constants.LATITUDE != null && Constants.LONGITUDE != null) {
+                    requestDriverPickupRoute(new LatLng(Constants.LATITUDE, Constants.LONGITUDE));
+                }
+                sp.updateResponse(String.valueOf(Constants.ACCEPT));
+                sp.updateActiveTrip("true");
+                sp.updateTripComplete("false");
                 status.setText(getString(R.string.notification_accept));
                 break;
             case Constants.START:
                 llchat.setVisibility(View.VISIBLE);
                 isCancelable = false;
                 orderButton.setVisibility(View.GONE);
+                timeAway.setVisibility(View.GONE);
+                requestRoute();
+                sp.updateResponse(String.valueOf(Constants.START));
+                sp.updateActiveTrip("true");
+                sp.updateTripComplete("false");
                 status.setText(getString(R.string.notification_start));
                 break;
             case Constants.FINISH:
                 isCancelable = false;
                 llchat.setVisibility(View.GONE);
                 orderButton.setVisibility(View.GONE);
+                timeAway.setVisibility(View.GONE);
+                sp.updateResponse(String.valueOf(Constants.FINISH));
+                sp.updateTripComplete("true");
+                sp.updateActiveTrip("false");
                 status.setText(getString(R.string.notification_finish));
                 getData(idtrans, iddriver);
                 break;
@@ -1112,8 +1198,12 @@ public class ProgressActivity extends AppCompatActivity
                 isCancelable = false;
                 llchat.setVisibility(View.GONE);
                 orderButton.setVisibility(View.GONE);
+                timeAway.setVisibility(View.GONE);
                 String statusText = this.status.getText().toString();
                 status.setText("Destination change by driver");
+                sp.updateResponse(String.valueOf(UPDATE));
+                sp.updateTripComplete("false");
+                sp.updateActiveTrip("true");
                 new Handler().postDelayed(new Runnable() {
                     public void run() {
                         status.setText(statusText);
@@ -1137,6 +1227,7 @@ public class ProgressActivity extends AppCompatActivity
         super.onResume();
         if (response.equals("2") || response.equals("3") && fitur != null) {
             startDriverLocationUpdate();
+            sp.updateActiveTrip("true");
         }
         registerReceiver(broadcastReceiver, new IntentFilter(BROADCAST_ORDER));
         removeNotif();
@@ -1235,7 +1326,11 @@ public class ProgressActivity extends AppCompatActivity
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 if (response.isSuccessful()){
-                    fcmUpdateDestination();
+                    OrderFCM orderfcm = new OrderFCM();
+                    orderfcm.id_rider = loginUser.getId();
+                    orderfcm.id_transaksi = idtrans;
+                    orderfcm.response = "6";
+                    fcmUpdateDestination(regdriver, orderfcm);
                     Toast.makeText(ProgressActivity.this, "Destination updated successfully", Toast.LENGTH_SHORT).show();
                 }else {
                     Toast.makeText(ProgressActivity.this, "Failed to update destination", Toast.LENGTH_SHORT).show();

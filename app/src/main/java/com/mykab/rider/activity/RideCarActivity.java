@@ -1,6 +1,7 @@
 package com.mykab.rider.activity;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -243,6 +244,8 @@ public class RideCarActivity extends AppCompatActivity
             }
         }
     };
+    private Activity activity;
+
     private void getRequestDetails(String json) {
 
         User loginUser = BaseApp.getInstance(context).getLoginUser();
@@ -297,9 +300,19 @@ public class RideCarActivity extends AppCompatActivity
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        sp = new SettingPreference(this);
+        String onTrip = sp.getSetting()[12];
+        if (onTrip.equals("true")){
+            Intent intent = new Intent(this, ProgressActivity.class);
+            intent.putExtra("id_transaksi", sp.getSetting()[14]);
+            intent.putExtra("id_driver", sp.getSetting()[13]);
+            intent.putExtra("response", sp.getSetting()[15]);
+            intent.putExtra("complete", sp.getSetting()[16]);
+        }
         setContentView(R.layout.activity_ride);
         ButterKnife.bind(this);
         currentLoop = 0;
+        activity = this;
         Places.initialize(getApplicationContext(), getString(R.string.google_maps_key));
         PlacesClient placesClient = Places.createClient(this);
 
@@ -310,7 +323,7 @@ public class RideCarActivity extends AppCompatActivity
         BottomSheetBehavior behavior = BottomSheetBehavior.from(bottomsheet);
         behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 
-        sp = new SettingPreference(this);
+
 
         parent_view = findViewById(android.R.id.content);
 
@@ -414,7 +427,7 @@ public class RideCarActivity extends AppCompatActivity
 
         setupFitur();
 
-        diskontext.setText("Discount " + designedFitur.getDiskon() + " with Wallet");
+//        diskontext.setText("Discount " + designedFitur.getDiskon() + " with Wallet");
         Picasso.with(this)
                 .load(Constants.IMAGESFITUR + ICONFITUR)
                 .placeholder(R.drawable.logo)
@@ -606,14 +619,17 @@ public class RideCarActivity extends AppCompatActivity
                 LatLng currentDriverPos = new LatLng(driver.getLatitude(), driver.getLongitude());
 
                 if (fitur.equals("1")) {
+                    MarkerOptions options = new MarkerOptions()
+                            .position(currentDriverPos)
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.carmap))
+                            .anchor((float) 0.5, (float) 0.5)
+                            .flat(true);
+                    if (driver.getBearing() != null) {
+                        options.rotation(Float.parseFloat(driver.getBearing()));
+                    }
+
                     driverMarkers.add(
-                            gMap.addMarker(new MarkerOptions()
-                                    .position(currentDriverPos)
-                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.carmap))
-                                    .anchor((float) 0.5, (float) 0.5)
-                                    .rotation(Float.parseFloat(driver.getBearing()))
-                                    .flat(true)
-                            )
+                            gMap.addMarker(options)
                     );
                 } /*else {
                     if (!driver.getBearing().isEmpty()) {
@@ -824,6 +840,20 @@ public class RideCarActivity extends AppCompatActivity
                        checkedwallet.setBackgroundTintList(getResources().getColorStateList(R.color.gray));
                    }
                }
+           });
+           llcheckedwallet.setOnClickListener(view -> {
+               runOnUiThread(new Runnable() {
+                   @Override
+                   public void run() {
+                       new Handler().post(new Runnable() {
+                           @Override
+                           public void run() {
+                               notif("Insufficient wallet balance, please topUp wallet!");
+                               Toast.makeText(context, "Insufficient wallet balance, please topUp wallet!", Toast.LENGTH_LONG).show();
+                           }
+                       });
+                   }
+               });
            });
 
         } else {
@@ -1171,17 +1201,16 @@ public class RideCarActivity extends AppCompatActivity
                     thread.start();
 
 
+                }else{
+                    notif("Not successful!");
+                    rlprogress.setVisibility(View.GONE);
                 }
             }
 
             @Override
             public void onFailure(Call<RideCarResponseJson> call, Throwable t) {
-                if (!NetworkUtils.isConnected(context) || !NetworkUtils.isConnectedFast(context)){
-                    notif("Connection error, Please check your network service");
-                }
-                t.printStackTrace();
-                Log.e(TAG, "ERROR MSG == " + t.getLocalizedMessage());
-//                notif("Your account has a problem, please contact customer service!");
+                rlprogress.setVisibility(View.GONE);
+                Utility.handleOnfailureException(t, activity);
                 notif("Error! Please try again");
                 new Handler().postDelayed(new Runnable() {
                     public void run() {
@@ -1193,40 +1222,42 @@ public class RideCarActivity extends AppCompatActivity
     }
 
     private void buildDriverRequest(RideCarResponseJson response) {
-        transaksi = response.getData().get(0);
-        Log.e("wallet", String.valueOf(transaksi.getPakaiWallet()));
-        User loginUser = BaseApp.getInstance(this).getLoginUser();
-        if (request == null) {
-            request = new DriverRequest();
-            request.setIdTransaksi(transaksi.getId());
-            request.setIdPelanggan(transaksi.getIdPelanggan());
-            request.setRegIdPelanggan(loginUser.getToken());
-            request.setOrderFitur(transaksi.getOrderFitur());
-            request.setStartLatitude(transaksi.getStartLatitude());
-            request.setStartLongitude(transaksi.getStartLongitude());
-            request.setEndLatitude(transaksi.getEndLatitude());
-            request.setEndLongitude(transaksi.getEndLongitude());
-            request.setJarak(Double.parseDouble(distanceText.getText().toString()));
-            request.setHarga(harga);
-            request.setWaktuOrder(transaksi.getWaktuOrder());
-            request.setAlamatAsal(transaksi.getAlamatAsal());
-            request.setAlamatTujuan(transaksi.getAlamatTujuan());
-            request.setKodePromo(transaksi.getKodePromo());
-            request.setKreditPromo(transaksi.getKreditPromo());
-            request.setPakaiWallet(String.valueOf(transaksi.getPakaiWallet()));
-            request.setEstimasi(fiturtext.getText().toString());
-            request.setLayanan(layanan.getText().toString());
-            request.setLayanandesc(layanandesk.getText().toString());
-            request.setIcon(ICONFITUR);
-            request.setBiaya(cost.getText().toString());
-            request.setDistance(distanceText.getText().toString());
+        if (!response.getData().isEmpty()) {
+            transaksi = response.getData().get(0);
+            Log.e("wallet", String.valueOf(transaksi.getPakaiWallet()));
+            User loginUser = BaseApp.getInstance(this).getLoginUser();
+            if (request == null) {
+                request = new DriverRequest();
+                request.setIdTransaksi(transaksi.getId());
+                request.setIdPelanggan(transaksi.getIdPelanggan());
+                request.setRegIdPelanggan(loginUser.getToken());
+                request.setOrderFitur(transaksi.getOrderFitur());
+                request.setStartLatitude(transaksi.getStartLatitude());
+                request.setStartLongitude(transaksi.getStartLongitude());
+                request.setEndLatitude(transaksi.getEndLatitude());
+                request.setEndLongitude(transaksi.getEndLongitude());
+                request.setJarak(Double.parseDouble(distanceText.getText().toString()));
+                request.setHarga(harga);
+                request.setWaktuOrder(transaksi.getWaktuOrder());
+                request.setAlamatAsal(transaksi.getAlamatAsal());
+                request.setAlamatTujuan(transaksi.getAlamatTujuan());
+                request.setKodePromo(transaksi.getKodePromo());
+                request.setKreditPromo(transaksi.getKreditPromo());
+                request.setPakaiWallet(String.valueOf(transaksi.getPakaiWallet()));
+                request.setEstimasi(fiturtext.getText().toString());
+                request.setLayanan(layanan.getText().toString());
+                request.setLayanandesc(layanandesk.getText().toString());
+                request.setIcon(ICONFITUR);
+                request.setBiaya(cost.getText().toString());
+                request.setDistance(distanceText.getText().toString());
 
-            String namaLengkap = String.format("%s", loginUser.getFullnama());
-            request.setNamaPelanggan(namaLengkap);
-            request.setTelepon(loginUser.getNoTelepon());
-            request.setType(ORDER);
-            request.setRate(sp.getSetting()[11]);
+                String namaLengkap = String.format("%s", loginUser.getFullnama());
+                request.setNamaPelanggan(namaLengkap);
+                request.setTelepon(loginUser.getNoTelepon());
+                request.setType(ORDER);
+                request.setRate(sp.getSetting()[11]);
 
+            }
         }
     }
 

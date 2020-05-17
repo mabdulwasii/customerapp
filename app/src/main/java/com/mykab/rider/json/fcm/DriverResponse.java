@@ -13,6 +13,7 @@ public class DriverResponse implements Serializable{
 
     public static final String ACCEPT = "2";
     public static final String REJECT = "0";
+    public static final String UPDATE = "6";
 
     @Expose
     @SerializedName("id")

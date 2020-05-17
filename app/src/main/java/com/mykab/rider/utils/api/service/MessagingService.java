@@ -35,6 +35,7 @@ import static com.mykab.rider.json.fcm.FCMType.CHAT;
 import static com.mykab.rider.json.fcm.FCMType.ORDER;
 import static com.mykab.rider.json.fcm.FCMType.OTHER;
 import static com.mykab.rider.json.fcm.FCMType.OTHER2;
+import static com.mykab.rider.json.fcm.FCMType.OTHER3;
 
 /**
  * Created by Ourdevelops Team on 10/13/2019.
@@ -95,7 +96,14 @@ public class MessagingService extends FirebaseMessagingService {
                 }
                 break;
             case OTHER2:
+                if (user != null) {
                     otherHandler2(remoteMessage);
+                }
+                break;
+             case OTHER3:
+                if (user != null) {
+                    otherHandler3(remoteMessage);
+                }
                 break;
             case CHAT:
                 if (user != null) {
@@ -114,6 +122,7 @@ public class MessagingService extends FirebaseMessagingService {
     }
 
     private void otherHandler(RemoteMessage remoteMessage){
+        playSound2();
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext(), "notify_001");
         Intent intent1 = new Intent(getApplicationContext(), MainActivity.class);
         intent1.addFlags(FLAG_ACTIVITY_NEW_TASK|FLAG_ACTIVITY_CLEAR_TASK);
@@ -146,8 +155,42 @@ public class MessagingService extends FirebaseMessagingService {
         notificationManager.notify(0, mBuilder.build());
     }
 
+    private void otherHandler3(RemoteMessage remoteMessage){
+        playSound4();
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext(), "notify_001");
+        Intent intent1 = new Intent(getApplicationContext(), ProgressActivity.class);
+        intent1.addFlags(FLAG_ACTIVITY_NEW_TASK);
+        PendingIntent pIntent1 = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent1, 0);
+        NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat.BigTextStyle();
+        bigTextStyle.setBigContentTitle(remoteMessage.getData().get("title"));
+        bigTextStyle.bigText(remoteMessage.getData().get("message"));
+
+        mBuilder.setContentIntent(pIntent1);
+        mBuilder.setSmallIcon(R.drawable.logo);
+        mBuilder.setContentTitle(remoteMessage.getData().get("title"));
+        mBuilder.setContentText(remoteMessage.getData().get("message"));
+        mBuilder.setStyle(bigTextStyle);
+        mBuilder.setPriority(Notification.PRIORITY_MAX);
+        mBuilder.setAutoCancel(true);
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        {
+            String channelId = "customer";
+            NotificationChannel channel = new NotificationChannel(
+                    channelId,
+                    "Channel customer",
+                    NotificationManager.IMPORTANCE_HIGH);
+            notificationManager.createNotificationChannel(channel);
+            mBuilder.setChannelId(channelId);
+        }
+
+        notificationManager.notify(0, mBuilder.build());
+    }
+
     private void otherHandler2(RemoteMessage remoteMessage){
-        playSound3();
+        playSound1();
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext(), "notify_001");
         Intent intent1 = new Intent(getApplicationContext(), SplashActivity.class);
         intent1.addFlags(FLAG_ACTIVITY_NEW_TASK|FLAG_ACTIVITY_CLEAR_TASK);
@@ -189,20 +232,16 @@ public class MessagingService extends FirebaseMessagingService {
             case Constants.REJECT:
                 break;
             case Constants.CANCEL:
-                playSound3();
                 notificationOrderBuilderCancel(remoteMessage);
                 break;
             case Constants.ACCEPT:
-                playSound1();
                 notificationOrderBuilderAccept(remoteMessage);
                 break;
             case Constants.START:
-                playSound();
                 notificationOrderBuilderStart(remoteMessage);
                 break;
 
             case Constants.FINISH:
-                playSound1();
                 notificationOrderBuilderFinish(remoteMessage);
                 break;
 
@@ -222,6 +261,7 @@ public class MessagingService extends FirebaseMessagingService {
 
 
     private void notificationOrderBuilderCancel(RemoteMessage remoteMessage) {
+        playSound3();
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext(), "notify_001");
         Intent intent1 = new Intent(getApplicationContext(), ProgressActivity.class);
         intent1.addFlags(FLAG_ACTIVITY_NEW_TASK);
@@ -232,7 +272,7 @@ public class MessagingService extends FirebaseMessagingService {
 
         mBuilder.setContentIntent(pIntent1);
         mBuilder.setSmallIcon(R.drawable.logo);
-        mBuilder.setContentTitle("Cancel");
+        mBuilder.setContentTitle("Order cancelled");
         mBuilder.setContentText(getString(R.string.notification_cancel));
         mBuilder.setPriority(Notification.PRIORITY_MAX);
         mBuilder.setAutoCancel(true);
@@ -254,6 +294,7 @@ public class MessagingService extends FirebaseMessagingService {
     }
 
     private void notificationOrderBuilderStart(RemoteMessage remoteMessage) {
+        playSound();
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext(), "notify_001");
         Intent intent1 = new Intent(getApplicationContext(), ProgressActivity.class);
         intent1.addFlags(FLAG_ACTIVITY_NEW_TASK);
@@ -264,7 +305,7 @@ public class MessagingService extends FirebaseMessagingService {
 
         mBuilder.setContentIntent(pIntent1);
         mBuilder.setSmallIcon(R.drawable.logo);
-        mBuilder.setContentTitle("Driver Start");
+        mBuilder.setContentTitle("Trip Started");
         mBuilder.setContentText(getString(R.string.notification_start));
         mBuilder.setPriority(Notification.PRIORITY_MAX);
         mBuilder.setAutoCancel(true);
@@ -286,6 +327,7 @@ public class MessagingService extends FirebaseMessagingService {
     }
 
     private void notificationOrderBuilderAccept(RemoteMessage remoteMessage) {
+        playSound1();
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext(), "notify_001");
         Intent intent1 = new Intent(getApplicationContext(), ProgressActivity.class);
         intent1.addFlags(FLAG_ACTIVITY_NEW_TASK);
@@ -296,7 +338,7 @@ public class MessagingService extends FirebaseMessagingService {
 
         mBuilder.setContentIntent(pIntent1);
         mBuilder.setSmallIcon(R.drawable.logo);
-        mBuilder.setContentTitle("Driver Accept");
+        mBuilder.setContentTitle("Request Accepted");
         mBuilder.setContentText(getString(R.string.notification_accept));
         mBuilder.setPriority(Notification.PRIORITY_MAX);
         mBuilder.setAutoCancel(true);
@@ -318,6 +360,7 @@ public class MessagingService extends FirebaseMessagingService {
     }
 
     private void notificationOrderBuilderFinish(RemoteMessage remoteMessage) {
+        playSound1();
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(getApplicationContext(), "notify_001");
         Intent intent1 = new Intent(getApplicationContext(), ProgressActivity.class);
@@ -330,7 +373,7 @@ public class MessagingService extends FirebaseMessagingService {
 
         mBuilder.setContentIntent(pIntent1);
         mBuilder.setSmallIcon(R.drawable.logo);
-        mBuilder.setContentTitle("Finish");
+        mBuilder.setContentTitle("Trip finished");
         mBuilder.setContentText(getString(R.string.notification_finish));
         mBuilder.setPriority(Notification.PRIORITY_MAX);
         mBuilder.setAutoCancel(true);
@@ -451,6 +494,23 @@ public class MessagingService extends FirebaseMessagingService {
 
     private void playSound3(){
         MediaPlayer BG = MediaPlayer.create(getBaseContext(), R.raw.notification);
+        BG.setLooping(false);
+        BG.setVolume(100, 100);
+        BG.start();
+
+        Vibrator v = (Vibrator) this.getSystemService(this.VIBRATOR_SERVICE);
+        v.vibrate(2000);
+    }
+
+    private void playSound2(){
+        MediaPlayer BG = MediaPlayer.create(getBaseContext(), R.raw.notification);
+        BG.setLooping(false);
+        BG.setVolume(100, 100);
+        BG.start();
+    }
+
+    private void playSound4(){
+        MediaPlayer BG = MediaPlayer.create(getBaseContext(), R.raw.finishsound);
         BG.setLooping(false);
         BG.setVolume(100, 100);
         BG.start();

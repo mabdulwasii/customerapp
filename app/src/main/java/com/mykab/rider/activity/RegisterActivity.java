@@ -627,6 +627,9 @@ public class RegisterActivity extends AppCompatActivity {
     private void loadProfileImage() {
 
         Bitmap imagebitmap = getBitmapFromFile(imagePath);
+        if (imagebitmap == null){
+            return;
+        }
 
         Matrix matrix = new Matrix();
         ExifInterface exif = null;
@@ -735,7 +738,7 @@ public class RegisterActivity extends AppCompatActivity {
         setUpVerificatonCallbacks();
         PhoneAuthProvider.getInstance().verifyPhoneNumber(
                 phoneNumber,
-                60,
+                120,
                 TimeUnit.SECONDS,
                 this,
                 verificationCallbacks);

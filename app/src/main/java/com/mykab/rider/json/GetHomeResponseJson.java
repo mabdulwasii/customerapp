@@ -8,15 +8,20 @@ import com.mykab.rider.models.PromoModel;
 import com.mykab.rider.models.RatingModel;
 import com.mykab.rider.models.User;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by Ourdevelops Team on 10/13/2019.
  */
 
-public class GetHomeResponseJson {
+public class GetHomeResponseJson extends RealmObject implements Serializable {
 
+    @PrimaryKey
     @SerializedName("message")
     @Expose
     private String message;

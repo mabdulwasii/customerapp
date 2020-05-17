@@ -76,6 +76,7 @@ public class MessageFragment extends Fragment {
                     intent.putExtra("tokendriver", item.getTokendriver());
                     intent.putExtra("tokenku", Constants.TOKEN);
                     intent.putExtra("pic", item.getPicture());
+                    intent.putExtra("finished", true);
                     getActivity().startActivity(intent);
                 }
 

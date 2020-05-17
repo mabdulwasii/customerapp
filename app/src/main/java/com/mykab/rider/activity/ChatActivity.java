@@ -125,13 +125,14 @@ public class ChatActivity extends AppCompatActivity {
     public static String uploadingImageId = "none";
     LinearLayout llcamera;
     ImageView camerabtn, profileimage;
-    CardView takephoto, opengallery;
+    CardView takephoto, opengallery, writechatlayout;
     ImageButton sendbtn, micBtn;
     private View rootView;
     public static String uploadingAudioId = "none";
     SendAudio sendAudio;
     EditText message;
     File direct;
+    private boolean isFinished;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,7 +146,10 @@ public class ChatActivity extends AppCompatActivity {
         Receiverid = i.getStringExtra("receiverid");
         Receiver_name = i.getStringExtra("name");
         Receiver_pic = i.getStringExtra("pic");
+        isFinished = i.getBooleanExtra("finished", false);
 
+
+        writechatlayout = findViewById(R.id.writechatlayout);
         sendbtn = findViewById(R.id.sendbtn);
         takephoto = findViewById(R.id.takephoto);
         opengallery = findViewById(R.id.opengallery);
@@ -163,6 +167,7 @@ public class ChatActivity extends AppCompatActivity {
         userName.setText(Receiver_name);
 
 
+
         if (Receiver_pic.isEmpty()) {
             Picasso.with(this).load(R.drawable.image_placeholder)
                     .resize(100, 100)
@@ -173,6 +178,8 @@ public class ChatActivity extends AppCompatActivity {
                     .into(profileimage);
         }
         message = (EditText) findViewById(R.id.msgedittext);
+
+
         message.addTextChangedListener(new TextWatcher() {
 
             @Override
@@ -442,8 +449,16 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
-
         ReceivetypeIndication();
+
+        if (isFinished){
+            message.setVisibility(View.GONE);
+            micBtn.setVisibility(View.GONE);
+            sendbtn.setVisibility(View.GONE);
+            camerabtn.setVisibility(View.GONE);
+            writechatlayout.setVisibility(View.GONE);
+        }
+
         getChat();
     }
 

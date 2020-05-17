@@ -24,6 +24,7 @@ import com.mykab.rider.utils.Utility;
 import com.mykab.rider.utils.api.ServiceGenerator;
 import com.mykab.rider.utils.api.service.UserService;
 
+import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -79,6 +80,7 @@ public class HistoryFragment extends Fragment {
             @Override
             public void onResponse(Call<AllTransResponseJson> call, Response<AllTransResponseJson> response) {
                 if (response.isSuccessful()) {
+                    saveHistory(response.body());
                     shimmertutup();
                     historyItem = new HistoryItem(context, response.body().getData(), R.layout.item_order);
                     recycle.setAdapter(historyItem);
@@ -98,6 +100,14 @@ public class HistoryFragment extends Fragment {
 
             }
         });
+    }
+
+    private void saveHistory(AllTransResponseJson historyObj) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        realm.delete(AllTransResponseJson.class);
+        realm.copyToRealm(historyObj);
+        realm.commitTransaction();
     }
 
     @Override

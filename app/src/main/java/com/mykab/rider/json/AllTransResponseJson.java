@@ -5,15 +5,20 @@ import com.google.gson.annotations.SerializedName;
 import com.mykab.rider.models.AllTransaksiModel;
 import com.mykab.rider.models.DriverModel;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by Ourdevelops Team on 10/19/2019.
  */
 
-public class AllTransResponseJson {
+public class AllTransResponseJson extends RealmObject implements Serializable {
 
+    @PrimaryKey
     @Expose
     @SerializedName("message")
     private String message;

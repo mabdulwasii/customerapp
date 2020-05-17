@@ -9,6 +9,9 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.mykab.rider.R;
 import com.mykab.rider.activity.ProgressActivity;
 import com.mykab.rider.constants.Constants;
@@ -19,9 +22,6 @@ import com.squareup.picasso.Picasso;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
-
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by otacodes on 3/24/2019.
@@ -82,6 +82,7 @@ public class HistoryItem extends RecyclerView.Adapter<HistoryItem.ItemRowHolder>
                     i.putExtra("id_driver", singleItem.getIdDriver());
                     i.putExtra("id_transaksi", singleItem.getIdTransaksi());
                     i.putExtra("complete", "true");
+                    i.putExtra("history", "history");
                     i.putExtra("response", String.valueOf(singleItem.status));
                     i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     mContext.startActivity(i);
@@ -99,6 +100,7 @@ public class HistoryItem extends RecyclerView.Adapter<HistoryItem.ItemRowHolder>
                     i.putExtra("id_driver", singleItem.getIdDriver());
                     i.putExtra("id_transaksi", singleItem.getIdTransaksi());
                     i.putExtra("complete", "true");
+                    i.putExtra("history", "history");
                     i.putExtra("response", String.valueOf(singleItem.status));
                     i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     mContext.startActivity(i);
@@ -115,6 +117,7 @@ public class HistoryItem extends RecyclerView.Adapter<HistoryItem.ItemRowHolder>
                     Intent i = new Intent(mContext, ProgressActivity.class);
                     i.putExtra("id_driver", singleItem.getIdDriver());
                     i.putExtra("id_transaksi", singleItem.getIdTransaksi());
+                    i.putExtra("history", "history");
                     i.putExtra("response", String.valueOf(singleItem.status));
                     i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     mContext.startActivity(i);

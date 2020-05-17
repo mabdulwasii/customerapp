@@ -20,6 +20,11 @@ public class SettingPreference {
     private static String CURRENCYTEXT = "CURRENCYTEXT";
     private static String AUTHCODE = "AUTHCODE";
     private static String RATING = "RATING";
+    private static String ACTIVETRIP = "ACTIVETRIP";
+    private static String IDDRIVER = "IDDRIVER";
+    private static String IDTRANSAKSI = "IDTRANSAKSI";
+    private static String RESPONSE = "RESPONSE";
+    private static String TRIPCOMPLETE = "TRIPCOMPLETE";
 
     private SharedPreferences pref;
 
@@ -101,9 +106,39 @@ public class SettingPreference {
         editor.apply();
     }
 
+    public void updateActiveTrip(String string) {
+        editor = pref.edit();
+        editor.putString(ACTIVETRIP, string);
+        editor.apply();
+    }
+
+    public void updateDriverId(String string) {
+        editor = pref.edit();
+        editor.putString(IDDRIVER, string);
+        editor.apply();
+    }
+
+    public void updateTransaksiId(String string) {
+        editor = pref.edit();
+        editor.putString(IDTRANSAKSI, string);
+        editor.apply();
+    }
+    public void updateResponse(String string) {
+        editor = pref.edit();
+        editor.putString(RESPONSE, string);
+        editor.apply();
+    }
+
+    public void updateTripComplete(String string) {
+        editor = pref.edit();
+        editor.putString(TRIPCOMPLETE, string);
+        editor.apply();
+    }
+
+
     public String[] getSetting() {
 
-        String[] settingan = new String[12];
+        String[] settingan = new String[17];
         settingan[0] = pref.getString(CURRENCY, "");
         settingan[1] = pref.getString(ABOUTUS, "");
         settingan[2] = pref.getString(EMAIL, "");
@@ -116,6 +151,11 @@ public class SettingPreference {
         settingan[9] = pref.getString(CURRENCYTEXT, "U+20A6");
         settingan[10] = pref.getString(AUTHCODE, "AUTHCODE");
         settingan[11] = pref.getString(RATING, "5.0");
+        settingan[12] = pref.getString(ACTIVETRIP, "false");
+        settingan[13] = pref.getString(IDDRIVER, "");
+        settingan[14] = pref.getString(IDTRANSAKSI, "");
+        settingan[15] = pref.getString(RESPONSE, "2");
+        settingan[16] = pref.getString(TRIPCOMPLETE, "true");
         return settingan;
     }
 }
