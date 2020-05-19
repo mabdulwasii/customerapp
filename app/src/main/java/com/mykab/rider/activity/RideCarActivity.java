@@ -624,8 +624,13 @@ public class RideCarActivity extends AppCompatActivity
                             .icon(BitmapDescriptorFactory.fromResource(R.drawable.carmap))
                             .anchor((float) 0.5, (float) 0.5)
                             .flat(true);
-                    if (driver.getBearing() != null) {
-                        options.rotation(Float.parseFloat(driver.getBearing()));
+                    if (!driver.getBearing().isEmpty()) {
+                        try {
+                            options.rotation(Float.parseFloat(driver.getBearing()));
+                        }catch (NumberFormatException e){
+                            e.printStackTrace();
+                            continue;
+                        }
                     }
 
                     driverMarkers.add(

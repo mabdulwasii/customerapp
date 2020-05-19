@@ -117,8 +117,8 @@ public class HistoryItem extends RecyclerView.Adapter<HistoryItem.ItemRowHolder>
                     Intent i = new Intent(mContext, ProgressActivity.class);
                     i.putExtra("id_driver", singleItem.getIdDriver());
                     i.putExtra("id_transaksi", singleItem.getIdTransaksi());
-                    i.putExtra("history", "history");
                     i.putExtra("response", String.valueOf(singleItem.status));
+                    i.putExtra("history", "history");
                     i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     mContext.startActivity(i);
 

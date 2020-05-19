@@ -80,7 +80,6 @@ public class HistoryFragment extends Fragment {
             @Override
             public void onResponse(Call<AllTransResponseJson> call, Response<AllTransResponseJson> response) {
                 if (response.isSuccessful()) {
-                    saveHistory(response.body());
                     shimmertutup();
                     historyItem = new HistoryItem(context, response.body().getData(), R.layout.item_order);
                     recycle.setAdapter(historyItem);
@@ -91,6 +90,7 @@ public class HistoryFragment extends Fragment {
                         recycle.setVisibility(View.VISIBLE);
                         rlnodata.setVisibility(View.GONE);
                     }
+                    saveHistory(response.body());
                 }
             }
 
@@ -106,7 +106,7 @@ public class HistoryFragment extends Fragment {
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
         realm.delete(AllTransResponseJson.class);
-        realm.copyToRealm(historyObj);
+        realm.copyToRealmOrUpdate(historyObj);
         realm.commitTransaction();
     }
 

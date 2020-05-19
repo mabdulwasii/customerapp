@@ -54,6 +54,7 @@ import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.gson.Gson;
 import com.mykab.rider.R;
 import com.mykab.rider.constants.BaseApp;
 import com.mykab.rider.constants.Constants;
@@ -101,10 +102,12 @@ import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static android.view.View.GONE;
 import static com.mykab.rider.constants.Constants.UPDATE;
 import static com.mykab.rider.json.fcm.FCMType.ORDER;
 import static com.mykab.rider.utils.MapsUtils.getBearing;
@@ -133,7 +136,7 @@ public class ProgressActivity extends AppCompatActivity
     private Marker driverMarker;
     Bundle orderBundle;
     private boolean isCancelable = true;
-    String idtrans, iddriver, response, history;
+    String idtrans, iddriver, response, history, remove;
 //    String pakai;
     String regdriver, fitur, imagedriver;
     private int markerCount;
@@ -158,76 +161,7 @@ public class ProgressActivity extends AppCompatActivity
     private TransaksiModel transaksi;
 
 
-    private Runnable updateDriverRunnable = new Runnable() {
-        @Override
-        public void run() {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        LokasiDriverRequest param = new LokasiDriverRequest();
-                        final BookService service = ServiceGenerator.createService(BookService.class, "admin", "12345");
-                        param.setId(iddriver);
-                        service.liatLokasiDriver(param).enqueue(new Callback<LokasiDriverResponse>() {
-                            @Override
-                            public void onResponse(Call<LokasiDriverResponse> call, Response<LokasiDriverResponse> response) {
-                                if (response.isSuccessful()) {
-                                    final LokasiDriverModel latlang = response.body().getData().get(0);
-                                    final LatLng location = new LatLng(Double.parseDouble(latlang.getLatitude()), Double.parseDouble(latlang.getLongitude()));
-                                    updateDriverMarker(location);
-                                    if (ProgressActivity.this.response != null && ProgressActivity.this.response.equals("2")) {
-                                        requestDriverPickupRoute(location);
-                                    }
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(Call<LokasiDriverResponse> call, Throwable t) {
-                                if (t.getLocalizedMessage() != null) {
-                                    Log.e("updateDriverRunnable", Objects.requireNonNull(t.getLocalizedMessage()));
-                                }
-                            }
-                        });
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    timer.scheduleAtFixedRate(new TimerTask() {
-                        @Override
-                        public void run() {
-                            if (NetworkManager.isConnectToInternet(ProgressActivity.this)) {
-                                try {
-                                    LokasiDriverRequest param = new LokasiDriverRequest();
-                                    final BookService service = ServiceGenerator.createService(BookService.class, "admin", "12345");
-                                    param.setId(iddriver);
-                                    service.liatLokasiDriver(param).enqueue(new Callback<LokasiDriverResponse>() {
-                                        @Override
-                                        public void onResponse(Call<LokasiDriverResponse> call, Response<LokasiDriverResponse> response) {
-                                            if (response.isSuccessful()) {
-                                                final LokasiDriverModel latlang = response.body().getData().get(0);
-                                                final LatLng location = new LatLng(Double.parseDouble(latlang.getLatitude()), Double.parseDouble(latlang.getLongitude()));
-                                                updateDriverMarker(location);
-                                                if (ProgressActivity.this.response != null && ProgressActivity.this.response.equals("2")) {
-                                                    requestDriverPickupRoute(location);
-                                                }
-
-                                            }
-                                        }
-
-                                        @Override
-                                        public void onFailure(Call<LokasiDriverResponse> call, Throwable t) {
-
-                                        }
-                                    });
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-                    }, 0, 4000);
-                }
-            }).start();
-        }
-    };
+    private Runnable updateDriverRunnable;
     private String time;
     private String namaDriver;
     private View mapView;
@@ -251,8 +185,12 @@ public class ProgressActivity extends AppCompatActivity
     }*/
 
     private void stopDriverLocationUpdate() {
-        handler.removeCallbacks(updateDriverRunnable);
-
+        if (handler != null) {
+            handler.removeCallbacks(updateDriverRunnable);
+            handler.removeCallbacksAndMessages(null);
+            handler = null;
+            updateDriverRunnable = null;
+        }
     }
 
     TextView textprogress, status;
@@ -261,7 +199,8 @@ public class ProgressActivity extends AppCompatActivity
     Button senderphone, receiverphone;
     TextView textnotif, priceText;
     TextView diskon, cost, distanceText, fiturtext, destinationText, pickUpText, timeAway;
-    ImageView foto, image, backbtn;
+    ImageView image, backbtn;
+    CircleImageView foto;
     TextView layanandesk, layanan;
     LinearLayout llpayment, bottomsheet, setDestinationContainer, setPickUpContainer, llchat, lldestination, lldistance, lldetailsend;
     RelativeLayout rlnotif, rlprogress;
@@ -272,7 +211,9 @@ public class ProgressActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ride);
-        handler = new Handler();
+        if(handler == null) {
+            handler = new Handler();
+        }
         context = this;
         sp = new SettingPreference(context);
 
@@ -312,10 +253,15 @@ public class ProgressActivity extends AppCompatActivity
         idtrans = intent.getStringExtra("id_transaksi");
         response = intent.getStringExtra("response");
         history = intent.getStringExtra("history");
+        remove = intent.getStringExtra("remove");
         if (intent.getStringExtra("complete") == null) {
             complete = "false";
         } else {
             complete = intent.getStringExtra("complete");
+        }
+
+        if(remove != null){
+
         }
 
         sp.updateTripComplete(complete);
@@ -358,25 +304,101 @@ public class ProgressActivity extends AppCompatActivity
         textprogress = findViewById(R.id.textprogress);
         timeAway = findViewById(R.id.timeAway);
 
+        updateDriverRunnable = new Runnable() {
+            @Override
+            public void run() {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            LokasiDriverRequest param = new LokasiDriverRequest();
+                            final BookService service = ServiceGenerator.createService(BookService.class, "admin", "12345");
+                            param.setId(iddriver);
+                            service.liatLokasiDriver(param).enqueue(new Callback<LokasiDriverResponse>() {
+                                @Override
+                                public void onResponse(Call<LokasiDriverResponse> call, Response<LokasiDriverResponse> response) {
+                                    if (response.isSuccessful()) {
+                                        final LokasiDriverModel latlang = response.body().getData().get(0);
+                                        final LatLng location = new LatLng(Double.parseDouble(latlang.getLatitude()), Double.parseDouble(latlang.getLongitude()));
+                                        updateDriverMarker(location);
+                                        if (ProgressActivity.this.response != null && ProgressActivity.this.response.equals("2")) {
+                                            requestDriverPickupRoute(location);
+                                        }else {
+                                            timeAway.setVisibility(GONE);
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<LokasiDriverResponse> call, Throwable t) {
+                                    if (t.getLocalizedMessage() != null) {
+                                        Log.e("updateDriverRunnable", Objects.requireNonNull(t.getLocalizedMessage()));
+                                    }
+                                }
+                            });
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        timer.scheduleAtFixedRate(new TimerTask() {
+                            @Override
+                            public void run() {
+                                if (NetworkManager.isConnectToInternet(ProgressActivity.this)) {
+                                    try {
+                                        LokasiDriverRequest param = new LokasiDriverRequest();
+                                        final BookService service = ServiceGenerator.createService(BookService.class, "admin", "12345");
+                                        param.setId(iddriver);
+                                        service.liatLokasiDriver(param).enqueue(new Callback<LokasiDriverResponse>() {
+                                            @Override
+                                            public void onResponse(Call<LokasiDriverResponse> call, Response<LokasiDriverResponse> response) {
+                                                if (response.isSuccessful()) {
+                                                    final LokasiDriverModel latlang = response.body().getData().get(0);
+                                                    final LatLng location = new LatLng(Double.parseDouble(latlang.getLatitude()), Double.parseDouble(latlang.getLongitude()));
+                                                    updateDriverMarker(location);
+                                                    if (ProgressActivity.this.response != null && ProgressActivity.this.response.equals("2")) {
+                                                        requestDriverPickupRoute(location);
+                                                    }else {
+                                                        timeAway.setVisibility(GONE);
+
+                                                    }
+
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onFailure(Call<LokasiDriverResponse> call, Throwable t) {
+
+                                            }
+                                        });
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+                        }, 0, 8000);
+                    }
+                }).start();
+            }
+        };
+
         status.setVisibility(View.VISIBLE);
-        image.setVisibility(View.GONE);
+        image.setVisibility(GONE);
         BottomSheetBehavior behavior = BottomSheetBehavior.from(bottomsheet);
         behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 
-        setPickUpContainer.setVisibility(View.GONE);
-        setDestinationContainer.setVisibility(View.GONE);
-        llpayment.setVisibility(View.GONE);
+        setPickUpContainer.setVisibility(GONE);
+        setDestinationContainer.setVisibility(GONE);
+        llpayment.setVisibility(GONE);
 
         destinationText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setDestinationContainer.setVisibility(View.GONE);
-                setPickUpContainer.setVisibility(View.GONE);
+                setDestinationContainer.setVisibility(GONE);
+                setPickUpContainer.setVisibility(GONE);
                 openAutocompleteActivity();
             }
         });
 
-        backbtn.setVisibility(View.GONE);
+        backbtn.setVisibility(GONE);
 
         if (history != null && history.equalsIgnoreCase("history")){
             backbtn.setVisibility(View.VISIBLE);
@@ -385,6 +407,12 @@ public class ProgressActivity extends AppCompatActivity
         backbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(handler != null) {
+                    handler.removeCallbacks(updateDriverRunnable);
+                    handler.removeCallbacksAndMessages(null);
+                    handler =  null;
+                    updateDriverRunnable = null;
+                }
                 finish();
             }
         });
@@ -513,8 +541,8 @@ public class ProgressActivity extends AppCompatActivity
                     distanceText.setText(String.valueOf(transaksi.getJarak()));
 
                     if (fitur.equalsIgnoreCase("6")) {
-                        lldestination.setVisibility(View.GONE);
-                        lldistance.setVisibility(View.GONE);
+                        lldestination.setVisibility(GONE);
+                        lldistance.setVisibility(GONE);
                         fiturtext.setText(transaksi.getEstimasiTime());
                     } else if (fitur.equalsIgnoreCase("5")) {
                         requestRoute();
@@ -606,6 +634,12 @@ public class ProgressActivity extends AppCompatActivity
                             sp.updateTripComplete("true");
                             sp.updateActiveTrip("false");
                             startActivity(intent);
+                        if(handler != null) {
+                            handler.removeCallbacks(updateDriverRunnable);
+                            handler.removeCallbacksAndMessages(null);
+                            handler = null;
+                            updateDriverRunnable = null;
+                        }
                             finish();
                     }
                 }
@@ -621,7 +655,7 @@ public class ProgressActivity extends AppCompatActivity
 
     private void parsedata(TransaksiModel request, final DriverModel driver) {
         final User loginUser = BaseApp.getInstance(ProgressActivity.this).getLoginUser();
-        rlprogress.setVisibility(View.GONE);
+        rlprogress.setVisibility(GONE);
         pickUpLatLng = new LatLng(request.getStartLatitude(), request.getStartLongitude());
         destinationLatLng = new LatLng(request.getEndLatitude(), request.getEndLongitude());
 
@@ -638,29 +672,30 @@ public class ProgressActivity extends AppCompatActivity
             sp.updateResponse("2");
             sp.updateActiveTrip("true");
             sp.updateTripComplete("false");
+            timeAway.setVisibility(View.VISIBLE);
         } else if (response.equals("3")) {
             llchat.setVisibility(View.VISIBLE);
             isCancelable = false;
-            orderButton.setVisibility(View.GONE);
-            timeAway.setVisibility(View.GONE);
+            orderButton.setVisibility(GONE);
             status.setText(getString(R.string.notification_start));
+            timeAway.setVisibility(GONE);
             sp.updateResponse("3");
             sp.updateActiveTrip("true");
             sp.updateTripComplete("false");
         } else if (response.equals("4")) {
             isCancelable = false;
-            llchat.setVisibility(View.GONE);
-            orderButton.setVisibility(View.GONE);
-            timeAway.setVisibility(View.GONE);
+            llchat.setVisibility(GONE);
+            orderButton.setVisibility(GONE);
+            timeAway.setVisibility(GONE);
             status.setText(getString(R.string.notification_finish));
             sp.updateResponse("4");
             sp.updateActiveTrip("false");
             sp.updateTripComplete("true");
         } else if (response.equals("5")) {
             isCancelable = false;
-            timeAway.setVisibility(View.GONE);
-            llchat.setVisibility(View.GONE);
-            orderButton.setVisibility(View.GONE);
+            timeAway.setVisibility(GONE);
+            llchat.setVisibility(GONE);
+            orderButton.setVisibility(GONE);
             status.setText(getString(R.string.notification_cancel));
             sp.updateResponse("5");
             sp.updateActiveTrip("false");
@@ -680,6 +715,9 @@ public class ProgressActivity extends AppCompatActivity
         String maxHarga = String.valueOf(harga + 200);
 
         Utility.currencyTXT(priceText, minHarga, maxHarga, this);
+        if (history != null && history.equalsIgnoreCase("history")){
+            Utility.currencyTXT(priceText, String.valueOf(harga), this);
+        }
 
         phone.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -758,9 +796,16 @@ public class ProgressActivity extends AppCompatActivity
             public void onResponse(Call<CancelBookResponseJson> call, Response<CancelBookResponseJson> response) {
                 if (response.isSuccessful()) {
                     if (response.body().mesage.equals("canceled")) {
-                        rlprogress.setVisibility(View.GONE);
+                        rlprogress.setVisibility(GONE);
                         fcmcancel();
                         notif("Order Canceled!");
+                        if(handler != null) {
+                            handler.removeCallbacks(updateDriverRunnable);
+                            handler.removeCallbacksAndMessages(null);
+                            updateDriverRunnable = null;
+                            handler = null;
+
+                        }
                         finish();
                     } else {
                         notif("Failed!");
@@ -852,7 +897,7 @@ public class ProgressActivity extends AppCompatActivity
 
         new Handler().postDelayed(new Runnable() {
             public void run() {
-                rlnotif.setVisibility(View.GONE);
+                rlnotif.setVisibility(GONE);
             }
         }, 3000);
     }
@@ -887,7 +932,9 @@ public class ProgressActivity extends AppCompatActivity
     }
 
     private void startDriverLocationUpdate() {
-        handler = new Handler();
+        if (handler == null) {
+            handler = new Handler();
+        }
         handler.postDelayed(updateDriverRunnable, 4000);
     }
 
@@ -1046,7 +1093,6 @@ public class ProgressActivity extends AppCompatActivity
                     ProgressActivity.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            timeAway.setVisibility(View.VISIBLE);
                             timeAway.setText(String.format("%s away", time));
                         }
                     });
@@ -1143,21 +1189,27 @@ public class ProgressActivity extends AppCompatActivity
         switch (code) {
             case Constants.REJECT:
                 isCancelable = false;
-                orderButton.setVisibility(View.GONE);
+                orderButton.setVisibility(GONE);
                 sp.updateResponse(String.valueOf(Constants.REJECT));
                 sp.updateActiveTrip("false");
                 sp.updateTripComplete("true");
                 break;
             case Constants.CANCEL:
                 isCancelable = false;
-                orderButton.setVisibility(View.GONE);
-                llchat.setVisibility(View.GONE);
+                orderButton.setVisibility(GONE);
+                llchat.setVisibility(GONE);
                 sp.updateResponse(String.valueOf(Constants.CANCEL));
                 sp.updateActiveTrip("false");
                 sp.updateTripComplete("true");
                 status.setText(getString(R.string.notification_cancel));
                 new Handler().postDelayed(new Runnable() {
                     public void run() {
+                        if(handler != null) {
+                            handler.removeCallbacks(updateDriverRunnable);
+                            handler.removeCallbacksAndMessages(null);
+                            handler = null;
+                            updateDriverRunnable = null;
+                        }
                         finish();
                     }
                 }, 3000);
@@ -1175,19 +1227,19 @@ public class ProgressActivity extends AppCompatActivity
             case Constants.START:
                 llchat.setVisibility(View.VISIBLE);
                 isCancelable = false;
-                orderButton.setVisibility(View.GONE);
-                timeAway.setVisibility(View.GONE);
+                orderButton.setVisibility(GONE);
                 requestRoute();
                 sp.updateResponse(String.valueOf(Constants.START));
                 sp.updateActiveTrip("true");
                 sp.updateTripComplete("false");
                 status.setText(getString(R.string.notification_start));
+                timeAway.setVisibility(GONE);
                 break;
             case Constants.FINISH:
                 isCancelable = false;
-                llchat.setVisibility(View.GONE);
-                orderButton.setVisibility(View.GONE);
-                timeAway.setVisibility(View.GONE);
+                llchat.setVisibility(GONE);
+                orderButton.setVisibility(GONE);
+                timeAway.setVisibility(GONE);
                 sp.updateResponse(String.valueOf(Constants.FINISH));
                 sp.updateTripComplete("true");
                 sp.updateActiveTrip("false");
@@ -1196,9 +1248,9 @@ public class ProgressActivity extends AppCompatActivity
                 break;
             case UPDATE:
                 isCancelable = false;
-                llchat.setVisibility(View.GONE);
-                orderButton.setVisibility(View.GONE);
-                timeAway.setVisibility(View.GONE);
+                llchat.setVisibility(GONE);
+                orderButton.setVisibility(GONE);
+                timeAway.setVisibility(GONE);
                 String statusText = this.status.getText().toString();
                 status.setText("Destination change by driver");
                 sp.updateResponse(String.valueOf(UPDATE));
@@ -1225,7 +1277,7 @@ public class ProgressActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        if (response.equals("2") || response.equals("3") && fitur != null) {
+        if (response != null && response.equals("2") || response.equals("3") && fitur != null) {
             startDriverLocationUpdate();
             sp.updateActiveTrip("true");
         }
@@ -1295,6 +1347,7 @@ public class ProgressActivity extends AppCompatActivity
                     /*gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                             new LatLng(latLng.latitude, latLng.longitude), 15f)
                     );*/
+                    Log.e("DESTINATION", "Calling on destination");
                     onDestination(latLng, place.getAddress());
                 }
             } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
@@ -1306,6 +1359,8 @@ public class ProgressActivity extends AppCompatActivity
     }
 
     private void onDestination(LatLng centerPos, String destination) {
+        Log.e("DESTINATION", "Inside onDestination");
+
         if (destinationMarker != null) destinationMarker.remove();
         destinationMarker = gMap.addMarker(new MarkerOptions()
                 .position(centerPos)
@@ -1321,11 +1376,14 @@ public class ProgressActivity extends AppCompatActivity
         param.setEndLatitude(String.valueOf(centerPos.latitude));
         param.setEndLongitude(String.valueOf(centerPos.longitude));
 
+        Log.e("DESTINATION", "Calling updateDestination " + new Gson().toJson(param));
         BookService service = PaystackServiceGenerator.createService(BookService.class, loginUser.getEmail(), loginUser.getPassword());
         service.updateDestination(param).enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
+                Log.e("DESTINATION", "Successful response updateDestination " + new Gson().toJson(response));
                 if (response.isSuccessful()){
+                    Log.e("Osele", "e don happen!");
                     OrderFCM orderfcm = new OrderFCM();
                     orderfcm.id_rider = loginUser.getId();
                     orderfcm.id_transaksi = idtrans;

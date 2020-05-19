@@ -160,16 +160,22 @@ public class MessagingService extends FirebaseMessagingService {
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext(), "notify_001");
         Intent intent1 = new Intent(getApplicationContext(), ProgressActivity.class);
         intent1.addFlags(FLAG_ACTIVITY_NEW_TASK);
+        intent1.putExtra("id_transaksi", remoteMessage.getData().get("id_transaksi"));
+        intent1.putExtra("id_driver",remoteMessage.getData().get("id_driver"));
+        intent1.putExtra("response",remoteMessage.getData().get("response"));
+        intent1.putExtra("time","time");
+
+
         PendingIntent pIntent1 = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent1, 0);
         NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat.BigTextStyle();
         bigTextStyle.setBigContentTitle(remoteMessage.getData().get("title"));
         bigTextStyle.bigText(remoteMessage.getData().get("message"));
 
         mBuilder.setContentIntent(pIntent1);
-        mBuilder.setSmallIcon(R.drawable.logo);
         mBuilder.setContentTitle(remoteMessage.getData().get("title"));
         mBuilder.setContentText(remoteMessage.getData().get("message"));
         mBuilder.setStyle(bigTextStyle);
+        mBuilder.setSmallIcon(R.drawable.logo);
         mBuilder.setPriority(Notification.PRIORITY_MAX);
         mBuilder.setAutoCancel(true);
 
@@ -200,10 +206,10 @@ public class MessagingService extends FirebaseMessagingService {
         bigTextStyle.bigText(remoteMessage.getData().get("message"));
 
         mBuilder.setContentIntent(pIntent1);
-        mBuilder.setSmallIcon(R.drawable.logo);
         mBuilder.setContentTitle(remoteMessage.getData().get("title"));
         mBuilder.setContentText(remoteMessage.getData().get("message"));
         mBuilder.setStyle(bigTextStyle);
+        mBuilder.setSmallIcon(R.drawable.logo);
         mBuilder.setPriority(Notification.PRIORITY_MAX);
         mBuilder.setAutoCancel(true);
 

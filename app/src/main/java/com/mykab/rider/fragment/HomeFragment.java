@@ -292,8 +292,6 @@ public class HomeFragment extends Fragment {
                 if (response.isSuccessful()) {
                     if (response.body().getMessage().equalsIgnoreCase("success")) {
                         shimmertutup();
-
-                        saveHome(response.body());
                         sp.updateCurrency(response.body().getCurrency());
                         sp.updateabout(response.body().getAboutus());
                         sp.updateemail(response.body().getEmail());
@@ -359,6 +357,8 @@ public class HomeFragment extends Fragment {
                             loginUser.setWalletSaldo(Long.parseLong(response.body().getSaldo()));
                             realm.commitTransaction();
                         }
+
+                        saveHome(response.body());
                     } else {
                         Realm realm = BaseApp.getInstance(getContext()).getRealmInstance();
                         realm.beginTransaction();
@@ -383,7 +383,7 @@ public class HomeFragment extends Fragment {
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
         realm.delete(GetHomeResponseJson.class);
-        realm.copyToRealm(getHomeResponseJson);
+        realm.copyToRealmOrUpdate(getHomeResponseJson);
         realm.commitTransaction();
     }
 

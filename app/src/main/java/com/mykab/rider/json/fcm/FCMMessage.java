@@ -13,9 +13,9 @@ public class FCMMessage {
     @SerializedName("to")
     private String to;
 
-    @Expose
+   /* @Expose
     @SerializedName("content_available")
-    private Boolean contentAvailable = true;
+    private boolean contentAvailable;*/
 
     @Expose
     @SerializedName("data")
@@ -37,11 +37,11 @@ public class FCMMessage {
         this.data = data;
     }
 
-    public Boolean getContentAvailable() {
+    /*public boolean getContentAvailable() {
         return contentAvailable;
     }
 
-    public void setContentAvailable(Boolean contentAvailable) {
+    public void setContentAvailable(boolean contentAvailable) {
         this.contentAvailable = contentAvailable;
-    }
+    }*/
 }

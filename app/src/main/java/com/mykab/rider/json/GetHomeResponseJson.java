@@ -9,9 +9,8 @@ import com.mykab.rider.models.RatingModel;
 import com.mykab.rider.models.User;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -72,23 +71,23 @@ public class GetHomeResponseJson extends RealmObject implements Serializable {
 
     @SerializedName("fitur")
     @Expose
-    private List<FiturModel> fitur = new ArrayList<>();
+    private RealmList<FiturModel> fitur = new RealmList<>();
 
     @SerializedName("ratinghome")
     @Expose
-    private List<RatingModel> rating = new ArrayList<>();
+    private RealmList<RatingModel> rating = new RealmList<>();
 
     @SerializedName("beritahome")
     @Expose
-    private List<BeritaModel> berita = new ArrayList<>();
+    private RealmList<BeritaModel> berita = new RealmList<>();
 
     @SerializedName("slider")
     @Expose
-    private List<PromoModel> slider = new ArrayList<>();
+    private RealmList<PromoModel> slider = new RealmList<>();
 
     @SerializedName("data")
     @Expose
-    private List<User> data = new ArrayList<>();
+    private RealmList<User> data = new RealmList<>();
 
     public String getMessage() {
         return message;
@@ -122,19 +121,19 @@ public class GetHomeResponseJson extends RealmObject implements Serializable {
         this.currency_text = currencytext;
     }
 
-    public List<FiturModel> getFitur() {
+    public RealmList<FiturModel> getFitur() {
         return fitur;
     }
 
-    public void setFitur(List<FiturModel> fitur) {
+    public void setFitur(RealmList<FiturModel> fitur) {
         this.fitur = fitur;
     }
 
-    public List<PromoModel> getSlider() {
+    public RealmList<PromoModel> getSlider() {
         return slider;
     }
 
-    public void setSlider(List<PromoModel> slider) {
+    public void setSlider(RealmList<PromoModel> slider) {
         this.slider = slider;
     }
 
@@ -170,27 +169,27 @@ public class GetHomeResponseJson extends RealmObject implements Serializable {
         this.website = website;
     }
 
-    public List<RatingModel> getRating() {
+    public RealmList<RatingModel> getRating() {
         return rating;
     }
 
-    public void setRating(List<RatingModel> rating) {
+    public void setRating(RealmList<RatingModel> rating) {
         this.rating = rating;
     }
 
-    public List<BeritaModel> getBerita() {
+    public RealmList<BeritaModel> getBerita() {
         return berita;
     }
 
-    public void setBerita(List<BeritaModel> berita) {
+    public void setBerita(RealmList<BeritaModel> berita) {
         this.berita = berita;
     }
 
-    public List<User> getData() {
+    public RealmList<User> getData() {
         return data;
     }
 
-    public void setData(List<User> data) {
+    public void setData(RealmList<User> data) {
         this.data = data;
     }
 

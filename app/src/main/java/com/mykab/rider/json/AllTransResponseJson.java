@@ -6,9 +6,8 @@ import com.mykab.rider.models.AllTransaksiModel;
 import com.mykab.rider.models.DriverModel;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -25,11 +24,11 @@ public class AllTransResponseJson extends RealmObject implements Serializable {
 
     @Expose
     @SerializedName("data")
-    private List<AllTransaksiModel> data = new ArrayList<>();
+    private RealmList<AllTransaksiModel> data = new RealmList<>();
 
     @Expose
     @SerializedName("driver")
-    private List<DriverModel> driver = new ArrayList<>();
+    private RealmList<DriverModel> driver = new RealmList<>();
 
     public String getMessage() {
         return message;
@@ -39,19 +38,19 @@ public class AllTransResponseJson extends RealmObject implements Serializable {
         this.message = message;
     }
 
-    public List<AllTransaksiModel> getData() {
+    public RealmList<AllTransaksiModel> getData() {
         return data;
     }
 
-    public void setData(List<AllTransaksiModel> data) {
+    public void setData(RealmList<AllTransaksiModel> data) {
         this.data = data;
     }
 
-    public List<DriverModel> getDriver() {
+    public RealmList<DriverModel> getDriver() {
         return driver;
     }
 
-    public void setDriver(List<DriverModel> driver) {
+    public void setDriver(RealmList<DriverModel> driver) {
         this.driver = driver;
     }
 }

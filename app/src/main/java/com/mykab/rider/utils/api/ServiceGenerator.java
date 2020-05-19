@@ -4,7 +4,6 @@ import android.util.Base64;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
 import com.mykab.rider.constants.Constants;
 import com.mykab.rider.utils.BooleanSerializerDeserializer;
 
@@ -79,9 +78,9 @@ public class ServiceGenerator {
         }
 
         OkHttpClient client = httpClient
-                .connectTimeout(60, TimeUnit.SECONDS)
-                .readTimeout(60, TimeUnit.SECONDS)
-                .writeTimeout(60, TimeUnit.SECONDS)
+                .connectTimeout(120, TimeUnit.SECONDS)
+                .readTimeout(120, TimeUnit.SECONDS)
+                .writeTimeout(120, TimeUnit.SECONDS)
                 .build();
         Retrofit retrofit = builder.client(client).build();
         return retrofit.create(serviceClass);

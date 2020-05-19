@@ -3,7 +3,11 @@ package com.mykab.rider.models;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class PromoModel {
+import java.io.Serializable;
+
+import io.realm.RealmObject;
+
+public class PromoModel extends RealmObject implements Serializable {
     @Expose
     @SerializedName("foto")
     private String foto;

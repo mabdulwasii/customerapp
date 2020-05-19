@@ -185,33 +185,45 @@ public class Utility {
 
         return bankList;
 
-
     }
 
     public  static void handleOnfailureException(Throwable t, Activity activity){
-        FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(activity);
-        if(t instanceof SocketTimeoutException){
-            activity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(activity, "Oops, please try again", Toast.LENGTH_LONG).show();
-                    Log.e("ERROR", t.getLocalizedMessage() );
-                }
-            });
-        }else if (t instanceof IOException){
-            activity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(activity, "Oops, please try again", Toast.LENGTH_LONG).show();
-                    Log.e("ERROR", t.getLocalizedMessage() );
-                }
-            });
-        }else {
-            Bundle bundle = new Bundle();
-            bundle.putString("throwable", t.getLocalizedMessage());
-            bundle.putString("activity", activity.getLocalClassName());
-            firebaseAnalytics.logEvent("throwable" , bundle);
+        if(activity != null) {
+            FirebaseAnalytics firebaseAnalytics = FirebaseAnalytics.getInstance(activity);
+            if (t instanceof SocketTimeoutException) {
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.e("SocketTimeoutException", t.getLocalizedMessage());
+                        Toast.makeText(activity, "We are unable to reach the server, please check your connection", Toast.LENGTH_LONG).show();
+
+                        Bundle bundle = new Bundle();
+                        bundle.putString("SocketTimeoutException", t.getLocalizedMessage());
+                        bundle.putString("activity", activity.getLocalClassName());
+                        firebaseAnalytics.logEvent("SocketTimeoutException" , bundle);
+                    }
+                });
+            } else if (t instanceof IOException) {
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.e("IOEXCEPTION", t.getLocalizedMessage());
+                        Toast.makeText(activity, "Please check your network connection.", Toast.LENGTH_LONG).show();
+
+                        Bundle bundle = new Bundle();
+                        bundle.putString("IOEXCEPTION", t.getLocalizedMessage());
+                        bundle.putString("activity", activity.getLocalClassName());
+                        firebaseAnalytics.logEvent("IOEXCEPTION" , bundle);
+                    }
+                });
+            }else {
+                Bundle bundle = new Bundle();
+                bundle.putString("throwable", t.getLocalizedMessage());
+                bundle.putString("activity", activity.getLocalClassName());
+                firebaseAnalytics.logEvent("throwable" , bundle);
+            }
         }
+
     }
 
     public  static void handleOnfailureException(Exception t, Activity activity){
@@ -222,21 +234,32 @@ public class Utility {
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(activity, "We are unable to reach the server, please check your connection", Toast.LENGTH_LONG).show();
-                        Log.e("ERROR", t.getLocalizedMessage() );
+                        Log.e("SocketTimeoutException", t.getLocalizedMessage());
+                        Toast.makeText(activity, "We are unable to reach the server, please try again", Toast.LENGTH_LONG).show();
+                        Log.e("SocketTimeoutException", t.getLocalizedMessage());
+                        Toast.makeText(activity, "Please try again!", Toast.LENGTH_LONG).show();
+
+                        Bundle bundle = new Bundle();
+                        bundle.putString("SocketTimeoutException", t.getLocalizedMessage());
+                        bundle.putString("activity", activity.getLocalClassName());
+                        firebaseAnalytics.logEvent("SocketTimeoutException" , bundle);
                     }
                 });
             } else if (t instanceof IOException) {
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e("ERROR", t.getLocalizedMessage() );
-                        Toast.makeText(activity, "Please check your network connection.", Toast.LENGTH_LONG).show();
+                        Log.e("IOEXCEPTION", t.getLocalizedMessage());
+                        Toast.makeText(activity, "Please try again!", Toast.LENGTH_LONG).show();
+                        Bundle bundle = new Bundle();
+                        bundle.putString("IOEXCEPTION", t.getLocalizedMessage());
+                        bundle.putString("activity", activity.getLocalClassName());
+                        firebaseAnalytics.logEvent("IOEXCEPTION" , bundle);
                     }
                 });
             } else {
                 Bundle bundle = new Bundle();
-                bundle.putString("throwable", t.getLocalizedMessage());
+                bundle.putString("exception", t.getLocalizedMessage());
                 bundle.putString("activity", activity.getLocalClassName());
                 firebaseAnalytics.logEvent("exception" , bundle);
             }
