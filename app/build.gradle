@@ -20,8 +20,8 @@ android {
         applicationId "com.mykab.rider"
         minSdkVersion 17
         targetSdkVersion 29
-        versionCode 4
-        versionName '0.8.5'
+        versionCode 5
+        versionName '0.8.7'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         signingConfig signingConfigs.config

@@ -1,5 +1,6 @@
 package com.mykab.rider.utils.api;
 
+import android.os.Environment;
 import android.util.Base64;
 
 import com.google.gson.Gson;
@@ -7,9 +8,11 @@ import com.google.gson.GsonBuilder;
 import com.mykab.rider.constants.Constants;
 import com.mykab.rider.utils.BooleanSerializerDeserializer;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.Cache;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -28,6 +31,9 @@ public class PaystackServiceGenerator {
     private static BooleanSerializerDeserializer booleanSerializerDeserializer = new BooleanSerializerDeserializer();
 
     private static OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+    static int cacheSize = 10 * 1024 * 1024; // 10 MB
+    static File cacheDir = new File(Environment.getExternalStorageDirectory() + "/ouride/cache");
+    static Cache cache = new Cache(cacheDir, cacheSize);
 
     public static Gson gson = new GsonBuilder()
             .setDateFormat("yyyy-MM-dd HH:mm:ss")
@@ -81,6 +87,7 @@ public class PaystackServiceGenerator {
                 .connectTimeout(120, TimeUnit.SECONDS)
                 .readTimeout(120, TimeUnit.SECONDS)
                 .writeTimeout(120, TimeUnit.SECONDS)
+                .cache(cache)
                 .build();
         Retrofit retrofit = builder.client(client).build();
         return retrofit.create(serviceClass);

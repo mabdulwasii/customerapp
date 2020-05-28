@@ -27,6 +27,7 @@ import com.mykab.rider.json.RateRequestJson;
 import com.mykab.rider.json.RateResponseJson;
 import com.mykab.rider.models.DriverModel;
 import com.mykab.rider.models.User;
+import com.mykab.rider.utils.SettingPreference;
 import com.mykab.rider.utils.Utility;
 import com.mykab.rider.utils.api.ServiceGenerator;
 import com.mykab.rider.utils.api.service.BookService;
@@ -56,16 +57,22 @@ public class RateActivity extends AppCompatActivity {
     ShimmerFrameLayout shimmername;
     @BindView(R.id.ratingView)
     RatingView ratingview;
+    SettingPreference sp;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rate);
         ButterKnife.bind(this);
+
+        sp = new SettingPreference(this);
         Intent intent = getIntent();
         iddriver = intent.getStringExtra("id_driver");
         idtrans = intent.getStringExtra("id_transaksi");
         response = intent.getStringExtra("response");
+
+        sp.updateTripComplete("true");
+
         getPriceDetails();
         //Todo getPrice of transaction using idtrans from server
         getData(idtrans, iddriver);

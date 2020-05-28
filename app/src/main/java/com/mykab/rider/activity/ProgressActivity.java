@@ -108,7 +108,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import static android.view.View.GONE;
-import static com.mykab.rider.constants.Constants.UPDATE;
 import static com.mykab.rider.json.fcm.FCMType.ORDER;
 import static com.mykab.rider.utils.MapsUtils.getBearing;
 import static com.mykab.rider.utils.api.service.MessagingService.BROADCAST_ORDER;
@@ -514,7 +513,6 @@ public class ProgressActivity extends AppCompatActivity
                 if (responsedata.isSuccessful()) {
                     transaksi = responsedata.body().getData().get(0);
                     DriverModel driver = responsedata.body().getDriver().get(0);
-                    parsedata(transaksi, driver);
                     regdriver = driver.getRegId();
                     imagedriver = Constants.IMAGESDRIVER + driver.getFoto();
                     Log.e("IMAGESDRIVER", imagedriver);
@@ -540,108 +538,28 @@ public class ProgressActivity extends AppCompatActivity
                     fiturtext.setText(transaksi.getEstimasiTime());
                     distanceText.setText(String.valueOf(transaksi.getJarak()));
 
-                    if (fitur.equalsIgnoreCase("6")) {
-                        lldestination.setVisibility(GONE);
-                        lldistance.setVisibility(GONE);
-                        fiturtext.setText(transaksi.getEstimasiTime());
-                    } else if (fitur.equalsIgnoreCase("5")) {
-                        requestRoute();
-                        lldetailsend.setVisibility(View.VISIBLE);
-                        produk.setText(transaksi.getNamaBarang());
-                        sendername.setText(transaksi.getNamaPengirim());
-                        receivername.setText(transaksi.getNamaPenerima());
+                    requestRoute();
 
-                        senderphone.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ProgressActivity.this, R.style.DialogStyle);
-                                alertDialogBuilder.setTitle("Call Driver");
-                                alertDialogBuilder.setMessage("You want to call " + transaksi.getNamaPengirim() + "(" + transaksi.getTeleponPengirim() + ")?");
-                                alertDialogBuilder.setPositiveButton("yes",
-                                        new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface arg0, int arg1) {
-                                                if (ActivityCompat.checkSelfPermission(ProgressActivity.this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-                                                    ActivityCompat.requestPermissions(ProgressActivity.this, new String[]{Manifest.permission.CALL_PHONE}, REQUEST_PERMISSION_CALL);
-                                                    return;
-                                                }
-
-                                                Intent callIntent = new Intent(Intent.ACTION_CALL);
-                                                callIntent.setData(Uri.parse("tel:" + transaksi.getTeleponPengirim()));
-                                                startActivity(callIntent);
-                                            }
-                                        });
-
-                                alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                    }
-                                });
-
-                                AlertDialog alertDialog = alertDialogBuilder.create();
-                                alertDialog.show();
-
-
-                            }
-                        });
-
-                        receiverphone.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ProgressActivity.this, R.style.DialogStyle);
-                                alertDialogBuilder.setTitle("Call Driver");
-                                alertDialogBuilder.setMessage("You want to call " + transaksi.getNamaPenerima() + "(" + transaksi.getTeleponPenerima() + ")?");
-                                alertDialogBuilder.setPositiveButton("yes",
-                                        new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface arg0, int arg1) {
-                                                if (ActivityCompat.checkSelfPermission(ProgressActivity.this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-                                                    ActivityCompat.requestPermissions(ProgressActivity.this, new String[]{Manifest.permission.CALL_PHONE}, REQUEST_PERMISSION_CALL);
-                                                    return;
-                                                }
-
-                                                Intent callIntent = new Intent(Intent.ACTION_CALL);
-                                                callIntent.setData(Uri.parse("tel:" + transaksi.getTeleponPenerima()));
-                                                startActivity(callIntent);
-                                            }
-                                        });
-
-                                alertDialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                    }
-                                });
-
-                                AlertDialog alertDialog = alertDialogBuilder.create();
-                                alertDialog.show();
-
-
-                            }
-                        });
-
-                    }else {
-                        requestRoute();
-                    }
                     if(transaksi.getStatus() == 4 && transaksi.getRate().isEmpty()) {
-                            Intent intent = new Intent(ProgressActivity.this, RateActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            intent.putExtra("id_driver", iddriver);
-                            intent.putExtra("id_transaksi", idtrans);
-                            intent.putExtra("response", response);
-                            sp.updateResponse(String.valueOf(Constants.FINISH));
-                            sp.updateTripComplete("true");
-                            sp.updateActiveTrip("false");
-                            startActivity(intent);
                         if(handler != null) {
                             handler.removeCallbacks(updateDriverRunnable);
                             handler.removeCallbacksAndMessages(null);
                             handler = null;
                             updateDriverRunnable = null;
                         }
-                            finish();
+
+                        Intent intent = new Intent(ProgressActivity.this, RateActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        intent.putExtra("id_driver", iddriver);
+                        intent.putExtra("id_transaksi", idtrans);
+                        intent.putExtra("response", response);
+                        sp.updateResponse(String.valueOf(Constants.FINISH));
+                        sp.updateTripComplete("true");
+                        sp.updateActiveTrip("false");
+                        startActivity(intent);
+                        finish();
                     }
+                    parsedata(transaksi, driver);
                 }
             }
             @Override
@@ -700,7 +618,15 @@ public class ProgressActivity extends AppCompatActivity
             sp.updateResponse("5");
             sp.updateActiveTrip("false");
             sp.updateTripComplete("true");
-            requestRoute();
+        } else if (response.equals("7")) {
+            llchat.setVisibility(View.VISIBLE);
+            isCancelable = false;
+            orderButton.setVisibility(GONE);
+            status.setText(getString(R.string.notification_arrived));
+            timeAway.setVisibility(GONE);
+            sp.updateResponse("7");
+            sp.updateActiveTrip("true");
+            sp.updateTripComplete("false");
         }
         namaDriver = driver.getNamaDriver();
         String[] s = namaDriver.split(" ");
@@ -820,18 +746,22 @@ public class ProgressActivity extends AppCompatActivity
         });
     }
 
-    private void fcmUpdateDestination(final String regdriver, final OrderFCM orderFCM){
-        Log.e("DESTINATION_UPDATE", "Inside fcmUpdateDestination");
+    private void fcmUpdateDestination(){
+        DriverResponse response = new DriverResponse();
+        response.type = ORDER;
+        response.setIdTransaksi(idtrans);
+        response.setResponse(DriverResponse.UPDATE);
 
         FCMMessage message = new FCMMessage();
         message.setTo(regdriver);
-        message.setData(orderFCM);
+        message.setData(response);
+
+        runOnUiThread(() -> Toast.makeText(ProgressActivity.this, "Inside fcmUpdateDestination method", Toast.LENGTH_LONG).show());
 
 
         FCMHelper.sendMessage(Constants.FCM_KEY, message).enqueue(new okhttp3.Callback() {
             @Override
             public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
-                Log.e("", response.message());
             }
 
             @Override
@@ -840,33 +770,6 @@ public class ProgressActivity extends AppCompatActivity
             }
         });
     }
-
-    /*private void fcmUpdateDestination() {
-        User loginUser = BaseApp.getInstance(this).getLoginUser();
-
-        FCMMessage message = new FCMMessage();
-        param.setType(UPDATE);
-        param.setIdPelanggan(loginUser.getId());
-        message.setTo(regdriver);
-        message.setData(param);
-
-
-        FCMHelper.sendMessage(Constants.FCM_KEY, message).enqueue(new okhttp3.Callback() {
-            @Override
-            public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
-                if(response.isSuccessful()){
-                    Log.e("UPDATEDEST", response.message());
-                }else {
-                    Log.e("UPDATEDEST", "NOT SUCCESSFUL " + response.message());
-                }
-            }
-
-            @Override
-            public void onFailure(okhttp3.Call call, IOException e) {
-                e.printStackTrace();
-            }
-        });
-    }*/
 
     private void fcmcancel() {
         DriverResponse response = new DriverResponse();
@@ -941,6 +844,12 @@ public class ProgressActivity extends AppCompatActivity
     private void updateDriverMarker(LatLng latLng) {
         latdriver = String.valueOf(latLng.latitude);
         londriver = String.valueOf(latLng.longitude);
+        driverLocation = new LatLng(latLng.latitude, latLng.longitude);
+        if(driverLocation != null ) {
+            if(response.equalsIgnoreCase("2")) {
+                requestDriverPickupRoute(driverLocation);
+            }
+        }
         mCurrentLocation = new Location(LocationManager.NETWORK_PROVIDER);
         mCurrentLocation.setLatitude(Double.parseDouble(latdriver));
         mCurrentLocation.setLongitude(Double.parseDouble(londriver));
@@ -1162,7 +1071,7 @@ public class ProgressActivity extends AppCompatActivity
                 directionLine = gMap.addPolyline((new PolylineOptions())
                         .addAll(routes.get(0).getOverviewPolyLine())
                         .color(ContextCompat.getColor(ProgressActivity.this, R.color.colorgradient))
-                        .width(8));
+                        .width(12));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -1224,6 +1133,14 @@ public class ProgressActivity extends AppCompatActivity
                 sp.updateTripComplete("false");
                 status.setText(getString(R.string.notification_accept));
                 break;
+            case Constants.ARRIVED:
+                llchat.setVisibility(View.VISIBLE);
+                sp.updateResponse(String.valueOf(Constants.START));
+                sp.updateActiveTrip("true");
+                sp.updateTripComplete("false");
+                status.setText(getString(R.string.notification_arrived));
+                timeAway.setVisibility(GONE);
+                break;
             case Constants.START:
                 llchat.setVisibility(View.VISIBLE);
                 isCancelable = false;
@@ -1244,23 +1161,6 @@ public class ProgressActivity extends AppCompatActivity
                 sp.updateTripComplete("true");
                 sp.updateActiveTrip("false");
                 status.setText(getString(R.string.notification_finish));
-                getData(idtrans, iddriver);
-                break;
-            case UPDATE:
-                isCancelable = false;
-                llchat.setVisibility(GONE);
-                orderButton.setVisibility(GONE);
-                timeAway.setVisibility(GONE);
-                String statusText = this.status.getText().toString();
-                status.setText("Destination change by driver");
-                sp.updateResponse(String.valueOf(UPDATE));
-                sp.updateTripComplete("false");
-                sp.updateActiveTrip("true");
-                new Handler().postDelayed(new Runnable() {
-                    public void run() {
-                        status.setText(statusText);
-                    }
-                }, 3000);
                 getData(idtrans, iddriver);
                 break;
         }
@@ -1388,7 +1288,7 @@ public class ProgressActivity extends AppCompatActivity
                     orderfcm.id_rider = loginUser.getId();
                     orderfcm.id_transaksi = idtrans;
                     orderfcm.response = "6";
-                    fcmUpdateDestination(regdriver, orderfcm);
+                    fcmUpdateDestination();
                     Toast.makeText(ProgressActivity.this, "Destination updated successfully", Toast.LENGTH_SHORT).show();
                 }else {
                     Toast.makeText(ProgressActivity.this, "Failed to update destination", Toast.LENGTH_SHORT).show();

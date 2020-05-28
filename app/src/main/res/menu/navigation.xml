@@ -16,11 +16,11 @@
         android:icon="@drawable/ic_favourites"
         android:title="@string/menu_favourite" />
 
-    <item
+    <!--<item
         android:id="@+id/chat"
         android:icon="@drawable/ic_pesan"
         android:title="@string/menu_chat" />
-
+-->
     <item
         android:id="@+id/profile"
         android:icon="@drawable/ic_profil"

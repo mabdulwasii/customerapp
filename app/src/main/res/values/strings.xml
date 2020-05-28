@@ -71,6 +71,7 @@
 
     <string name="notification_cancel">Order has been canceled</string>
     <string name="notification_start">Your trip has started</string>
+    <string name="notification_arrived">Driver has arrived</string>
     <string name="notification_accept">We found a driver for you</string>
     <string name="notification_finish">Thank you for using our services</string>
     <string name="pass_mismatch">Password mismatch</string>

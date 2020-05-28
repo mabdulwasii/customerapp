@@ -24,7 +24,6 @@ import com.mykab.rider.constants.Constants;
 import com.mykab.rider.fragment.FavouriteFragment;
 import com.mykab.rider.fragment.HistoryFragment;
 import com.mykab.rider.fragment.HomeFragment;
-import com.mykab.rider.fragment.MessageFragment;
 import com.mykab.rider.fragment.ProfileFragment;
 import com.mykab.rider.json.GetFiturResponseJson;
 import com.mykab.rider.json.SimpleResponse;
@@ -69,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
             menu.findItem(R.id.home).setIcon(R.drawable.ic_home);
             menu.findItem(R.id.order).setIcon(R.drawable.ic_transaksi);
             menu.findItem(R.id.favourite).setIcon(R.drawable.ic_favourites);
-            menu.findItem(R.id.chat).setIcon(R.drawable.ic_pesan);
+//            menu.findItem(R.id.chat).setIcon(R.drawable.ic_pesan);
             menu.findItem(R.id.profile).setIcon(R.drawable.ic_profil);
             switch (item.getItemId()) {
                 case R.id.home:
@@ -90,12 +89,12 @@ public class MainActivity extends AppCompatActivity {
                     item.setIcon(R.drawable.ic_favourite);
                     loadFrag(favFragment, getString(R.string.menu_favourite), fragmentManager);
                     return true;
-                case R.id.chat:
+               /* case R.id.chat:
                     MessageFragment pesanFragment = new MessageFragment();
                     navigationItemSelected(2);
                     item.setIcon(R.drawable.ic_pesan_s);
                     loadFrag(pesanFragment, getString(R.string.menu_home), fragmentManager);
-                    return true;
+                    return true;*/
                 case R.id.profile:
                     ProfileFragment profilFragment = new ProfileFragment();
                     navigationItemSelected(3);

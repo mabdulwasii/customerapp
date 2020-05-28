@@ -374,7 +374,8 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onFailure(Call<GetHomeResponseJson> call, Throwable t) {
-                Utility.handleOnfailureException(t, activity);
+//                Utility.handleOnfailureException(t, activity);
+                Log.e("", t.getLocalizedMessage());
             }
         });
     }

@@ -145,7 +145,6 @@ public class ChatActivity extends AppCompatActivity {
         Receiverid = i.getStringExtra("receiverid");
         Receiver_name = i.getStringExtra("name");
         Receiver_pic = i.getStringExtra("pic");
-        Receiver_pic = i.getStringExtra("pic");
 
         sendbtn = findViewById(R.id.sendbtn);
         takephoto = findViewById(R.id.takephoto);

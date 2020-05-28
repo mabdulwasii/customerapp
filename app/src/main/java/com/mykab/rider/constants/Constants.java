@@ -15,11 +15,14 @@ public class Constants {
 //    public static final String BASE_URL = "https://mykab.team/";
 //    public static final String BASE_URL = "https://mykab.smaaptal.com/";
 //    public static final String BASE_URL2 = "https://smaaptal.com/mykab/";
+    public static final String BASE_URL = "http://test.bomzak.com/";
+    public static final String BASE_URL2 = "http://test.bomzak.com/";
 //    public static final String BASE_URL = "http://smaaptal.com/demokab/";
 //    public static final String BASE_URL2 = "http://smaaptal.com/demokab/";
 
-    public static final String BASE_URL = "http://smaaptal.com/testkab/";
-    public static final String BASE_URL2 = "http://smaaptal.com/testkab/";
+//    public static final String BASE_URL = "http://smaaptal.com/testkab/";
+//    public static final String BASE_URL2 = "http://smaaptal.com/testkab/";
+
 //    public static final String FCM_KEY = "AIzaSyAHFune4I3bVRUfXonBCp7JhnSrbIeyfK0";
     public static final String FCM_KEY = "AAAA0_p0VKI:APA91bHHlSmz_wDjM2EmjanjjxwwGgdCGFwtKww8DFM8Rr-O9Kj3Gf1m8Wr0hXH0Gjnsr9vZmdPVgCSSBZyU2PcJkzBQ7SekPSDhYFlDrvRGV76eT6C6mCCMAV88fW1ce2NZp-JmVq5l";
     public static final String CONNECTION = BASE_URL + "api/";
@@ -35,6 +38,7 @@ public class Constants {
     public static final String CONTACT_EMAIL = "choice.iruh@bomzak.com";
     public static final int MIN_TOP_UP = 100;
 
+
     public static String CURRENCY = "#";
 
     public static final int REJECT = 0;
@@ -43,6 +47,7 @@ public class Constants {
     public static final int START = 3;
     public static final int FINISH = 4;
     public static final int UPDATE = 6;
+    public static final int ARRIVED = 7;
 
     public static Double LATITUDE;
     public static Double LONGITUDE;

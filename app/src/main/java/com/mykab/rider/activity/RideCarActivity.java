@@ -720,8 +720,8 @@ public class RideCarActivity extends AppCompatActivity
             if (routes.size() > 0) {
                 directionLine = gMap.addPolyline((new PolylineOptions())
                         .addAll(routes.get(0).getOverviewPolyLine())
-                        .color(ContextCompat.getColor(RideCarActivity.this, R.color.parentcolor))
-                        .width(8));
+                        .color(ContextCompat.getColor(RideCarActivity.this, R.color.colorgradient))
+                        .width(12));
 
             }
         } catch (Exception e) {
@@ -1128,7 +1128,7 @@ public class RideCarActivity extends AppCompatActivity
                             public void run() {
                                 finish();
                             }
-                        }, 3000);
+                        }, 5000);
                     }
                     buildDriverRequest(response.body());
                     thread = new Thread(new Runnable() {
@@ -1138,6 +1138,7 @@ public class RideCarActivity extends AppCompatActivity
                                 fcmBroadcast(i, driverList);
                             }
 
+                            sp.updateTripComplete("true");
                             try {
                                 Log.e(TAG, "Thread started sleeping");
                                 Thread.sleep(60000);
@@ -1159,7 +1160,6 @@ public class RideCarActivity extends AppCompatActivity
 
                                             CheckStatusTransaksiResponse checkStatus = response.body();
                                             if (!checkStatus.isStatus()) {
-                                                notif("Driver not found!");
                                                 runOnUiThread(new Runnable() {
                                                     @Override
                                                     public void run() {
@@ -1171,7 +1171,7 @@ public class RideCarActivity extends AppCompatActivity
                                                     public void run() {
                                                         finish();
                                                     }
-                                                }, 3000);
+                                                }, 5000);
                                             }
                                         }
                                     }
@@ -1312,7 +1312,6 @@ public class RideCarActivity extends AppCompatActivity
                             driver = cDriver;
 
                             Log.e(TAG, "Driver name is " + driver.getNamaDriver());
-
                             Intent intent = new Intent(RideCarActivity.this, ProgressActivity.class);
                             intent.putExtra("id_driver", cDriver.getId());
                             intent.putExtra("id_transaksi", request.getIdTransaksi());
