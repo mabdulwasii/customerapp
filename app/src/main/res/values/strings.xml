@@ -4,12 +4,20 @@
         AIzaSyChTpt9en0sAWtRVQGEqS0k_WSbejko1Ps
     </string>
 
-    <string name="paystack_key" templateMergeStrategy="preserve" translatable="false">
+    <!--<string name="paystack_key" templateMergeStrategy="preserve" translatable="false">
         pk_test_f62e9d081d4ccbf1add061e7c2445e47f0c44e78
+    </string>-->
+
+    <string name="paystack_key" templateMergeStrategy="preserve" translatable="false">
+        pk_live_df68c539396bab41f4629a74f150f0e5f64aa48c
     </string>
 
-    <string name="secret_key" templateMergeStrategy="preserve" translatable="false">
+    <!--<string name="secret_key" templateMergeStrategy="preserve" translatable="false">
         sk_test_409d8c28b3c326a81ba58fc9ae0886eeed570c31
+    </string>-->
+
+    <string name="secret_key" templateMergeStrategy="preserve" translatable="false">
+        sk_live_77d9ea52e573c0635d3aaef8e9b7b8d84fbba0d8
     </string>
 
     ////////

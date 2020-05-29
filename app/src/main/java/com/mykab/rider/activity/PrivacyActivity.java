@@ -1,9 +1,6 @@
 package com.mykab.rider.activity;
 
 import android.graphics.Color;
-
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -11,6 +8,8 @@ import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.mykab.rider.R;
 import com.mykab.rider.json.PrivacyRequestJson;
@@ -20,6 +19,7 @@ import com.mykab.rider.utils.NetworkUtils;
 import com.mykab.rider.utils.api.ServiceGenerator;
 import com.mykab.rider.utils.api.service.UserService;
 
+import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -39,6 +39,7 @@ public class PrivacyActivity extends AppCompatActivity {
         webView = findViewById(R.id.webView);
         backbtn = findViewById(R.id.back_btn);
         webView.setBackgroundColor(Color.TRANSPARENT);
+        loadPrivacy();
         if (NetworkUtils.isConnected(PrivacyActivity.this)) {
             get();
         }
@@ -49,6 +50,14 @@ public class PrivacyActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void loadPrivacy() {
+        Realm realm = Realm.getDefaultInstance();
+        SettingsModel model = realm.where(SettingsModel.class).findFirst();
+        if (model != null) {
+            setResult(model);
+        }
     }
 
 
@@ -63,6 +72,7 @@ public class PrivacyActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     if (response.body().getMessage().equalsIgnoreCase("found")) {
                         SettingsModel model = response.body().getData().get(0);
+                        saveModel(model);
                         setResult(model);
                     } else {
 
@@ -75,6 +85,14 @@ public class PrivacyActivity extends AppCompatActivity {
                 t.printStackTrace();
             }
         });
+    }
+
+    private void saveModel(SettingsModel model) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        realm.delete(SettingsModel.class);
+        realm.copyToRealmOrUpdate(model);
+        realm.commitTransaction();
     }
 
     private void setResult(SettingsModel getprivacy) {

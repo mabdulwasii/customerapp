@@ -56,6 +56,7 @@ import com.mykab.rider.gmap.directions.Directions;
 import com.mykab.rider.gmap.directions.Route;
 import com.mykab.rider.json.CheckStatusTransaksiRequest;
 import com.mykab.rider.json.CheckStatusTransaksiResponse;
+import com.mykab.rider.json.DetailTransResponseJson;
 import com.mykab.rider.json.DistanceTimeJson;
 import com.mykab.rider.json.GetDistanceResponse;
 import com.mykab.rider.json.GetNearRideCarRequestJson;
@@ -302,13 +303,33 @@ public class RideCarActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         sp = new SettingPreference(this);
         String onTrip = sp.getSetting()[12];
-        if (onTrip.equals("true")){
+        realm = Realm.getDefaultInstance();
+
+        DetailTransResponseJson first = realm.where(DetailTransResponseJson.class).findFirst();
+        if (first != null && first.getData() != null) {
+            TransaksiModel transaksi = first.getData().get(0);
+            if (transaksi != null){
+                Intent intent = new Intent(this, ProgressActivity.class);
+                intent.putExtra("id_transaksi", transaksi.getId());
+                intent.putExtra("id_driver", transaksi.getIdDriver());
+                intent.putExtra("response", sp.getSetting()[15]);
+                intent.putExtra("complete", sp.getSetting()[16]);
+                if (!sp.getSetting()[15].equalsIgnoreCase(String.valueOf(Constants.FINISH))){
+                    startActivity(intent);
+                }
+            }
+        }
+
+        /*if (onTrip.equals("true")){
             Intent intent = new Intent(this, ProgressActivity.class);
             intent.putExtra("id_transaksi", sp.getSetting()[14]);
             intent.putExtra("id_driver", sp.getSetting()[13]);
             intent.putExtra("response", sp.getSetting()[15]);
             intent.putExtra("complete", sp.getSetting()[16]);
-        }
+            if (!sp.getSetting()[15].equalsIgnoreCase(String.valueOf(Constants.FINISH))){
+                startActivity(intent);
+            }
+        }*/
         setContentView(R.layout.activity_ride);
         ButterKnife.bind(this);
         currentLoop = 0;
@@ -405,8 +426,6 @@ public class RideCarActivity extends AppCompatActivity
                     .addApi(LocationServices.API)
                     .build();
         }
-
-        realm = Realm.getDefaultInstance();
 
         Intent intent = getIntent();
         fiturId = intent.getIntExtra(FITUR_KEY, -1);
@@ -989,9 +1008,7 @@ public class RideCarActivity extends AppCompatActivity
 
                     @Override
                     public void onFailure(retrofit2.Call<GetNearRideCarResponseJson> call, Throwable t) {
-                        if (!NetworkUtils.isConnected(context)) {
-                            Toast.makeText(context, "Error connecting, please check your network service", Toast.LENGTH_SHORT).show();
-                        }
+                        Utility.handleOnfailureException(t, RideCarActivity.this);
                     }
                 });
         }

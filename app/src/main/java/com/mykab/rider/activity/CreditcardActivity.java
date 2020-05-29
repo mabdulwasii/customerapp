@@ -529,12 +529,7 @@ public class CreditcardActivity extends AppCompatActivity {
 
                     @Override
                     public void onFailure(Call<TopupResponse> call, Throwable t) {
-                        if (!NetworkUtils.isConnectedFast(CreditcardActivity.this) || !NetworkUtils.isConnected(CreditcardActivity.this)){
-                            Toast.makeText(CreditcardActivity.this, "Please check your network service", Toast.LENGTH_LONG).show();
-                            notif("Please check your network service");
-                            progresshide();
-
-                        }
+                       Utility.handleOnfailureException(t, CreditcardActivity.this);
                     }
                 });
 
@@ -579,10 +574,7 @@ public class CreditcardActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<AuthCodeResponseJson> call, Throwable t) {
-                if (!NetworkUtils.isConnected(CreditcardActivity.this) || !NetworkUtils.isConnectedFast(CreditcardActivity.this)){
-
-                    Toast.makeText(CreditcardActivity.this, "Please check your network service", Toast.LENGTH_LONG).show();
-                }
+                Utility.handleOnfailureException(t, CreditcardActivity.this);
             }
         });
     }

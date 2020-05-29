@@ -6,9 +6,10 @@ import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.CountDownTimer;
 import android.os.Handler;
-import androidx.annotation.NonNull;
 import android.util.Log;
 import android.widget.EditText;
+
+import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -226,7 +227,8 @@ public class SendAudio {
                                 HashMap sendermap=new HashMap<>();
                                 sendermap.put("rid",senderid);
                                 sendermap.put("name", loginUser.getFullnama());
-                                sendermap.put("pic", Constants.IMAGESUSER+loginUser.getFotopelanggan());
+                                sendermap.put("pic", loginUser.getFotopelanggan());
+//                                sendermap.put("pic", Constants.IMAGESUSER+loginUser.getFotopelanggan());
                                 sendermap.put("msg","Send an Audio...");
                                 sendermap.put("status","0");
                                 sendermap.put("tokendriver", tokendriver);

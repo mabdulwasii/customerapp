@@ -25,6 +25,7 @@ import com.mykab.rider.utils.api.ServiceGenerator;
 import com.mykab.rider.utils.api.service.UserService;
 
 import io.realm.Realm;
+import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -70,7 +71,6 @@ public class HistoryFragment extends Fragment {
     }
 
     private void getdatatrans() {
-        shimmershow();
         User loginUser = BaseApp.getInstance(context).getLoginUser();
         UserService userService = ServiceGenerator.createService(
                 UserService.class, loginUser.getNoTelepon(), loginUser.getPassword());
@@ -80,16 +80,8 @@ public class HistoryFragment extends Fragment {
             @Override
             public void onResponse(Call<AllTransResponseJson> call, Response<AllTransResponseJson> response) {
                 if (response.isSuccessful()) {
-                    shimmertutup();
-                    historyItem = new HistoryItem(context, response.body().getData(), R.layout.item_order);
-                    recycle.setAdapter(historyItem);
-                    if (response.body().getData().isEmpty()) {
-                        recycle.setVisibility(View.GONE);
-                        rlnodata.setVisibility(View.VISIBLE);
-                    } else {
-                        recycle.setVisibility(View.VISIBLE);
-                        rlnodata.setVisibility(View.GONE);
-                    }
+                    AllTransResponseJson body = response.body();
+                    populateOrderHistory(body);
                     saveHistory(response.body());
                 }
             }
@@ -102,17 +94,42 @@ public class HistoryFragment extends Fragment {
         });
     }
 
+    private void populateOrderHistory(AllTransResponseJson response) {
+        shimmertutup();
+        historyItem = new HistoryItem(context, response.getData(), R.layout.item_order);
+        recycle.setAdapter(historyItem);
+        if (response.getData().isEmpty()) {
+            recycle.setVisibility(View.GONE);
+            rlnodata.setVisibility(View.VISIBLE);
+        } else {
+            recycle.setVisibility(View.VISIBLE);
+            rlnodata.setVisibility(View.GONE);
+        }
+    }
+
     private void saveHistory(AllTransResponseJson historyObj) {
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
-        realm.delete(AllTransResponseJson.class);
+        RealmResults<AllTransResponseJson> all = realm.where(AllTransResponseJson.class).findAll();
+        all.deleteAllFromRealm();
         realm.copyToRealmOrUpdate(historyObj);
         realm.commitTransaction();
     }
 
+
     @Override
     public void onResume() {
         super.onResume();
+        shimmershow();
+        loadHistory();
         getdatatrans();
+    }
+
+    private void loadHistory() {
+        Realm realm = Realm.getDefaultInstance();
+        AllTransResponseJson first = realm.where(AllTransResponseJson.class).findFirst();
+        if (first != null) {
+            populateOrderHistory(first);
+        }
     }
 }

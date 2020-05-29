@@ -10,6 +10,8 @@ import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.mykab.rider.R;
 import com.mykab.rider.constants.Constants;
 import com.mykab.rider.models.MessageModels;
@@ -20,8 +22,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-
-import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by mykab on 11/20/2020.
@@ -111,7 +111,8 @@ public class MessageItem extends RecyclerView.Adapter<MessageItem.CustomViewHold
                     .placeholder(R.drawable.image_placeholder).into(holder.userImage);
         } else {
             Picasso.with(context).
-                    load(Constants.IMAGESDRIVER + item.getPicture())
+//                    load(Constants.IMAGESDRIVER + item.getPicture())
+                    load(item.getPicture())
                     .resize(100, 100)
                     .placeholder(R.drawable.image_placeholder).into(holder.userImage);
         }

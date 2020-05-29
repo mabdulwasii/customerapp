@@ -28,6 +28,10 @@ public class CheckStatusTransaksiResponse {
     @Expose
     private List<DriverModel> listDriver = new ArrayList<>();
 
+    @SerializedName("transaction")
+    @Expose
+    private List<CheckTransaction> transaction = new ArrayList<>();
+
     public String getMessage() {
         return message;
     }
@@ -58,5 +62,13 @@ public class CheckStatusTransaksiResponse {
 
     public void setListDriver(List<DriverModel> listDriver) {
         this.listDriver = listDriver;
+    }
+
+    public List<CheckTransaction> getTransaction() {
+        return transaction;
+    }
+
+    public void setTransaction(List<CheckTransaction> transaction) {
+        this.transaction = transaction;
     }
 }

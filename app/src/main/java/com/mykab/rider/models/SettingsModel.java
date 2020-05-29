@@ -5,11 +5,13 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
+import io.realm.RealmObject;
+
 /**
  * Created by Ourdevelops Team on 12/01/2019.
  */
 
-public class SettingsModel implements Serializable {
+public class SettingsModel extends RealmObject implements Serializable {
     @Expose
     @SerializedName("app_privacy_policy")
     public String privacy;

@@ -56,6 +56,7 @@ public class SliderItem extends PagerAdapter {
         final PromoModel propertyModels = models.get(position);
         Picasso.with(context)
                 .load(Constants.IMAGESSLIDER + propertyModels.getFoto())
+//                .load(Constants.IMAGESSLIDER + propertyModels.getFoto())
                 .placeholder(R.drawable.image_placeholder)
                 .into(imageView);
 

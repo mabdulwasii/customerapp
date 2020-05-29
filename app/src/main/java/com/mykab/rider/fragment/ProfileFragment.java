@@ -300,7 +300,8 @@ public class ProfileFragment extends Fragment {
         email.setText(loginUser.getEmail());
 
         Picasso.with(context)
-                .load(Constants.IMAGESUSER + loginUser.getFotopelanggan())
+                .load(loginUser.getFotopelanggan())
+//                .load(Constants.IMAGESUSER + loginUser.getFotopelanggan())
                 .placeholder(R.drawable.image_placeholder)
                 .resize(250, 250)
                 .into(foto);

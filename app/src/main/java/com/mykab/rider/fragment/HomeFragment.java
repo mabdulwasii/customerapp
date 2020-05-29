@@ -50,6 +50,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.RealmResults;
 import me.relex.circleindicator.CircleIndicator;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -231,11 +232,14 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        shimmershow();
+
         FusedLocationProviderClient mFusedLocation = LocationServices.getFusedLocationProviderClient(context);
         mFusedLocation.getLastLocation().addOnSuccessListener(activity, new OnSuccessListener<Location>() {
             @Override
             public void onSuccess(Location location) {
                 if (location != null) {
+                    loadHome();
                     gethome(location);
                     Constants.LATITUDE = location.getLatitude();
                     Constants.LONGITUDE = location.getLongitude();
@@ -245,9 +249,19 @@ public class HomeFragment extends Fragment {
         });
 
         colors = colors_temp;
-        shimmershow();
 
         return getView;
+    }
+
+    private void loadHome() {
+        Realm realm = BaseApp.getInstance(HomeFragment.this.activity).getRealmInstance();
+        GetHomeResponseJson first = realm.where(GetHomeResponseJson.class).findFirst();
+        if (first != null) {
+            shimmertutup();
+            populateHomeData(first);
+
+        }
+
     }
 
     private void shimmershow() {
@@ -291,63 +305,9 @@ public class HomeFragment extends Fragment {
             public void onResponse(Call<GetHomeResponseJson> call, Response<GetHomeResponseJson> response) {
                 if (response.isSuccessful()) {
                     if (response.body().getMessage().equalsIgnoreCase("success")) {
+                        saveHome(response.body());
                         shimmertutup();
-                        sp.updateCurrency(response.body().getCurrency());
-                        sp.updateabout(response.body().getAboutus());
-                        sp.updateemail(response.body().getEmail());
-                        sp.updatephone(response.body().getPhone());
-                        sp.updateweb(response.body().getWebsite());
-
-                        if (response.body().getSaldo() != null) {
-                            Utility.currencyTXT(saldo, response.body().getSaldo(), context);
-                        }else {
-                            Utility.currencyTXT(saldo, "0", context);
-                        }
-
-                        if (response.body().getSlider().isEmpty()) {
-                            llslider.setVisibility(View.GONE);
-                        } else {
-                            promoslider.setVisibility(View.VISIBLE);
-                            adapter = new SliderItem(response.body().getSlider(), activity);
-                            viewPager.setAdapter(adapter);
-                            circleIndicator.setViewPager(viewPager);
-                            viewPager.setPadding(50, 0, 50, 0);
-                        }
-
-                        List<FiturModel> fitur = response.body().getFitur();
-                        List<FiturModel> fiturList = new ArrayList<>();
-
-                        Log.e("FITUR SIZE : ", String.valueOf(fitur.size()));
-                        for (FiturModel fmodel :
-                                fitur) {
-                            Log.e("FITUR : ", fmodel.getFitur());
-                            if (fmodel.getFitur().equalsIgnoreCase("Saloon") || fmodel.getFitur().equalsIgnoreCase("Towing Van") ){
-                                fiturList.add(fmodel);
-                            }
-
-                        }
-
-                        if (fiturList.size() > 0) {
-                            fiturItem = new FiturItem(activity, fiturList, R.layout.item_fitur);
-                        }
-//                        fiturItem = new FiturItem(activity, response.body().getFitur(), R.layout.item_fitur);
-
-                        Log.e("FEATURES", "List of features" + String.valueOf(fiturItem.getItemCount()));
-                        rvCategory.setAdapter(fiturItem);
-                        if (response.body().getRating().isEmpty()) {
-                            llrating.setVisibility(View.GONE);
-                        } else {
-                            ratingItem = new RatingItem(response.body().getRating(), context);
-                            rvreview.setAdapter(ratingItem);
-                            circleIndicatorreview.setViewPager(rvreview);
-                            rvreview.setPadding(50, 0, 50, 0);
-                        }
-                        if (response.body().getBerita().isEmpty()) {
-                            llberita.setVisibility(View.GONE);
-                        } else {
-                            beritaItem = new BeritaItem(activity, response.body().getBerita(), R.layout.item_grid);
-                            rvberita.setAdapter(beritaItem);
-                        }
+                        populateHomeData(response.body());
                         User user = response.body().getData().get(0);
                         saveUser(user);
                         if (HomeFragment.this.activity != null) {
@@ -357,8 +317,6 @@ public class HomeFragment extends Fragment {
                             loginUser.setWalletSaldo(Long.parseLong(response.body().getSaldo()));
                             realm.commitTransaction();
                         }
-
-                        saveHome(response.body());
                     } else {
                         Realm realm = BaseApp.getInstance(getContext()).getRealmInstance();
                         realm.beginTransaction();
@@ -380,10 +338,70 @@ public class HomeFragment extends Fragment {
         });
     }
 
+    private void populateHomeData(GetHomeResponseJson response) {
+        sp.updateCurrency(response.getCurrency());
+        sp.updateabout(response.getAboutus());
+        sp.updateemail(response.getEmail());
+        sp.updatephone(response.getPhone());
+        sp.updateweb(response.getWebsite());
+
+        if (response.getSaldo() != null) {
+            Utility.currencyTXT(saldo, response.getSaldo(), context);
+        }else {
+            Utility.currencyTXT(saldo, "0", context);
+        }
+
+        if (response.getSlider().isEmpty()) {
+            llslider.setVisibility(View.GONE);
+        } else {
+            promoslider.setVisibility(View.VISIBLE);
+            adapter = new SliderItem(response.getSlider(), activity);
+            viewPager.setAdapter(adapter);
+            circleIndicator.setViewPager(viewPager);
+            viewPager.setPadding(50, 0, 50, 0);
+        }
+
+        List<FiturModel> fitur = response.getFitur();
+        List<FiturModel> fiturList = new ArrayList<>();
+
+        Log.e("FITUR SIZE : ", String.valueOf(fitur.size()));
+        for (FiturModel fmodel :
+                fitur) {
+            Log.e("FITUR : ", fmodel.getFitur());
+            if (fmodel.getFitur().equalsIgnoreCase("Saloon") || fmodel.getFitur().equalsIgnoreCase("Towing Van") ){
+                fiturList.add(fmodel);
+            }
+
+        }
+
+        if (fiturList.size() > 0) {
+            fiturItem = new FiturItem(activity, fiturList, R.layout.item_fitur);
+            Log.e("FEATURES", "List of features" + String.valueOf(fiturItem.getItemCount()));
+        }
+//                        fiturItem = new FiturItem(activity, response.body().getFitur(), R.layout.item_fitur);
+
+        rvCategory.setAdapter(fiturItem);
+        if (response.getRating().isEmpty()) {
+            llrating.setVisibility(View.GONE);
+        } else {
+            ratingItem = new RatingItem(response.getRating(), context);
+            rvreview.setAdapter(ratingItem);
+            circleIndicatorreview.setViewPager(rvreview);
+            rvreview.setPadding(50, 0, 50, 0);
+        }
+        if (response.getBerita().isEmpty()) {
+            llberita.setVisibility(View.GONE);
+        } else {
+            beritaItem = new BeritaItem(activity, response.getBerita(), R.layout.item_grid);
+            rvberita.setAdapter(beritaItem);
+        }
+    }
+
     private void saveHome(GetHomeResponseJson getHomeResponseJson) {
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
-        realm.delete(GetHomeResponseJson.class);
+        RealmResults<GetHomeResponseJson> all = realm.where(GetHomeResponseJson.class).findAll();
+        all.deleteAllFromRealm();
         realm.copyToRealmOrUpdate(getHomeResponseJson);
         realm.commitTransaction();
     }

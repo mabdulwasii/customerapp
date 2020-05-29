@@ -5,23 +5,30 @@ import com.google.gson.annotations.SerializedName;
 import com.mykab.rider.models.DriverModel;
 import com.mykab.rider.models.TransaksiModel;
 
-import java.util.List;
+import io.realm.RealmList;
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 /**
  * Created by Ourdevelops Team on 10/19/2019.
  */
 
-public class DetailTransResponseJson {
+public class DetailTransResponseJson extends RealmObject {
+
+
+    @PrimaryKey
+    Long id;
 
     @SerializedName("status")
     @Expose
     private Boolean status;
+
     @SerializedName("data")
     @Expose
-    private List<TransaksiModel> data = null;
+    private RealmList<TransaksiModel> data = null;
     @SerializedName("driver")
     @Expose
-    private List<DriverModel> driver = null;
+    private RealmList<DriverModel> driver = null;
 
     public boolean getStatus() {
         return status;
@@ -31,19 +38,19 @@ public class DetailTransResponseJson {
         this.status = status;
     }
 
-    public List<TransaksiModel> getData() {
+    public RealmList<TransaksiModel> getData() {
         return data;
     }
 
-    public void setData(List<TransaksiModel> data) {
+    public void setData(RealmList<TransaksiModel> data) {
         this.data = data;
     }
 
-    public List<DriverModel> getDriver() {
+    public RealmList<DriverModel> getDriver() {
         return driver;
     }
 
-    public void setDriver(List<DriverModel> driver) {
+    public void setDriver(RealmList<DriverModel> driver) {
         this.driver = driver;
     }
 }

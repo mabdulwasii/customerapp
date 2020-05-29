@@ -164,12 +164,9 @@ public class WithdrawActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<CreateRecipientResponseJson> call, Throwable t) {
-                if(!NetworkUtils.isConnected(context) || !NetworkUtils.isConnectedFast(context)){
-                    notif("Please check your network");
-                } else {
                     Log.e(TAG, t.getLocalizedMessage());
-                }
                 progresshide();
+                Utility.handleOnfailureException(t, WithdrawActivity.this);
 
             }
         });
@@ -205,11 +202,8 @@ public class WithdrawActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<TransactionResponseJson> call, Throwable t) {
 
-                if(!NetworkUtils.isConnected(context) || !NetworkUtils.isConnectedFast(context)){
-                    notif("Please check your network");
-                } else {
+                Utility.handleOnfailureException(t, WithdrawActivity.this);
                     Log.e(TAG, t.getLocalizedMessage());
-                }
                 progresshide();
             }
         });

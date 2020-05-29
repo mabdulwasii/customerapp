@@ -6,5 +6,9 @@
         <domain includeSubdomains="true">mykab.smaaptal</domain>
         <domain includeSubdomains="true">smaaptal.com</domain>
         <domain includeSubdomains="true">smaaptal.com/demokab/</domain>
+        <domain includeSubdomains="true">bomzak.com</domain>
+        <domain includeSubdomains="true">test.bomzak.com/index.php/</domain>
+        <domain includeSubdomains="true">test.bomzak.com/index.php</domain>
+        <domain includeSubdomains="true">test.bomzak.com</domain>
     </domain-config>
 </network-security-config>

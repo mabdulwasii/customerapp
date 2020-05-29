@@ -68,6 +68,7 @@ import com.mykab.rider.json.RegisterRequestJson;
 import com.mykab.rider.json.RegisterResponseJson;
 import com.mykab.rider.models.FirebaseToken;
 import com.mykab.rider.models.User;
+import com.mykab.rider.utils.Utility;
 import com.mykab.rider.utils.api.ServiceGenerator;
 import com.mykab.rider.utils.api.service.UserService;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
@@ -989,6 +990,7 @@ public class RegisterActivity extends AppCompatActivity {
                 progresshide();
                 t.printStackTrace();
                 notif("error!");
+                Utility.handleOnfailureException(t,RegisterActivity.this);
             }
         });
     }

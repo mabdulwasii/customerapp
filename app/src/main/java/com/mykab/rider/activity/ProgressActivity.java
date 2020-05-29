@@ -103,6 +103,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import io.realm.Realm;
+import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -164,6 +166,7 @@ public class ProgressActivity extends AppCompatActivity
     private String time;
     private String namaDriver;
     private View mapView;
+    private DetailTransResponseJson detailTransResponseJson;
 
     @Override
     protected void onDestroy() {
@@ -511,10 +514,13 @@ public class ProgressActivity extends AppCompatActivity
             @Override
             public void onResponse(Call<DetailTransResponseJson> call, Response<DetailTransResponseJson> responsedata) {
                 if (responsedata.isSuccessful()) {
-                    transaksi = responsedata.body().getData().get(0);
-                    DriverModel driver = responsedata.body().getDriver().get(0);
+                    detailTransResponseJson = responsedata.body();
+                    transaksi = detailTransResponseJson.getData().get(0);
+                    saveProgress(detailTransResponseJson);
+                    DriverModel driver = detailTransResponseJson.getDriver().get(0);
                     regdriver = driver.getRegId();
-                    imagedriver = Constants.IMAGESDRIVER + driver.getFoto();
+                    imagedriver = driver.getFoto();
+//                    imagedriver = Constants.IMAGESDRIVER + driver.getFoto();
                     Log.e("IMAGESDRIVER", imagedriver);
 
                     pickUpLatLng = new LatLng(transaksi.getStartLatitude(), transaksi.getStartLongitude());
@@ -556,6 +562,7 @@ public class ProgressActivity extends AppCompatActivity
                         sp.updateResponse(String.valueOf(Constants.FINISH));
                         sp.updateTripComplete("true");
                         sp.updateActiveTrip("false");
+                        deleteProgress();
                         startActivity(intent);
                         finish();
                     }
@@ -569,6 +576,24 @@ public class ProgressActivity extends AppCompatActivity
         });
 
 
+    }
+
+    private void deleteProgress() {
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        RealmResults<DetailTransResponseJson> all = realm.where(DetailTransResponseJson.class).findAll();
+        all.deleteAllFromRealm();
+        realm.commitTransaction();
+        Log.e("deleteProgress", "Delete successful");
+    }
+
+    private void saveProgress(DetailTransResponseJson body) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        RealmResults<DetailTransResponseJson> all = realm.where(DetailTransResponseJson.class).findAll();
+        all.deleteAllFromRealm();
+        realm.copyToRealmOrUpdate(body);
+        realm.commitTransaction();
     }
 
     private void parsedata(TransaksiModel request, final DriverModel driver) {
@@ -609,6 +634,7 @@ public class ProgressActivity extends AppCompatActivity
             sp.updateResponse("4");
             sp.updateActiveTrip("false");
             sp.updateTripComplete("true");
+            deleteProgress();
         } else if (response.equals("5")) {
             isCancelable = false;
             timeAway.setVisibility(GONE);
@@ -711,6 +737,7 @@ public class ProgressActivity extends AppCompatActivity
 
     private void cancelOrder() {
         rlprogress.setVisibility(View.VISIBLE);
+        deleteProgress();
         User loginUser = BaseApp.getInstance(ProgressActivity.this).getLoginUser();
         CancelBookRequestJson requestcancel = new CancelBookRequestJson();
         requestcancel.id = loginUser.getId();
@@ -734,6 +761,7 @@ public class ProgressActivity extends AppCompatActivity
                         }
                         finish();
                     } else {
+                        rlprogress.setVisibility(View.GONE);
                         notif("Failed!");
                     }
                 }
@@ -741,6 +769,7 @@ public class ProgressActivity extends AppCompatActivity
 
             @Override
             public void onFailure(Call<CancelBookResponseJson> call, Throwable t) {
+                rlprogress.setVisibility(View.GONE);
                 t.printStackTrace();
             }
         });
@@ -1161,6 +1190,7 @@ public class ProgressActivity extends AppCompatActivity
                 sp.updateTripComplete("true");
                 sp.updateActiveTrip("false");
                 status.setText(getString(R.string.notification_finish));
+                deleteProgress();
                 getData(idtrans, iddriver);
                 break;
         }

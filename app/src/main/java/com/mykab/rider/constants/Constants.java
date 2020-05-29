@@ -15,8 +15,8 @@ public class Constants {
 //    public static final String BASE_URL = "https://mykab.team/";
 //    public static final String BASE_URL = "https://mykab.smaaptal.com/";
 //    public static final String BASE_URL2 = "https://smaaptal.com/mykab/";
-    public static final String BASE_URL = "http://test.bomzak.com/";
-    public static final String BASE_URL2 = "http://test.bomzak.com/";
+    public static final String BASE_URL = "http://test.bomzak.com/index.php/";
+    public static final String BASE_URL2 = "http://test.bomzak.com/index.php/";
 //    public static final String BASE_URL = "http://smaaptal.com/demokab/";
 //    public static final String BASE_URL2 = "http://smaaptal.com/demokab/";
 
@@ -27,6 +27,7 @@ public class Constants {
     public static final String FCM_KEY = "AAAA0_p0VKI:APA91bHHlSmz_wDjM2EmjanjjxwwGgdCGFwtKww8DFM8Rr-O9Kj3Gf1m8Wr0hXH0Gjnsr9vZmdPVgCSSBZyU2PcJkzBQ7SekPSDhYFlDrvRGV76eT6C6mCCMAV88fW1ce2NZp-JmVq5l";
     public static final String CONNECTION = BASE_URL + "api/";
     public static final String CONNECTION2 = BASE_URL2 + "api/";
+    public static final String ALLIMAGES = "https://mykab.s3.eu-west-2.amazonaws.com/";
     public static final String IMAGESFITUR = BASE_URL + "images/fitur/";
     public static final String IMAGESBERITA = BASE_URL + "images/berita/";
     public static final String IMAGESSLIDER = BASE_URL + "images/promo/";

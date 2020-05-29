@@ -93,7 +93,8 @@ public class EditProfileActivity extends AppCompatActivity {
 
         User loginUser = BaseApp.getInstance(this).getLoginUser();
         Picasso.with(this)
-                .load(Constants.IMAGESUSER + loginUser.getFotopelanggan())
+                .load(loginUser.getFotopelanggan())
+//                .load(Constants.IMAGESUSER + loginUser.getFotopelanggan())
                 .placeholder(R.drawable.image_placeholder)
                 .resize(250, 250)
                 .into(foto);

@@ -7,9 +7,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.viewpager.widget.PagerAdapter;
+
 import com.github.ornolfr.ratingview.RatingView;
 import com.mykab.rider.R;
-import com.mykab.rider.constants.Constants;
 import com.mykab.rider.models.RatingModel;
 import com.squareup.picasso.Picasso;
 
@@ -18,9 +20,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-
-import androidx.annotation.NonNull;
-import androidx.viewpager.widget.PagerAdapter;
 
 /**
  * Created by otacodes on 3/24/2019.
@@ -68,7 +67,8 @@ public class RatingItem extends PagerAdapter {
         name.setText(singleItem.getFullnama());
         if (!singleItem.getFotopelanggan().isEmpty()) {
             Picasso.with(context)
-                    .load(Constants.IMAGESUSER + singleItem.getFotopelanggan())
+                    .load(singleItem.getFotopelanggan())
+//                    .load(Constants.IMAGESUSER + singleItem.getFotopelanggan())
                     .resize(100, 100)
                     .into(images);
         }
