@@ -20,7 +20,6 @@ import com.mykab.rider.item.HistoryItem;
 import com.mykab.rider.json.AllTransResponseJson;
 import com.mykab.rider.json.DetailRequestJson;
 import com.mykab.rider.models.User;
-import com.mykab.rider.utils.Utility;
 import com.mykab.rider.utils.api.ServiceGenerator;
 import com.mykab.rider.utils.api.service.UserService;
 
@@ -88,7 +87,7 @@ public class HistoryFragment extends Fragment {
 
             @Override
             public void onFailure(Call<AllTransResponseJson> call, Throwable t) {
-                Utility.handleOnfailureException(t, activity);
+//                Utility.handleOnfailureException(t, activity);
 
             }
         });

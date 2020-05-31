@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.mykab.rider.R;
 import com.mykab.rider.activity.ProgressActivity;
-import com.mykab.rider.constants.Constants;
 import com.mykab.rider.models.AllTransaksiModel;
 import com.mykab.rider.utils.Utility;
 import com.squareup.picasso.Picasso;
@@ -67,7 +66,8 @@ public class HistoryItem extends RecyclerView.Adapter<HistoryItem.ItemRowHolder>
         holder.rating.setText(singleItem.getRate());
 
         Picasso.with(mContext)
-                .load(Constants.IMAGESFITUR + singleItem.getIcon())
+                .load(singleItem.getIcon())
+//                .load(Constants.IMAGESFITUR + singleItem.getIcon())
                 .placeholder(R.drawable.image_placeholder)
                 .into(holder.images);
 

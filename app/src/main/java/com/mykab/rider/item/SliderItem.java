@@ -2,6 +2,7 @@ package com.mykab.rider.item;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +14,6 @@ import androidx.viewpager.widget.PagerAdapter;
 
 import com.mykab.rider.R;
 import com.mykab.rider.activity.RideCarActivity;
-import com.mykab.rider.constants.Constants;
 import com.mykab.rider.models.PromoModel;
 import com.squareup.picasso.Picasso;
 
@@ -55,7 +55,7 @@ public class SliderItem extends PagerAdapter {
 
         final PromoModel propertyModels = models.get(position);
         Picasso.with(context)
-                .load(Constants.IMAGESSLIDER + propertyModels.getFoto())
+                .load(propertyModels.getFoto())
 //                .load(Constants.IMAGESSLIDER + propertyModels.getFoto())
                 .placeholder(R.drawable.image_placeholder)
                 .into(imageView);
@@ -65,16 +65,16 @@ public class SliderItem extends PagerAdapter {
             slider.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                 /*   String url = (propertyModels.getLinkpromosi());
+                    String url = (propertyModels.getLinkpromosi());
                     Intent i = new Intent(Intent.ACTION_VIEW);
                     i.setData(Uri.parse(url));
-                    context.startActivity(i);*/
+                    context.startActivity(i);
 
                 }
             });
 
         } else {
-            if (propertyModels.getFiturpromosi() == 1 || propertyModels.getFiturpromosi() == 2) {
+            if (propertyModels.getFiturpromosi() == 1 || propertyModels.getFiturpromosi() == 2  ) {
                 slider.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -85,7 +85,7 @@ public class SliderItem extends PagerAdapter {
                         context.startActivity(i);
                     }
                 });
-            } else if (propertyModels.getFiturpromosi() == 5) {
+            } else if (propertyModels.getFiturpromosi() == 3 || propertyModels.getFiturpromosi() == 5) {
                 slider.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -97,7 +97,7 @@ public class SliderItem extends PagerAdapter {
 
                     }
                 });
-            } else if (propertyModels.getFiturpromosi() == 6) {
+            } else if (propertyModels.getFiturpromosi() == 4 ||propertyModels.getFiturpromosi() == 6) {
                 slider.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

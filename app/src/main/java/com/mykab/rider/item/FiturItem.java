@@ -2,21 +2,17 @@ package com.mykab.rider.item;
 
 import android.content.Context;
 import android.content.Intent;
-
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.mykab.rider.R;
-import com.mykab.rider.activity.RentCarActivity;
 import com.mykab.rider.activity.RideCarActivity;
-import com.mykab.rider.activity.SendActivity;
-import com.mykab.rider.constants.Constants;
 import com.mykab.rider.models.FiturModel;
 import com.squareup.picasso.Picasso;
 
@@ -51,7 +47,8 @@ public class FiturItem extends RecyclerView.Adapter<FiturItem.ItemRowHolder> {
         holder.text.setText(singleItem.getFitur());
         if (!singleItem.getIcon().isEmpty()) {
             Picasso.with(mContext)
-                    .load(Constants.IMAGESFITUR + singleItem.getIcon())
+                    .load(singleItem.getIcon())
+//                    .load(Constants.IMAGESFITUR + singleItem.getIcon())
                     .resize(100, 100)
                     .into(holder.images);
         }

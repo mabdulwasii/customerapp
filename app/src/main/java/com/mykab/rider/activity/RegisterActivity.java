@@ -177,7 +177,7 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
-        String priv = getResources().getString(R.string.privacy);
+        String priv = getResources().getString(R.string.privacyRegister);
         privacypolicy.setText(Html.fromHtml(priv));
 
         /*countryCode.setOnClickListener(new View.OnClickListener() {

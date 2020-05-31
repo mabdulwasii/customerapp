@@ -38,10 +38,13 @@
     <string name="resend">Resend Code</string>
     <string name="confirm">Confirm</string>
     <string name="privacy">By signing in, you agree to the  <![CDATA[<b><font color=#6DC0FF>terms and conditions</font></b>]]></string>
+    <string name="privacyRegister">By signing up, you agree to the  <![CDATA[<b><font color=#6DC0FF>terms and conditions</font></b>]]></string>
     <string name="text_with_bullet">\u2022</string>
     <string name="lupa">Forgot Password?</string>
     <string name="button_signIn">Login</string>
-    <string name="button_signUp"> Register</string>
+    <string name="button_signUp">AGREE AND REGISTER</string>
+    <string name="text_signUp">Register</string>
+
     <string name="button_dontHaveAccount">Dont Have Account? </string>
     <string name="wrongnumber">Wrong phone number format </string>
     <string name="phoneemailwrong">wrong phone or password</string>

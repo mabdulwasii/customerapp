@@ -400,7 +400,7 @@ public class ProgressActivity extends AppCompatActivity
             }
         });
 
-        backbtn.setVisibility(GONE);
+//        backbtn.setVisibility(GONE);
 
         if (history != null && history.equalsIgnoreCase("history")){
             backbtn.setVisibility(View.VISIBLE);
@@ -415,7 +415,15 @@ public class ProgressActivity extends AppCompatActivity
                     handler =  null;
                     updateDriverRunnable = null;
                 }
-                finish();
+                if (history != null && history.equalsIgnoreCase("history")){
+                    finish();
+                }else{
+                    Intent intent = new Intent(ProgressActivity.this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                    finish();
+                }
+
             }
         });
 

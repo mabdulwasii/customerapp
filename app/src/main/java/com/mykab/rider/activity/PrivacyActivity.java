@@ -62,8 +62,8 @@ public class PrivacyActivity extends AppCompatActivity {
 
 
     private void get() {
-        PrivacyRequestJson request = new PrivacyRequestJson();
 
+        PrivacyRequestJson request = new PrivacyRequestJson();
         UserService service = ServiceGenerator.createService(UserService.class, "admin", "12345");
         service.privacy(request).enqueue(new Callback<PrivacyResponseJson>() {
             @Override

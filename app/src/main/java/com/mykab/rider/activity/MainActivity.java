@@ -21,7 +21,6 @@ import com.google.android.material.bottomnavigation.LabelVisibilityMode;
 import com.mykab.rider.R;
 import com.mykab.rider.constants.BaseApp;
 import com.mykab.rider.constants.Constants;
-import com.mykab.rider.fragment.FavouriteFragment;
 import com.mykab.rider.fragment.HistoryFragment;
 import com.mykab.rider.fragment.HomeFragment;
 import com.mykab.rider.fragment.ProfileFragment;
@@ -67,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
             Menu menu = navigation.getMenu();
             menu.findItem(R.id.home).setIcon(R.drawable.ic_home);
             menu.findItem(R.id.order).setIcon(R.drawable.ic_transaksi);
-            menu.findItem(R.id.favourite).setIcon(R.drawable.ic_favourites);
+//            menu.findItem(R.id.favourite).setIcon(R.drawable.ic_favourites);
 //            menu.findItem(R.id.chat).setIcon(R.drawable.ic_pesan);
             menu.findItem(R.id.profile).setIcon(R.drawable.ic_profil);
             switch (item.getItemId()) {
@@ -83,13 +82,13 @@ public class MainActivity extends AppCompatActivity {
                     item.setIcon(R.drawable.ic_transaksi_s);
                     loadFrag(listFragment, getString(R.string.menu_home), fragmentManager);
                     return true;
-                case R.id.favourite:
+               /* case R.id.favourite:
                     FavouriteFragment favFragment = new FavouriteFragment();
                     navigationItemSelected(1);
                     item.setIcon(R.drawable.ic_favourite);
                     loadFrag(favFragment, getString(R.string.menu_favourite), fragmentManager);
-                    return true;
-               /* case R.id.chat:
+                    return true;*/
+                /*case R.id.chat:
                     MessageFragment pesanFragment = new MessageFragment();
                     navigationItemSelected(2);
                     item.setIcon(R.drawable.ic_pesan_s);

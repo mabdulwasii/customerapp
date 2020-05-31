@@ -239,7 +239,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_toRightOf="@id/textdaftar"
-            android:text="@string/button_signUp"
+            android:text="@string/text_signUp"
             android:textAlignment="center"
             android:textColor="@color/colorgradient"
             android:textSize="18dp" />

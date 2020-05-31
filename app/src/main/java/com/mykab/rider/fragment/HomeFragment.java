@@ -16,7 +16,6 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
@@ -25,7 +24,6 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.mykab.rider.R;
-import com.mykab.rider.activity.AllBeritaActivity;
 import com.mykab.rider.activity.IntroActivity;
 import com.mykab.rider.activity.TopupSaldoActivity;
 import com.mykab.rider.activity.WalletActivity;
@@ -65,13 +63,13 @@ public class HomeFragment extends Fragment {
     Integer[] colors = null;
     ArgbEvaluator argbEvaluator = new ArgbEvaluator();
     CircleIndicator circleIndicator, circleIndicatorreview;
-    RecyclerView rvCategory, rvberita;
-    LinearLayout llslider, promoslider, llrating, llberita;
+    RecyclerView rvCategory; //rvberita;
+    LinearLayout llslider, promoslider, llrating; //llberita;
     FiturItem fiturItem;
     RatingItem ratingItem;
     BeritaItem beritaItem;
-    private ShimmerFrameLayout mShimmerCat, shimerPromo, shimerreview, shimberita;
-    TextView saldo, showall, riderName;
+    private ShimmerFrameLayout mShimmerCat, shimerPromo, shimerreview;// shimberita;
+    TextView saldo, riderName; //showall;
     RelativeLayout topup, withdraw, detail;
     SettingPreference sp;
     private Activity activity;
@@ -86,16 +84,16 @@ public class HomeFragment extends Fragment {
         viewPager = getView.findViewById(R.id.viewPager);
         rvCategory = getView.findViewById(R.id.category);
         rvreview = getView.findViewById(R.id.viewPagerreview);
-        rvberita = getView.findViewById(R.id.berita);
+//        rvberita = getView.findViewById(R.id.berita);
         promoslider = getView.findViewById(R.id.rlslider);
         llslider = getView.findViewById(R.id.promoslider);
         saldo = getView.findViewById(R.id.saldo);
         topup = getView.findViewById(R.id.topup);
         withdraw = getView.findViewById(R.id.withdraw);
         detail = getView.findViewById(R.id.detail);
-        llberita = getView.findViewById(R.id.llnews);
+//        llberita = getView.findViewById(R.id.llnews);
         llrating = getView.findViewById(R.id.llrating);
-        showall = getView.findViewById(R.id.showall);
+//        showall = getView.findViewById(R.id.showall);
         riderName = getView.findViewById(R.id.riderName);
         sp = new SettingPreference(context);
         activity = getActivity();
@@ -103,15 +101,15 @@ public class HomeFragment extends Fragment {
         mShimmerCat = getView.findViewById(R.id.shimmercat);
         shimerPromo = getView.findViewById(R.id.shimmepromo);
         shimerreview = getView.findViewById(R.id.shimreview);
-        shimberita = getView.findViewById(R.id.shimberita);
+//        shimberita = getView.findViewById(R.id.shimberita);
 
         rvCategory.setHasFixedSize(true);
         rvCategory.setLayoutManager(new GridLayoutManager(activity, 2));
 
 
-        rvberita.setHasFixedSize(true);
-        rvberita.setNestedScrollingEnabled(false);
-        rvberita.setLayoutManager(new LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false));
+//        rvberita.setHasFixedSize(true);
+//        rvberita.setNestedScrollingEnabled(false);
+//        rvberita.setLayoutManager(new LinearLayoutManager(activity, LinearLayoutManager.HORIZONTAL, false));
 
         User user = BaseApp.getInstance(getContext()).getLoginUser();
         if (user != null) {
@@ -154,7 +152,7 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        showall.setOnClickListener(new View.OnClickListener() {
+       /* showall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(context, AllBeritaActivity.class);
@@ -162,7 +160,7 @@ public class HomeFragment extends Fragment {
                 context.startActivity(i);
 
             }
-        });
+        });*/
 
         detail.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -267,8 +265,8 @@ public class HomeFragment extends Fragment {
     private void shimmershow() {
         rvCategory.setVisibility(View.GONE);
         rvreview.setVisibility(View.GONE);
-        rvberita.setVisibility(View.GONE);
-        shimberita.startShimmerAnimation();
+//        rvberita.setVisibility(View.GONE);
+//        shimberita.startShimmerAnimation();
         mShimmerCat.startShimmerAnimation();
         shimerreview.startShimmerAnimation();
         shimerPromo.startShimmerAnimation();
@@ -278,9 +276,9 @@ public class HomeFragment extends Fragment {
     private void shimmertutup() {
         rvreview.setVisibility(View.VISIBLE);
         rvCategory.setVisibility(View.VISIBLE);
-        rvberita.setVisibility(View.VISIBLE);
-        shimberita.stopShimmerAnimation();
-        shimberita.setVisibility(View.GONE);
+//        rvberita.setVisibility(View.VISIBLE);
+//        shimberita.stopShimmerAnimation();
+//        shimberita.setVisibility(View.GONE);
         mShimmerCat.setVisibility(View.GONE);
         mShimmerCat.stopShimmerAnimation();
         shimerreview.setVisibility(View.GONE);
@@ -390,10 +388,10 @@ public class HomeFragment extends Fragment {
             rvreview.setPadding(50, 0, 50, 0);
         }
         if (response.getBerita().isEmpty()) {
-            llberita.setVisibility(View.GONE);
+//            llberita.setVisibility(View.GONE);
         } else {
             beritaItem = new BeritaItem(activity, response.getBerita(), R.layout.item_grid);
-            rvberita.setAdapter(beritaItem);
+//            rvberita.setAdapter(beritaItem);
         }
     }
 

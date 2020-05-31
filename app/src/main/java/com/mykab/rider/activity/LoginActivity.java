@@ -379,7 +379,7 @@ public class LoginActivity extends AppCompatActivity {
         setUpVerificatonCallbacks();
         PhoneAuthProvider.getInstance().verifyPhoneNumber(
                 phoneNumber,
-                90,
+                120,
                 TimeUnit.SECONDS,
                 this,
                 verificationCallbacks);
@@ -413,6 +413,15 @@ public class LoginActivity extends AppCompatActivity {
                 viewFlipper.setInAnimation(LoginActivity.this, R.anim.from_right);
                 viewFlipper.setOutAnimation(LoginActivity.this, R.anim.to_left);
                 viewFlipper.setDisplayedChild(1);
+
+            }
+
+            @Override
+            public void onCodeAutoRetrievalTimeOut(@NonNull String s) {
+                progresshide();
+                notif2("Your Phone Number Verification is failed.Retry again!");
+
+                Log.e("VERIFICATION_ID", s);
 
             }
         };
@@ -460,7 +469,7 @@ public class LoginActivity extends AppCompatActivity {
         setUpVerificatonCallbacks();
         PhoneAuthProvider.getInstance().verifyPhoneNumber(
                 phoneNumber,
-                60,
+                120,
                 TimeUnit.SECONDS,
                 this,
                 verificationCallbacks,

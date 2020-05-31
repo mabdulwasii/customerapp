@@ -223,6 +223,7 @@ public class RideCarActivity extends AppCompatActivity
 
 
     private okhttp3.Callback updateRouteCallback = new okhttp3.Callback() {
+
         @Override
         public void onFailure(okhttp3.Call call, IOException e) {
 //            Toast.makeText(context, "Error connection, please select destination again!", Toast.LENGTH_SHORT).show();
@@ -343,8 +344,6 @@ public class RideCarActivity extends AppCompatActivity
         loginUser = BaseApp.getInstance(context).getLoginUser();
         BottomSheetBehavior behavior = BottomSheetBehavior.from(bottomsheet);
         behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-
-
 
         parent_view = findViewById(android.R.id.content);
 
@@ -683,21 +682,25 @@ public class RideCarActivity extends AppCompatActivity
 
 
     private void onDestination() {
+
         if (destinationMarker != null) destinationMarker.remove();
         LatLng centerPos = gMap.getCameraPosition().target;
         destinationMarker = gMap.addMarker(new MarkerOptions()
                 .position(centerPos)
                 .title("Destination")
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.destination)));
+
         destinationLatLang = centerPos;
 
         fetchNearDriver(pickUpLatLang.latitude, pickUpLatLang.longitude);
         requestAddress(centerPos, destinationText);
 
         setDestinationContainer.setVisibility(View.GONE);
+
         if (pickUpText.getText().toString().isEmpty()) {
             Toast.makeText(context, "Please set pickup location", Toast.LENGTH_SHORT).show();
             setPickUpContainer.setVisibility(View.VISIBLE);
+
         } else {
             setPickUpContainer.setVisibility(View.GONE);
             requestRoute();
@@ -709,16 +712,7 @@ public class RideCarActivity extends AppCompatActivity
         setPickUpContainer.setVisibility(View.GONE);
         if (pickUpMarker != null) pickUpMarker.remove();
         LatLng centerPos = gMap.getCameraPosition().target;
-        pickUpMarker = gMap.addMarker(new MarkerOptions()
-                .position(centerPos)
-                .title("Pick Up")
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.pickup)));
-        pickUpLatLang = centerPos;
-        textprogress.setVisibility(View.VISIBLE);
-
-        requestAddress(centerPos, pickUpText);
-        fetchNearDriver(pickUpLatLang.latitude, pickUpLatLang.longitude);
-        requestRoute();
+        requestAddressPickup(centerPos, pickUpText);
     }
 
     private void requestRoute() {
@@ -1037,6 +1031,50 @@ public class RideCarActivity extends AppCompatActivity
                                     JSONObject userdata = Jarray.getJSONObject(0);
                                     address = userdata.getString("formatted_address");
                                     textView.setText(address);
+                                    Log.e("TESTER", userdata.getString("formatted_address"));
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+        }
+    }
+
+    private void requestAddressPickup(LatLng latlang, final TextView textView) {
+        if (latlang != null) {
+            MapDirectionAPI.getAddress(latlang).enqueue(updateAddressCallback = new okhttp3.Callback() {
+                @Override
+                public void onFailure(okhttp3.Call call, IOException e) {
+
+                }
+
+                @Override
+                public void onResponse(okhttp3.Call call, final okhttp3.Response response) throws IOException {
+                    if (response.isSuccessful()) {
+                        final String json = response.body().string();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    JSONObject Jobject = new JSONObject(json);
+                                    JSONArray Jarray = Jobject.getJSONArray("results");
+                                    JSONObject userdata = Jarray.getJSONObject(0);
+                                    address = userdata.getString("formatted_address");
+                                    textView.setText(address);
+
+                                    pickUpMarker = gMap.addMarker(new MarkerOptions()
+                                            .position(latlang)
+                                            .title("Pick Up")
+                                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.pickup)));
+                                    pickUpLatLang = latlang;
+                                    textprogress.setVisibility(View.VISIBLE);
+
+                                    fetchNearDriver(pickUpLatLang.latitude, pickUpLatLang.longitude);
+                                    requestRoute();
+
                                     Log.e("TESTER", userdata.getString("formatted_address"));
                                 } catch (JSONException e) {
                                     e.printStackTrace();

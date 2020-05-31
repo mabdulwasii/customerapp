@@ -6,15 +6,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.firebase.database.DataSnapshot;
@@ -29,7 +30,6 @@ import com.mykab.rider.constants.Constants;
 import com.mykab.rider.constants.Functions;
 import com.mykab.rider.item.MessageItem;
 import com.mykab.rider.models.MessageModels;
-import com.mykab.rider.utils.SettingPreference;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,7 +46,6 @@ public class MessageFragment extends Fragment {
     ArrayList<MessageModels> inboxArraylist;
     ShimmerFrameLayout shimmer;
     DatabaseReference rootRef;
-    SettingPreference sp;
 
     MessageItem inboxItem;
 
@@ -59,8 +58,6 @@ public class MessageFragment extends Fragment {
 
         rootRef = FirebaseDatabase.getInstance().getReference();
 
-        sp = new SettingPreference(context);
-
         inboxList = getView.findViewById(R.id.inboxlist);
         shimmer = getView.findViewById(R.id.shimmerwallet);
         inboxArraylist = new ArrayList<>();
@@ -71,6 +68,7 @@ public class MessageFragment extends Fragment {
         inboxItem = new MessageItem(context, inboxArraylist, new MessageItem.OnItemClickListener() {
             @Override
             public void onItemClick(MessageModels item) {
+
                 if (checkReadStoragepermission()) {
                     Intent intent = new Intent(getActivity(), ChatActivity.class);
                     intent.putExtra("senderid", Constants.USERID);
@@ -79,13 +77,6 @@ public class MessageFragment extends Fragment {
                     intent.putExtra("tokendriver", item.getTokendriver());
                     intent.putExtra("tokenku", Constants.TOKEN);
                     intent.putExtra("pic", item.getPicture());
-
-                    if (item.equals(inboxArraylist.get(inboxArraylist.size() - 1)) && sp.getSetting()[16].equalsIgnoreCase("false")){
-                        intent.putExtra("finished", "unfinished");
-                    }else {
-                        intent.putExtra("finished", "finished");
-                    }
-
                     getActivity().startActivity(intent);
                 }
 
@@ -151,7 +142,6 @@ public class MessageFragment extends Fragment {
                     model.setTokenuser(ds.child("tokenuser").getValue().toString());
                     inboxArraylist.add(model);
                 }
-
                 Collections.reverse(inboxArraylist);
                 inboxItem.notifyDataSetChanged();
 
@@ -160,7 +150,6 @@ public class MessageFragment extends Fragment {
                 } else {
                     getView.findViewById(R.id.rlnodata).setVisibility(View.GONE);
                 }
-
             }
 
             @Override

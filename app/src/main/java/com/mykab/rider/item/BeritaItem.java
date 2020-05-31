@@ -12,19 +12,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.mykab.rider.R;
 import com.mykab.rider.activity.BeritaDetailActivity;
 import com.mykab.rider.constants.BaseApp;
-import com.mykab.rider.constants.Constants;
 import com.mykab.rider.models.BeritaModel;
 import com.mykab.rider.models.User;
 import com.mykab.rider.utils.DatabaseHelper;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
-
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by otacodes on 3/24/2019.
@@ -57,7 +56,8 @@ public class BeritaItem extends RecyclerView.Adapter<BeritaItem.ItemRowHolder> {
         holder.name.setText(singleItem.getTitle());
         if (!singleItem.getFotoberita().isEmpty()) {
             Picasso.with(mContext)
-                    .load(Constants.IMAGESBERITA + singleItem.getFotoberita())
+                    .load(singleItem.getFotoberita())
+//                    .load(Constants.IMAGESBERITA + singleItem.getFotoberita())
                     .resize(250, 250)
                     .into(holder.images);
         }
