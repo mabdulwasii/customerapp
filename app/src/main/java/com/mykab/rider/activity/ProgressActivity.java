@@ -579,10 +579,9 @@ public class ProgressActivity extends AppCompatActivity
             }
             @Override
             public void onFailure(retrofit2.Call<DetailTransResponseJson> call, Throwable t) {
-
+                rlprogress.setVisibility(View.GONE);
             }
         });
-
 
     }
 
@@ -652,13 +651,13 @@ public class ProgressActivity extends AppCompatActivity
             sp.updateResponse("5");
             sp.updateActiveTrip("false");
             sp.updateTripComplete("true");
-        } else if (response.equals("7")) {
+        } else if (response.equals("6")) {
             llchat.setVisibility(View.VISIBLE);
             isCancelable = false;
             orderButton.setVisibility(GONE);
             status.setText(getString(R.string.notification_arrived));
             timeAway.setVisibility(GONE);
-            sp.updateResponse("7");
+            sp.updateResponse("6");
             sp.updateActiveTrip("true");
             sp.updateTripComplete("false");
         }
@@ -684,7 +683,7 @@ public class ProgressActivity extends AppCompatActivity
             public void onClick(View v) {
                 final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ProgressActivity.this, R.style.DialogStyle);
                 alertDialogBuilder.setTitle("Call Driver");
-                alertDialogBuilder.setMessage("You want to call driver (" + driver.getNoTelepon() + ")?");
+                alertDialogBuilder.setMessage("Do you want to call driver (" + driver.getNoTelepon() + ")?");
                 alertDialogBuilder.setPositiveButton("yes",
                         new DialogInterface.OnClickListener() {
                             @Override

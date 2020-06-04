@@ -11,7 +11,6 @@ android {
             storePassword '#Hardetuneji1M@'
             keyAlias = 'mykabRider'
             keyPassword '#Hardetuneji1M@'
-            v2SigningEnabled false
         }
     }
 
@@ -20,7 +19,7 @@ android {
         applicationId "com.mykab.rider"
         minSdkVersion 17
         targetSdkVersion 29
-        versionCode 7
+        versionCode 8
         versionName '0.8.8'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true

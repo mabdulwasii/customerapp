@@ -1,8 +1,12 @@
 <resources>
     <string name="app_name">Mykab</string>
-    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">
+    <!--<string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">
         AIzaSyChTpt9en0sAWtRVQGEqS0k_WSbejko1Ps
-    </string>
+    </string>-->
+
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">
+            AIzaSyCdCo3231lBBYA-mG3sPlZ2_f2bIvjNyyA
+        </string>
 
     <!--<string name="paystack_key" templateMergeStrategy="preserve" translatable="false">
         pk_test_f62e9d081d4ccbf1add061e7c2445e47f0c44e78

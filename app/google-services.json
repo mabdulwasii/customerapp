@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "910440027298-bepkih2npg02jgnrjvmp9mhu8u03lhna.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mykab.driver",
+            "certificate_hash": "5b3e7c47a362afb43145c904d9ca28f90eca938b"
+          }
+        },
+        {
           "client_id": "910440027298-fg845unskqhs66ogl24p0pombq8krje7.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -54,6 +62,13 @@
             {
               "client_id": "910440027298-hviejp49roqdppiem0vva785lqishvb6.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "910440027298-kqhs6pk6pb4cjkriemroee17ne63lev3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mykab.rider"
+              }
             }
           ]
         }
@@ -67,6 +82,14 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "910440027298-66us3fah7dahpmjd6mgb8hua59jt2vfh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mykab.rider",
+            "certificate_hash": "5b3e7c47a362afb43145c904d9ca28f90eca938b"
+          }
+        },
         {
           "client_id": "910440027298-pum7gdfh9nl383m9frlsakdt9f4qcpm5.apps.googleusercontent.com",
           "client_type": 1,
@@ -107,6 +130,13 @@
             {
               "client_id": "910440027298-hviejp49roqdppiem0vva785lqishvb6.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "910440027298-kqhs6pk6pb4cjkriemroee17ne63lev3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.mykab.rider"
+              }
             }
           ]
         }

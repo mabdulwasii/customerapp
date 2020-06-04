@@ -47,8 +47,8 @@ public class Constants {
     public static final int CANCEL = 5;
     public static final int START = 3;
     public static final int FINISH = 4;
-    public static final int UPDATE = 6;
-    public static final int ARRIVED = 7;
+    public static final int UPDATE = 7;
+    public static final int ARRIVED = 6;
 
     public static Double LATITUDE;
     public static Double LONGITUDE;

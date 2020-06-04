@@ -44,10 +44,10 @@ import com.mykab.rider.utils.Utility;
 import com.mykab.rider.utils.api.ServiceGenerator;
 import com.mykab.rider.utils.api.service.UserService;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import io.realm.Realm;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 import me.relex.circleindicator.CircleIndicator;
 import retrofit2.Call;
@@ -360,7 +360,7 @@ public class HomeFragment extends Fragment {
         }
 
         List<FiturModel> fitur = response.getFitur();
-        List<FiturModel> fiturList = new ArrayList<>();
+        RealmList<FiturModel> fiturList = new RealmList<>();
 
         Log.e("FITUR SIZE : ", String.valueOf(fitur.size()));
         for (FiturModel fmodel :
