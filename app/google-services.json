@@ -15,11 +15,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "910440027298-bepkih2npg02jgnrjvmp9mhu8u03lhna.apps.googleusercontent.com",
+          "client_id": "910440027298-78etmpr9e9sq11v65dpbrbvcqmg92568.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.mykab.driver",
-            "certificate_hash": "5b3e7c47a362afb43145c904d9ca28f90eca938b"
+            "certificate_hash": "67f1482e949e71434774d5c3f6f0ddb61667d679"
           }
         },
         {
@@ -28,22 +28,6 @@
           "android_info": {
             "package_name": "com.mykab.driver",
             "certificate_hash": "f4bd9adbd292b6e4ee6c7ee3540f6f75e10dbbe2"
-          }
-        },
-        {
-          "client_id": "910440027298-9loku07j4h5mv54bmu72ra4kl2s93pep.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.mykab.driver",
-            "certificate_hash": "3270dc747b8e3dc8bcf75ae655077e715f613f2e"
-          }
-        },
-        {
-          "client_id": "910440027298-bil077hp33edc50bo21d1bdalu4b4j7o.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.mykab.driver",
-            "certificate_hash": "9fe61e5fab4da0616b82a685933e00e4ed0eb427"
           }
         },
         {
@@ -83,11 +67,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "910440027298-66us3fah7dahpmjd6mgb8hua59jt2vfh.apps.googleusercontent.com",
+          "client_id": "910440027298-ef06siir9vis464n80hre2gn3jefcn0m.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.mykab.rider",
-            "certificate_hash": "5b3e7c47a362afb43145c904d9ca28f90eca938b"
+            "certificate_hash": "5f82b379cdab8ba8251cef44b1b5b89c316d65e9"
           }
         },
         {
@@ -96,22 +80,6 @@
           "android_info": {
             "package_name": "com.mykab.rider",
             "certificate_hash": "f4bd9adbd292b6e4ee6c7ee3540f6f75e10dbbe2"
-          }
-        },
-        {
-          "client_id": "910440027298-5ce40ooatpifk5orr1c0s1smsm6aps8n.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.mykab.rider",
-            "certificate_hash": "b2db684df7cc5388baf6d17d1236cc60dd684fe4"
-          }
-        },
-        {
-          "client_id": "910440027298-g8qhngfogk851aaluaaf7ma91f49beas.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.mykab.rider",
-            "certificate_hash": "3270dc747b8e3dc8bcf75ae655077e715f613f2e"
           }
         },
         {

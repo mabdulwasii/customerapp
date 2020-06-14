@@ -291,7 +291,7 @@ public class SendActivity extends AppCompatActivity
             public void run() {
                 rlnotif.setVisibility(View.GONE);
             }
-        }, 3000);
+        }, 5000);
     }
 
     private void openAutocompleteActivity(int request_code) {
@@ -306,6 +306,7 @@ public class SendActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1) {
             if (resultCode == RESULT_OK) {
                 Place place = Autocomplete.getPlaceFromIntent(data);

@@ -2,7 +2,6 @@ package com.mykab.rider.item;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,9 +64,10 @@ public class SliderItem extends PagerAdapter {
             slider.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String url = (propertyModels.getLinkpromosi());
-                    Intent i = new Intent(Intent.ACTION_VIEW);
-                    i.setData(Uri.parse(url));
+                    Intent i = new Intent(context, RideCarActivity.class);
+                    i.putExtra("FiturKey", propertyModels.getFiturpromosi());
+                    i.putExtra("icon", propertyModels.getIcon());
+                    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     context.startActivity(i);
 
                 }

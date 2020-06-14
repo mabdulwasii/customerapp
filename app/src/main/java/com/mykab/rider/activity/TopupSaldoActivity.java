@@ -222,7 +222,7 @@ public class TopupSaldoActivity extends AppCompatActivity {
             public void run() {
                 rlnotif.setVisibility(View.GONE);
             }
-        }, 3000);
+        }, 5000);
     }
 
 

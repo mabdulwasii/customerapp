@@ -60,7 +60,7 @@ public class FiturItem extends RecyclerView.Adapter<FiturItem.ItemRowHolder> {
                     holder.background.setImageDrawable(mContext.getResources().getDrawable(R.drawable.button_round_2));
                 }
 
-                if (singleItem.getIdFitur() == 1 || singleItem.getIdFitur() == 2 || singleItem.getIdFitur() == 3 || singleItem.getIdFitur() == 4 || singleItem.getIdFitur() == 5 || singleItem.getIdFitur() == 6) {
+//                if (singleItem.getIdFitur() == 1 || singleItem.getIdFitur() == 2 || singleItem.getIdFitur() == 3 || singleItem.getIdFitur() == 4 || singleItem.getIdFitur() == 5 || singleItem.getIdFitur() == 6 || singleItem.getIdFitur() == 7 || singleItem.getIdFitur() == 8) {
                     holder.background.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -72,7 +72,7 @@ public class FiturItem extends RecyclerView.Adapter<FiturItem.ItemRowHolder> {
 
                         }
                     });
-                } /*else if (singleItem.getIdFitur() == 5) {
+                /*} else if (singleItem.getIdFitur() == 5) {
             holder.background.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

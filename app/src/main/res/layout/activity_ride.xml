@@ -136,7 +136,10 @@
                     <customfonts.TextViewSFProDisplayMedium
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="15dp"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="15dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="10dp"
                         android:text="Location"
                         android:textSize="18dp" />
 
@@ -146,19 +149,24 @@
                         android:layout_marginLeft="15dp"
                         android:layout_marginRight="15dp"
                         android:layout_marginBottom="15dp"
-                        android:background="@color/white"
+                        android:padding="4dp"
+                        android:background="@drawable/round_edittext_background"
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
 
                         <ImageView
+                            android:layout_marginBottom="2dp"
+                            android:layout_marginTop="2dp"
                             android:layout_width="20dp"
                             android:layout_height="20dp"
                             android:src="@drawable/ic_pickup" />
 
                         <customfonts.TextViewSFProDisplayRegular
                             android:id="@+id/pickUpText"
+                            android:layout_marginTop="2dp"
+                            android:layout_marginBottom="2dp"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
                             android:layout_marginLeft="15dp"
                             android:layout_marginRight="15dp"
                             android:background="@color/transparent"
@@ -174,16 +182,21 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="15dp"
                         android:layout_marginRight="15dp"
-                        android:background="@color/white"
+                        android:padding="4dp"
+                        android:background="@drawable/round_edittext_background"
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
 
                         <ImageView
+                            android:layout_marginBottom="2dp"
+                            android:layout_marginTop="2dp"
                             android:layout_width="20dp"
                             android:layout_height="20dp"
                             android:src="@drawable/ic_destination" />
 
                         <customfonts.TextViewSFProDisplayRegular
+                            android:layout_marginBottom="2dp"
+                            android:layout_marginTop="2dp"
                             android:id="@+id/destinationText"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"

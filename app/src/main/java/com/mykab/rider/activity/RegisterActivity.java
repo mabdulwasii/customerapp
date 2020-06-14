@@ -94,8 +94,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.mykab.rider.constants.Constants.REQUEST_IMAGE_CAPTURE;
-
 public class RegisterActivity extends AppCompatActivity {
 
     ImageView foto, gantifoto, backbtn, backButtonverify;
@@ -125,6 +123,8 @@ public class RegisterActivity extends AppCompatActivity {
     private File photoFile;
     private String imagePath;
     private Context context;
+    private static Calendar calendar, calendarNow;
+    private boolean isCalenderValid = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -177,6 +177,14 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
+        foto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectImage();
+            }
+        });
+
+
         String priv = getResources().getString(R.string.privacyRegister);
         privacypolicy.setText(Html.fromHtml(priv));
 
@@ -217,13 +225,24 @@ public class RegisterActivity extends AppCompatActivity {
                 final String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
                 final String emailvalidate = email.getText().toString();
 
-                if (imageByteArray == null) {
-                    notif("please add profile picture!");
-                } else if (TextUtils.isEmpty(phone.getText().toString())) {
+                if (calendarNow != null && calendar != null) {
+                    isCalenderValid = calendarNow.after(calendar);
+                }
+
+                String phoneNo = phone.getText().toString();
+                if (phoneNo.startsWith("0")){
+                    phoneNo = phoneNo.replaceFirst("0", "");
+                }
+
+                if (TextUtils.isEmpty(phone.getText().toString())) {
 
                     notif(getString(R.string.phoneempty));
 
-                } else if (TextUtils.isEmpty(nama.getText().toString())) {
+                }  else if (phoneNo.length() != 10){
+
+                    notif("Please enter phone correctly");
+
+                }  else if (TextUtils.isEmpty(nama.getText().toString())) {
 
                     notif("Name cannot be empty");
 
@@ -233,7 +252,11 @@ public class RegisterActivity extends AppCompatActivity {
 
                 } else if (TextUtils.isEmpty(tanggal.getText().toString())) {
 
-                    notif("birthday cant be empty!");
+                    notif("Date of birth cannot be empty!");
+
+                } else if (!isCalenderValid) {
+
+                        notif("Please select a valid date of birth");
 
                 } else if (!emailvalidate.matches(emailPattern)) {
 
@@ -242,6 +265,10 @@ public class RegisterActivity extends AppCompatActivity {
                 } else if (TextUtils.isEmpty(password.getText().toString())) {
 
                     notif(getString(R.string.passempty));
+
+                } else if (password.getText().toString().length() < 6){
+
+                    notif(getString(R.string.least_password));
 
                 } else if (TextUtils.isEmpty(confirmPassword.getText().toString())) {
 
@@ -293,21 +320,34 @@ public class RegisterActivity extends AppCompatActivity {
                 new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-                        Calendar calendar = Calendar.getInstance();
+                        calendar = Calendar.getInstance();
                         calendar.set(Calendar.YEAR, year);
                         calendar.set(Calendar.MONTH, monthOfYear);
                         calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                        long date_ship_millis = calendar.getTimeInMillis();
-                        tanggal.setText(dateFormatterview.format(date_ship_millis));
-                        dateview = dateFormatter.format(date_ship_millis);
+
+                        calendarNow = Calendar.getInstance();
+                        if (calendarNow.after(calendar)) {
+                            long date_ship_millis = calendar.getTimeInMillis();
+                            tanggal.setText(dateFormatterview.format(date_ship_millis));
+                            dateview = dateFormatter.format(date_ship_millis);
+                        }else {
+                            notif("Please select a valid date of birth");
+                            calendar = null;
+                            calendarNow = null;
+                            tanggal.setText("");
+                            return;
+                        }
                     }
                 }
         );
+        datePicker.showYearPickerFirst(true);
+        Calendar instance = Calendar.getInstance();
+        instance.add(Calendar.YEAR, -18);
+        datePicker.setMaxDate(instance);
         datePicker.setThemeDark(false);
         datePicker.setAccentColor(getResources().getColor(R.color.colorgradient));
         datePicker.show(getFragmentManager(), "Datepickerdialog");
     }
-
 
     public void progressshow() {
         rlprogress.setVisibility(View.VISIBLE);
@@ -329,10 +369,15 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     public void Nextbtn(View view) {
-        phoneNumber = countryCode.getText().toString() + phone.getText().toString();
+        String phoneNo = phone.getText().toString();
+        if (phoneNo.startsWith("0")){
+            phoneNo = phoneNo.replaceFirst("0", "");
+        }
+        phoneNumber = countryCode.getText().toString() + phoneNo;
+        Log.e("TAG", phoneNo);
         String ccode = countryCode.getText().toString();
 
-        if ((!TextUtils.isEmpty(phoneNumber) && !TextUtils.isEmpty(ccode)) && phone.getText().toString().length() == 10) {
+        if ((!TextUtils.isEmpty(phoneNumber) && !TextUtils.isEmpty(ccode)) && phoneNo.length() == 10) {
             progressshow();
             Send_Number_tofirebase(phoneNumber);
             Log.e(TAG, "Sending phone number " + phoneNumber);
@@ -351,7 +396,7 @@ public class RegisterActivity extends AppCompatActivity {
             public void run() {
                 rlnotif.setVisibility(View.GONE);
             }
-        }, 3000);
+        }, 5000);
     }
 
 
@@ -404,7 +449,7 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }*/
     private void selectImage() {
-        if (check_ReadCameraPermission() && check_ReadStoragepermission()) {
+//        if (check_ReadCameraPermission() && check_ReadStoragepermission()) {
            /* Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             // Ensure that there's a camera activity to handle the intent
             if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
@@ -431,7 +476,7 @@ public class RegisterActivity extends AppCompatActivity {
                         @Override
                         public void onPermissionsChecked(MultiplePermissionsReport report) {
                             if (report.areAllPermissionsGranted()) {
-                                uploadImage();
+                                captureImage(1);
                             } else {
                                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                                 builder.setTitle("Permission denied")
@@ -450,7 +495,7 @@ public class RegisterActivity extends AppCompatActivity {
                             token.continuePermissionRequest();
                         }
                     }).check();
-        }
+//        }
     }
 
 
@@ -490,7 +535,7 @@ public class RegisterActivity extends AppCompatActivity {
                 .toolbarDoneButtonText("DONE") // done button text
                 .imageFullDirectory(Environment.getExternalStorageDirectory().getPath())
                 .enableLog(true)
-                .start(number); // start image picker activity with request code
+                .start();// start image picker activity without request code
     }
 
     private void uploadImage() {
@@ -532,49 +577,53 @@ public class RegisterActivity extends AppCompatActivity {
 
         if (resultCode == RESULT_OK) {
 
-            if (requestCode == REQUEST_IMAGE_CAPTURE) {
-                Bundle extras = data.getExtras();
-                Bitmap imagebitmap = (Bitmap) extras.get("data");
+//            if (requestCode == REQUEST_IMAGE_CAPTURE) {
+//                Bundle extras = data.getExtras();
+//                Bitmap imagebitmap = (Bitmap) extras.get("data");
+//
+//                Uri selectedImage = Uri.fromFile(photoFile);
+//                InputStream imageStream = null;
+//                try {
+//                    imageStream = this.getContentResolver().openInputStream(selectedImage);
+//                } catch (FileNotFoundException e) {
+//                    e.printStackTrace();
+//                }
+//                String path = getPath(selectedImage);
+//
+//                Matrix matrix = new Matrix();
+//                ExifInterface exif = null;
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//                    try {
+//                        exif = new ExifInterface(currentPhotoPath);
+//                        int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1);
+//                        switch (orientation) {
+//                            case ExifInterface.ORIENTATION_ROTATE_90:
+//                                matrix.postRotate(90);
+//                                break;
+//                            case ExifInterface.ORIENTATION_ROTATE_180:
+//                                matrix.postRotate(180);
+//                                break;
+//                            case ExifInterface.ORIENTATION_ROTATE_270:
+//                                matrix.postRotate(270);
+//                                break;
+//                        }
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//
+//
+//                Bitmap rotatedBitmap = Bitmap.createBitmap(imagebitmap, 0, 0, imagebitmap.getWidth(), imagebitmap.getHeight(), matrix, true);
+//                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//                rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 20, baos);
+//                foto.setImageBitmap(rotatedBitmap);
+//                imageByteArray = baos.toByteArray();
+//                decoded = BitmapFactory.decodeStream(new ByteArrayInputStream(baos.toByteArray()));
+//            }
 
-                Uri selectedImage = Uri.fromFile(photoFile);
-                InputStream imageStream = null;
-                try {
-                    imageStream = this.getContentResolver().openInputStream(selectedImage);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-                String path = getPath(selectedImage);
-
-                Matrix matrix = new Matrix();
-                ExifInterface exif = null;
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    try {
-                        exif = new ExifInterface(currentPhotoPath);
-                        int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1);
-                        switch (orientation) {
-                            case ExifInterface.ORIENTATION_ROTATE_90:
-                                matrix.postRotate(90);
-                                break;
-                            case ExifInterface.ORIENTATION_ROTATE_180:
-                                matrix.postRotate(180);
-                                break;
-                            case ExifInterface.ORIENTATION_ROTATE_270:
-                                matrix.postRotate(270);
-                                break;
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-
-                Bitmap rotatedBitmap = Bitmap.createBitmap(imagebitmap, 0, 0, imagebitmap.getWidth(), imagebitmap.getHeight(), matrix, true);
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 20, baos);
-                foto.setImageBitmap(rotatedBitmap);
-                imageByteArray = baos.toByteArray();
-                decoded = BitmapFactory.decodeStream(new ByteArrayInputStream(baos.toByteArray()));
-            }
+//            if (requestCode == 1) {
+//                ImagePicker.getFirstImageOrNull()
+//            }
 
             if (requestCode == 2) {
                 Uri selectedImage = data.getData();
@@ -732,7 +781,7 @@ public class RegisterActivity extends AppCompatActivity {
             public void run() {
                 rlnotif2.setVisibility(View.GONE);
             }
-        }, 3000);
+        }, 5000);
     }
 
     public void Send_Number_tofirebase(String phoneNumber) {
@@ -763,10 +812,10 @@ public class RegisterActivity extends AppCompatActivity {
                 notif2("Verifikasi Gagal!, Verification failed");
                 if (e instanceof FirebaseAuthInvalidCredentialsException) {
                     // Invalid request
-                    notif2("Invalid request");
+                    notif2(e.getLocalizedMessage());
                 } else if (e instanceof FirebaseTooManyRequestsException) {
                     // SMS quota exceeded
-                    notif2("SMS quota exceeded");
+                    notif2(e.getLocalizedMessage());
                 }
             }
 
@@ -814,7 +863,7 @@ public class RegisterActivity extends AppCompatActivity {
                             if (task.getException() instanceof
                                     FirebaseAuthInvalidCredentialsException) {
                                 progresshide();
-                                notif2("wrong code!,");
+                                notif2(task.getException().getLocalizedMessage());
                                 Toast.makeText(context, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                             }
                         }
@@ -889,7 +938,6 @@ public class RegisterActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-
             }
         });
 
@@ -937,64 +985,78 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void upload(final String check) {
         progressshow();
-        RegisterRequestJson request = new RegisterRequestJson();
-        request.setFullNama(nama.getText().toString());
-        request.setEmail(email.getText().toString());
-        request.setPassword(password.getText().toString());
-        if (!idCardNumber.getText().toString().isEmpty()) {
-            request.setCardNumber(idCardNumber.getText().toString());
-        } else {
-            request.setCardNumber(null);
+        String phoneNo = phone.getText().toString();
+        if (phoneNo.startsWith("0")){
+            phoneNo = phoneNo.replaceFirst("0", "");
+            Log.e("TAG", phoneNo);
         }
-        request.setNoTelepon(countryCode.getText().toString().replace("+", "") + phone.getText().toString());
-        request.setPhone(phone.getText().toString());
-        request.setTglLahir(dateview);
-        request.setFotopelanggan(getStringImage(decoded));
-        Log.i(TAG, getStringImage(decoded));
-        request.setCountrycode(countryCode.getText().toString());
-        request.setChecked(check);
 
-        FirebaseInstanceId token = FirebaseInstanceId.getInstance();
-        request.setToken(token.getToken());
+        if (phoneNo.length() != 10){
+            notif("Please enter phone correctly");
+        }else {
 
-        Log.e(TAG, "Firebase token " + token);
+            RegisterRequestJson request = new RegisterRequestJson();
+            request.setFullNama(nama.getText().toString());
+            request.setEmail(email.getText().toString());
+            request.setPassword(password.getText().toString());
+            if (!idCardNumber.getText().toString().isEmpty()) {
+                request.setCardNumber(idCardNumber.getText().toString());
+            } else {
+                request.setCardNumber(null);
+            }
+            request.setNoTelepon(countryCode.getText().toString().replace("+", "") + phoneNo);
+            request.setPhone(phoneNo);
+            request.setTglLahir(dateview);
+            if (decoded != null) {
+                request.setFotopelanggan(getStringImage(decoded));
+                Log.i(TAG, getStringImage(decoded));
+            } else {
+                request.setFotopelanggan(null);
+            }
+            request.setCountrycode(countryCode.getText().toString());
+            request.setChecked(check);
 
-        UserService service = ServiceGenerator.createService(UserService.class, request.getEmail(), request.getPassword());
-        service.register(request).enqueue(new Callback<RegisterResponseJson>() {
-            @Override
-            public void onResponse(Call<RegisterResponseJson> call, Response<RegisterResponseJson> response) {
-                progresshide();
-                if (response.isSuccessful()) {
-                    if (response.body().getMessage().equalsIgnoreCase("next")) {
-                        Nextbtn(viewFlipper);
+            FirebaseInstanceId token = FirebaseInstanceId.getInstance();
+            request.setToken(token.getToken());
 
-                    } else if (response.body().getMessage().equalsIgnoreCase("success")) {
+            Log.e(TAG, "Firebase token " + token);
 
-                        User user = response.body().getData().get(0);
-                        saveUser(user);
-                        Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(intent);
-                        finish();
+            UserService service = ServiceGenerator.createService(UserService.class, request.getEmail(), request.getPassword());
+            service.register(request).enqueue(new Callback<RegisterResponseJson>() {
+                @Override
+                public void onResponse(Call<RegisterResponseJson> call, Response<RegisterResponseJson> response) {
+                    progresshide();
+                    if (response.isSuccessful()) {
+                        if (response.body().getMessage().equalsIgnoreCase("next")) {
+                            Nextbtn(viewFlipper);
 
+                        } else if (response.body().getMessage().equalsIgnoreCase("success")) {
+
+                            User user = response.body().getData().get(0);
+                            saveUser(user);
+                            Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                            finish();
+
+                        } else {
+                            notif(response.body().getMessage());
+                        }
                     } else {
-                        notif(response.body().getMessage());
+                        notif("Error");
                     }
-                } else {
-                    notif("error");
                 }
-            }
 
-            @Override
-            public void onFailure(Call<RegisterResponseJson> call, Throwable t) {
-                progresshide();
-                t.printStackTrace();
-                notif("error!");
-                Utility.handleOnfailureException(t,RegisterActivity.this);
-            }
-        });
+                @Override
+                public void onFailure(Call<RegisterResponseJson> call, Throwable t) {
+                    progresshide();
+                    t.printStackTrace();
+                    notif("Error!");
+                    Utility.handleOnfailureException(t, RegisterActivity.this);
+                }
+            });
+        }
     }
-
 
     private void saveUser(User user) {
         Realm realm = Realm.getDefaultInstance();

@@ -30,5 +30,7 @@
     <color name="fiftypercenttranparent">#00CE4E</color>
     <color name="alphabet_text_selected_color">#019D3C</color>
     <color name="splashbackground">#019D3C</color>
+    <color name="ninetypercenttranparent">#12F869</color>
+
 
 </resources>

@@ -62,7 +62,7 @@
                     android:layout_marginLeft="20dp"
                     android:gravity="left"
                     android:hint="xxxx-xxxx-xxxx-xxxx"
-                    android:maxLength="19"
+                    android:maxLength="23"
                     android:textColor="@color/white"
                     android:textColorHint="@color/white"
                     android:textSize="20dp" />
@@ -142,6 +142,7 @@
                         android:id="@+id/cardnumber"
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
+                        android:maxLength="23"
                         android:background="@drawable/button_round_1"
                         android:backgroundTint="@color/graybackground"
                         android:hint="Card Number"

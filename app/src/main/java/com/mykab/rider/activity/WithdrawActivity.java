@@ -282,7 +282,7 @@ public class WithdrawActivity extends AppCompatActivity {
             public void run() {
                 rlnotif.setVisibility(View.GONE);
             }
-        }, 3000);
+        }, 5000);
     }
 
     public void progressshow() {

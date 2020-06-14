@@ -66,6 +66,7 @@ public class CreditcardActivity extends AppCompatActivity {
     SettingPreference sp;
 
     public static final String VISA_PREFIX = "4";
+    public static final String VERVE_PREFIX = "6500,5061,";
     public static final String MASTERCARD_PREFIX = "51,52,53,54,55,";
     public static final String DISCOVER_PREFIX = "6011";
     public static final String DISCOVER2_PREFIX = "65";
@@ -224,7 +225,8 @@ public class CreditcardActivity extends AppCompatActivity {
                 boolean flag = true;
                 String eachBlock[] = cardnumber.getText().toString().split("-");
                 for (int i = 0; i < eachBlock.length; i++) {
-                    if (eachBlock[i].length() > 4) {
+
+                    if (eachBlock[i].length() > 5) {
                         flag = false;
                     }
                 }
@@ -266,6 +268,8 @@ public class CreditcardActivity extends AppCompatActivity {
                                     logo.setImageDrawable(getResources().getDrawable(R.drawable.jcb));
                                 } else if (AMEX_PREFIX.contains(s.toString().substring(0, 2) + ",") && s.length() >= 1) {
                                     logo.setImageDrawable(getResources().getDrawable(R.drawable.american_express));
+                                } else if (VERVE_PREFIX.contains(s.toString().substring(0, 4) + ",") && s.length() >= 1) {
+                                    logo.setImageDrawable(getResources().getDrawable(R.drawable.new_verve_logo));
                                 }
 
                             }
@@ -276,7 +280,6 @@ public class CreditcardActivity extends AppCompatActivity {
                         a = cardnumber.getText().toString();
                         keyDel = 0;
                     }
-
 
                     cardnumbertext.setText(s.toString());
 
@@ -289,7 +292,6 @@ public class CreditcardActivity extends AppCompatActivity {
                 }
 
             }
-
 
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count,
@@ -693,7 +695,7 @@ public class CreditcardActivity extends AppCompatActivity {
             public void run() {
                 rlnotif.setVisibility(View.GONE);
             }
-        }, 4000);
+        }, 5000);
     }
 
     public void progressshow() {

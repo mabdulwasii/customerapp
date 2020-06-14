@@ -19,8 +19,9 @@ import com.mykab.rider.utils.Utility;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
-import java.util.List;
 import java.util.Locale;
+
+import io.realm.RealmList;
 
 /**
  * Created by otacodes on 3/24/2019.
@@ -28,13 +29,13 @@ import java.util.Locale;
 
 public class HistoryItem extends RecyclerView.Adapter<HistoryItem.ItemRowHolder> {
 
-    private List<AllTransaksiModel> dataList;
+    private RealmList<AllTransaksiModel> dataList;
     private Context mContext;
     private int rowLayout;
     private boolean complete = true;
 
 
-    public HistoryItem(Context context, List<AllTransaksiModel> dataList, int rowLayout) {
+    public HistoryItem(Context context, RealmList<AllTransaksiModel> dataList, int rowLayout) {
         this.dataList = dataList;
         this.mContext = context;
         this.rowLayout = rowLayout;

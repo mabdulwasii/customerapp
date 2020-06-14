@@ -9,6 +9,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.mykab.rider.R;
 import com.mykab.rider.constants.BaseApp;
 import com.mykab.rider.json.ChangePassRequestJson;
@@ -21,7 +23,6 @@ import com.mykab.rider.utils.api.service.UserService;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import androidx.appcompat.app.AppCompatActivity;
 import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -68,6 +69,8 @@ public class ChangepassActivity extends AppCompatActivity {
                     notif("old password cant be empty!");
                 } else if (passbaru.getText().toString().isEmpty()) {
                     notif("please input your new password!");
+                } else if (passbaru.getText().toString().length() < 6){
+                    notif(getString(R.string.least_password));
                 } else {
                     get();
                 }
@@ -92,11 +95,12 @@ public class ChangepassActivity extends AppCompatActivity {
                 progresshide();
                 if (response.isSuccessful()) {
                     if (response.body().getMessage().equalsIgnoreCase("found")) {
-
+                        notif("Password changed successfully");
                         User user = response.body().getData().get(0);
                         saveUser(user);
-                        finish();
-
+                        new Handler().postDelayed(
+                                () -> finish(), 5000
+                        );
 
                     } else {
                         notif(response.body().getMessage());
@@ -140,7 +144,7 @@ public class ChangepassActivity extends AppCompatActivity {
             public void run() {
                 rlnotif.setVisibility(View.GONE);
             }
-        }, 3000);
+        }, 5000);
     }
 
     private void saveUser(User user) {

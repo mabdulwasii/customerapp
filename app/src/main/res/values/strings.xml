@@ -26,14 +26,14 @@
 
     ////////
     <string name="introtext1">Sign up now!</string>
-    <string name="introdesc1">Where did you go today? we will be ready to drive anywhere and anytime</string>
+    <string name="introdesc1">Where are you going today? we are  ready to drive you anywhere anytime</string>
     <string name="introtext2">Trackable</string>
     <string name="introdesc2">Keep track of your packages location and driver, real-time.</string>
     <string name="introtext3">Speedy delivery</string>
     <string name="introdesc3">You can stay productive while we pick up and drop off your package, all within hours!</string>
 
     <string name="exit">Are you sure you want to exit the application?</string>
-    <string name="yes">YES!</string>
+    <string name="yes">YES</string>
     <string name="no">NO</string>
 
     <string name="email">Email</string>
@@ -61,7 +61,7 @@
     <string name="hint_name">Name</string>
     <string name="hint_email">Email</string>
     <string name="hint_phone">Phone</string>
-    <string name="hint_birthday">Birthday</string>
+    <string name="hint_birthday">Date of Birth</string>
     <string name="hint_password">Password</string>
 
     <string name="menu_home">home</string>
@@ -84,7 +84,7 @@
     <string name="waiting_pleaseWait">Please Wait....</string>
     <string name="text_noInternet">No internet Access</string>
 
-    <string name="notification_cancel">Order has been canceled</string>
+    <string name="notification_cancel">Order was canceled</string>
     <string name="notification_start">Your trip has started</string>
     <string name="notification_arrived">Driver has arrived</string>
     <string name="notification_accept">We found a driver for you</string>
@@ -92,6 +92,8 @@
     <string name="pass_mismatch">Password mismatch</string>
     <string name="confirm_empty">Confirm password cannot be empty!</string>
     <string name="connection_error">Error connecting, please check your network</string>
-    <string name="wrongemail">Email Not Registered</string>
+    <string name="wrongemail">Email not registered</string>
+    <string name="least_password">Password must be at least 6 characters</string>
+    <string name="enter_phone_correctly">Please enter phone correctly</string>
 
 </resources>

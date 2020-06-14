@@ -168,7 +168,6 @@ public class ChatActivity extends AppCompatActivity {
                     .resize(100, 100)
                     .into(profileimage);
         } else {
-//            Picasso.with(this).load(Constants.IMAGESDRIVER + Receiver_pic)
             Picasso.with(this).load(Receiver_pic)
                     .resize(100, 100)
                     .into(profileimage);

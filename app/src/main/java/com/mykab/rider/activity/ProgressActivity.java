@@ -123,6 +123,7 @@ public class ProgressActivity extends AppCompatActivity
 
     long mBackPressed;
 
+    private int count = 0;
     private GoogleMap gMap;
     private boolean isMapReady = false;
     private Location lastKnownLocation;
@@ -758,7 +759,16 @@ public class ProgressActivity extends AppCompatActivity
                     if (response.body().mesage.equals("canceled")) {
                         rlprogress.setVisibility(GONE);
                         fcmcancel();
+
                         notif("Order Canceled!");
+
+                        /*notif("Order has been Canceled!");
+                        Notif notif = new Notif();
+                        notif.title = "Order cancelled";
+                        notif.message = "The rider has cancelled the trip";
+                        sendNotif(regdriver, notif);
+*/
+
                         if(handler != null) {
                             handler.removeCallbacks(updateDriverRunnable);
                             handler.removeCallbacksAndMessages(null);
@@ -766,10 +776,16 @@ public class ProgressActivity extends AppCompatActivity
                             handler = null;
 
                         }
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                finish();
+                            }
+                        }, 5000);
                         finish();
                     } else {
                         rlprogress.setVisibility(View.GONE);
-                        notif("Failed!");
+                        notif("Failed to cancel Order");
                     }
                 }
             }
@@ -792,7 +808,7 @@ public class ProgressActivity extends AppCompatActivity
         message.setTo(regdriver);
         message.setData(response);
 
-        runOnUiThread(() -> Toast.makeText(ProgressActivity.this, "Inside fcmUpdateDestination method", Toast.LENGTH_LONG).show());
+        runOnUiThread(() -> Log.e("TestUpdateDestination", "Inside fcmUpdateDestination method"));
 
 
         FCMHelper.sendMessage(Constants.FCM_KEY, message).enqueue(new okhttp3.Callback() {
@@ -838,7 +854,7 @@ public class ProgressActivity extends AppCompatActivity
             public void run() {
                 rlnotif.setVisibility(GONE);
             }
-        }, 3000);
+        }, 5000);
     }
 
     @Override
@@ -880,11 +896,8 @@ public class ProgressActivity extends AppCompatActivity
     private void updateDriverMarker(LatLng latLng) {
         latdriver = String.valueOf(latLng.latitude);
         londriver = String.valueOf(latLng.longitude);
-        driverLocation = new LatLng(latLng.latitude, latLng.longitude);
-        if(driverLocation != null ) {
-            if(response.equalsIgnoreCase("2")) {
-                requestDriverPickupRoute(driverLocation);
-            }
+        if(response.equalsIgnoreCase("2")) {
+            requestDriverPickupRoute(latLng);
         }
         mCurrentLocation = new Location(LocationManager.NETWORK_PROVIDER);
         mCurrentLocation.setLatitude(Double.parseDouble(latdriver));
@@ -1038,7 +1051,7 @@ public class ProgressActivity extends AppCompatActivity
                     ProgressActivity.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            timeAway.setText(String.format("%s away", time));
+                                timeAway.setText(String.format("%s away", time));
                         }
                     });
                 }
@@ -1080,6 +1093,10 @@ public class ProgressActivity extends AppCompatActivity
                 );
                 gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lastKnownLocation
                         .getLatitude(), lastKnownLocation.getLongitude()), 15f));
+            }
+
+            if(response.equalsIgnoreCase("3") || response.equalsIgnoreCase("6")){
+                updateDriverMarker(new LatLng(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude()));
             }
         }
 

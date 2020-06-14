@@ -105,12 +105,20 @@ public class EditProfileActivity extends AppCompatActivity {
 
         countryCode.setText(loginUser.getCountrycode());
         dateview = loginUser.getTglLahir();
+
         gantifoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 selectImage();
             }
         });
+
+        foto.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        selectImage();
+                    }
+                });
 
         /*countryCode.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("WrongConstant")
@@ -129,7 +137,6 @@ public class EditProfileActivity extends AppCompatActivity {
                 picker.show(getSupportFragmentManager(), "Select Country");
             }
         });*/
-
 
         Date myDate = null;
         dateFormatter = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
@@ -204,6 +211,10 @@ public class EditProfileActivity extends AppCompatActivity {
                     }
                 }
         );
+        datePicker.showYearPickerFirst(true);
+        Calendar instance = Calendar.getInstance();
+        instance.add(Calendar.YEAR, -18);
+        datePicker.setMaxDate(instance);
         datePicker.setThemeDark(false);
         datePicker.setAccentColor(getResources().getColor(R.color.colorgradient));
         datePicker.show(getFragmentManager(), "Datepickerdialog");
@@ -218,7 +229,7 @@ public class EditProfileActivity extends AppCompatActivity {
             public void run() {
                 rlnotif.setVisibility(View.GONE);
             }
-        }, 3000);
+        }, 5000);
     }
 
 

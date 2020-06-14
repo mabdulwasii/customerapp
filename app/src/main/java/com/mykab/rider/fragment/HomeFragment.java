@@ -1,11 +1,14 @@
 package com.mykab.rider.fragment;
 
+import android.Manifest;
 import android.animation.ArgbEvaluator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -233,18 +237,20 @@ public class HomeFragment extends Fragment {
         shimmershow();
 
         FusedLocationProviderClient mFusedLocation = LocationServices.getFusedLocationProviderClient(context);
-        mFusedLocation.getLastLocation().addOnSuccessListener(activity, new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-                if (location != null) {
-                    loadHome();
-                    gethome(location);
-                    Constants.LATITUDE = location.getLatitude();
-                    Constants.LONGITUDE = location.getLongitude();
-                    Log.e("BEARING:", String.valueOf(location.getBearing()));
+        if (check_locationPermission()) {
+            mFusedLocation.getLastLocation().addOnSuccessListener(activity, new OnSuccessListener<Location>() {
+                @Override
+                public void onSuccess(Location location) {
+                    if (location != null) {
+                        loadHome();
+                        gethome(location);
+                        Constants.LATITUDE = location.getLatitude();
+                        Constants.LONGITUDE = location.getLongitude();
+                        Log.e("BEARING:", String.valueOf(location.getBearing()));
+                    }
                 }
-            }
-        });
+            });
+        }
 
         colors = colors_temp;
 
@@ -252,7 +258,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void loadHome() {
-        Realm realm = BaseApp.getInstance(HomeFragment.this.activity).getRealmInstance();
+        Realm realm = BaseApp.getInstance(activity).getRealmInstance();
         GetHomeResponseJson first = realm.where(GetHomeResponseJson.class).findFirst();
         if (first != null) {
             shimmertutup();
@@ -260,6 +266,29 @@ public class HomeFragment extends Fragment {
 
         }
 
+    }
+
+    private boolean check_locationPermission() {
+        if (ContextCompat.checkSelfPermission(activity.getApplicationContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(activity.getApplicationContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            return true;
+        } else {
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                            Constants.permission_loaction_fine);
+                     requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                            Constants.permission_loaction_coarse);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw e;
+            }
+        }
+        return false;
     }
 
     private void shimmershow() {

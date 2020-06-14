@@ -379,14 +379,14 @@
 
                         <de.hdodenhof.circleimageview.CircleImageView
                             android:id="@+id/contactPhone"
-                            android:paddingTop="2dp"
-                            android:paddingBottom="2dp"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginEnd="8dp"
-                            android:background="@color/green"
                             android:layout_width="30dp"
                             android:layout_height="30dp"
                             android:layout_gravity="center"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:background="@color/green"
+                            android:paddingTop="2dp"
+                            android:paddingBottom="2dp"
                             android:src="@drawable/ic_phone" />
 
                         <de.hdodenhof.circleimageview.CircleImageView

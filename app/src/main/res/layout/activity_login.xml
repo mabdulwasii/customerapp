@@ -29,10 +29,9 @@
                     android:layout_centerVertical="true"
                     android:layout_gravity="center"
                     android:layout_marginBottom="10dp"
+                    android:scaleType="fitCenter"
                     android:background="@color/colorgradient"
-                    android:paddingTop="20dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/login" />
+                    android:src="@drawable/login_image" />
 
 
                 <RelativeLayout

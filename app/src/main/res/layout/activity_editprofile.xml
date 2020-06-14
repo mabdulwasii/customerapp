@@ -100,12 +100,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
                     android:layout_marginTop="10dp"
-                    android:background="@drawable/round_edittext_background">
+                    android:orientation="horizontal"
+                    android:background="@drawable/rounded_corners_edittext_dark">
 
                     <customfonts.TextViewSFProDisplayMedium
                         android:id="@+id/countrycode"
                         android:layout_width="80dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:gravity="center"
                         android:text="+234"
                         android:textAlignment="center"
@@ -120,27 +121,42 @@
                         android:layout_toRightOf="@+id/countrycode"
                         android:background="@color/dark_gray" />
 
-                    <customfonts.EditTextSFProDisplayRegular
-                        android:id="@+id/phonenumber"
+                    <RelativeLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginRight="10dp"
-                        android:layout_toRightOf="@+id/countrycode"
-                        android:background="@color/transparent"
-                        android:hint="@string/hint_phone"
-                        android:inputType="phone"
-                        android:textColor="@color/black"
-                        android:textColorHint="@color/gray"
-                        android:textSize="15dp" />
+                        android:layout_height="match_parent">
 
+                        <customfonts.EditTextSFProDisplayRegular
+                            android:id="@+id/phonenumber"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:paddingStart="10dp"
+                            android:layout_marginLeft="10dp"
+                            android:background="@drawable/round_edittext_background"
+                            android:hint="@string/hint_phone"
+                            android:inputType="phone"
+                            android:textColor="@color/black"
+                            android:textColorHint="@color/gray"
+                            android:textSize="15dp" />
+
+                        <ImageView
+                            android:layout_centerVertical="true"
+                            android:id="@+id/editphone"
+                            android:layout_marginEnd="6dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:scaleType="fitXY"
+                            android:layout_alignParentEnd="true"
+                            android:src="@drawable/ic_editlist" />
+
+
+                    </RelativeLayout>
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
                     android:layout_marginTop="10dp"
-                    android:background="@drawable/round_edittext_background">
+                    android:background="@drawable/rounded_corners_edittext_dark">
 
                     <ImageView
                         android:layout_width="80dp"
@@ -158,14 +174,17 @@
                         android:layout_marginBottom="5dp"
                         android:background="@color/dark_gray" />
 
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
                     <customfonts.EditTextSFProDisplayRegular
                         android:id="@+id/nama"
+                        android:paddingStart="10dp"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginLeft="10dp"
-                        android:layout_marginRight="10dp"
-                        android:layout_toRightOf="@+id/countrycode"
-                        android:background="@color/transparent"
+                        android:background="@drawable/round_edittext_background"
                         android:hint="@string/hint_name"
                         android:inputType="text"
                         android:lines="1"
@@ -173,13 +192,25 @@
                         android:textColorHint="@color/gray"
                         android:textSize="15dp" />
 
+                        <ImageView
+                            android:layout_centerVertical="true"
+                            android:id="@+id/editname"
+                            android:layout_marginEnd="6dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:scaleType="fitXY"
+                            android:layout_alignParentEnd="true"
+                            android:src="@drawable/ic_editlist" />
+
+                    </RelativeLayout>
+
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
                     android:layout_marginTop="10dp"
-                    android:background="@drawable/round_edittext_background">
+                    android:background="@drawable/rounded_corners_edittext_dark">
 
                     <ImageView
                         android:layout_width="80dp"
@@ -197,19 +228,34 @@
                         android:layout_marginBottom="5dp"
                         android:background="@color/dark_gray" />
 
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
                     <customfonts.EditTextSFProDisplayRegular
                         android:id="@+id/email"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginLeft="10dp"
-                        android:layout_marginRight="10dp"
-                        android:layout_toRightOf="@+id/countrycode"
-                        android:background="@color/transparent"
+                        android:paddingStart="10dp"
+                        android:background="@drawable/round_edittext_background"
                         android:hint="@string/hint_email"
                         android:inputType="textEmailAddress"
                         android:textColor="@color/black"
                         android:textColorHint="@color/gray"
                         android:textSize="15dp" />
+
+                        <ImageView
+                            android:layout_centerVertical="true"
+                            android:id="@+id/editEmail"
+                            android:layout_marginEnd="6dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:scaleType="fitXY"
+                            android:layout_alignParentEnd="true"
+                            android:src="@drawable/ic_editlist" />
+
+                    </RelativeLayout>
 
                 </LinearLayout>
 
@@ -217,8 +263,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
                     android:layout_marginTop="10dp"
-                    android:background="@drawable/round_edittext_background">
-
+                    android:background="@drawable/rounded_corners_edittext_dark">
                     <ImageView
                         android:layout_width="80dp"
                         android:layout_height="15dp"
@@ -235,19 +280,34 @@
                         android:layout_marginBottom="5dp"
                         android:background="@color/dark_gray" />
 
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
                     <customfonts.TextViewSFProDisplayRegular
                         android:id="@+id/tanggal"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginLeft="10dp"
-                        android:layout_marginRight="10dp"
-                        android:layout_toRightOf="@+id/countrycode"
-                        android:background="@color/transparent"
+                        android:paddingStart="10dp"
+                        android:background="@drawable/round_edittext_background"
                         android:gravity="center_vertical"
                         android:hint="@string/hint_birthday"
                         android:textColor="@color/black"
                         android:textColorHint="@color/gray"
                         android:textSize="15dp" />
+
+                        <ImageView
+                            android:layout_centerVertical="true"
+                            android:id="@+id/editBirthDate"
+                            android:layout_marginEnd="6dp"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:scaleType="fitXY"
+                            android:layout_alignParentEnd="true"
+                            android:src="@drawable/ic_editlist" />
+
+                    </RelativeLayout>
 
                 </LinearLayout>
 

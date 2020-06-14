@@ -111,8 +111,7 @@ public class MessageItem extends RecyclerView.Adapter<MessageItem.CustomViewHold
                     .placeholder(R.drawable.image_placeholder).into(holder.userImage);
         } else {
             Picasso.with(context).
-//                    load(Constants.IMAGESDRIVER + item.getPicture())
-                    load(item.getPicture())
+                    load(Constants.IMAGESDRIVER + item.getPicture())
                     .resize(100, 100)
                     .placeholder(R.drawable.image_placeholder).into(holder.userImage);
         }

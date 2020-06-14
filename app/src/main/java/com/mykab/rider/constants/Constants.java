@@ -15,13 +15,18 @@ public class Constants {
 //    public static final String BASE_URL = "https://mykab.team/";
 //    public static final String BASE_URL = "https://mykab.smaaptal.com/";
 //    public static final String BASE_URL2 = "https://smaaptal.com/mykab/";
-    public static final String BASE_URL = "http://test.bomzak.com/index.php/";
-    public static final String BASE_URL2 = "http://test.bomzak.com/index.php/";
+
 //    public static final String BASE_URL = "http://smaaptal.com/demokab/";
 //    public static final String BASE_URL2 = "http://smaaptal.com/demokab/";
 
 //    public static final String BASE_URL = "http://smaaptal.com/testkab/";
 //    public static final String BASE_URL2 = "http://smaaptal.com/testkab/";
+
+//    public static final String BASE_URL = "https://mykab.team/api/";
+//    public static final String BASE_URL2 = "https://mykab.team/api/";
+
+    public static final String BASE_URL = "http://test.bomzak.com/index.php/";
+    public static final String BASE_URL2 = "http://test.bomzak.com/index.php/";
 
 //    public static final String FCM_KEY = "AIzaSyAHFune4I3bVRUfXonBCp7JhnSrbIeyfK0";
     public static final String FCM_KEY = "AAAA0_p0VKI:APA91bHHlSmz_wDjM2EmjanjjxwwGgdCGFwtKww8DFM8Rr-O9Kj3Gf1m8Wr0hXH0Gjnsr9vZmdPVgCSSBZyU2PcJkzBQ7SekPSDhYFlDrvRGV76eT6C6mCCMAV88fW1ce2NZp-JmVq5l";
@@ -36,8 +41,9 @@ public class Constants {
     public static final int REQUEST_IMAGE_CAPTURE = 12456;
     public static final String PAYSTACK_BASE_URL = "https://api.paystack.co/transaction/";
     public static final String CONTACT_TELEPHONE = "08151938000";
-    public static final String CONTACT_EMAIL = "choice.iruh@bomzak.com";
+    public static final String CONTACT_EMAIL = "admin@mykab.ng";
     public static final int MIN_TOP_UP = 100;
+    public static final String MYKAB_WEBSITE = "https://mykab.ng";
 
 
     public static String CURRENCY = "#";
@@ -64,6 +70,8 @@ public class Constants {
     public static int permission_write_data = 788;
     public static int permission_Read_data = 789;
     public static int permission_Recording_audio = 790;
+    public static int permission_loaction_coarse = 710;
+    public static int permission_loaction_fine = 770;
 
     public static SimpleDateFormat df =
             new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);

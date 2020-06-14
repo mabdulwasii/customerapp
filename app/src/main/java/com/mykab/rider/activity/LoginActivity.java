@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import androidx.annotation.NonNull;
@@ -124,15 +125,23 @@ public class LoginActivity extends AppCompatActivity {
         buttonLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                phoneNumber = countryCode.getText().toString() + phoneText.getText().toString();
-                String phonetext = phoneText.getText().toString();
+                String phoneNo = phoneText.getText().toString();
+                if (phoneNo.startsWith("0")){
+                    phoneNo = phoneNo.replaceFirst("0", "");
+                }
+                phoneNumber = countryCode.getText().toString() + phoneNo;
+
                 String pass = password.getText().toString();
-                if (TextUtils.isEmpty(phonetext) || TextUtils.isEmpty(pass)) {
+                if (TextUtils.isEmpty(phoneNo) || TextUtils.isEmpty(pass)) {
                     notif(getString(R.string.phonepass));
-                } else if (TextUtils.isEmpty(phonetext)) {
+                } else if (TextUtils.isEmpty(phoneNo)) {
                     notif(getString(R.string.phoneempty));
+                } else if (phoneNo.length() != 10){
+                    notif(getString(R.string.enter_phone_correctly));
                 } else if (TextUtils.isEmpty(pass)) {
                     notif(getString(R.string.passempty));
+                } else if (pass.length() < 6){
+                    notif(getString(R.string.least_password));
                 } else {
                     if (NetworkUtils.isConnected(LoginActivity.this)) {
                         progressshow();
@@ -236,7 +245,7 @@ public class LoginActivity extends AppCompatActivity {
             public void run() {
                 rlnotif.setVisibility(View.GONE);
             }
-        }, 3000);
+        }, 5000);
     }
 
     public void notif2(String text) {
@@ -247,7 +256,7 @@ public class LoginActivity extends AppCompatActivity {
             public void run() {
                 rlnotif2.setVisibility(View.GONE);
             }
-        }, 3000);
+        }, 5000);
     }
 
     public void progressshow() {
@@ -363,10 +372,16 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void Nextbtn(View view) {
-        phoneNumber = countryCode.getText().toString() + phoneText.getText().toString();
+
+        String phoneNo = phoneText.getText().toString();
+        if (phoneNo.startsWith("0")){
+            phoneNo = phoneNo.replaceFirst("0", "");
+        }
+        phoneNumber = countryCode.getText().toString() + phoneNo;
+        Log.e("TAG", phoneNo);
         String ccode = countryCode.getText().toString();
 
-        if ((!TextUtils.isEmpty(phoneNumber) && !TextUtils.isEmpty(ccode)) && phoneNumber.length() > 5) {
+        if ((!TextUtils.isEmpty(phoneNumber) && !TextUtils.isEmpty(ccode)) && phoneNo.length() == 10) {
             progressshow();
             Send_Number_tofirebase(phoneNumber);
 
@@ -396,11 +411,13 @@ public class LoginActivity extends AppCompatActivity {
             public void onVerificationFailed(FirebaseException e) {
                 progresshide();
                 Log.d("respon", e.toString());
-                notif2("Masukkan Kode verikasi dengan benar");
+                notif2("Failed!");
                 if (e instanceof FirebaseAuthInvalidCredentialsException) {
                     // Invalid request
+                    notif(e.getLocalizedMessage());
                 } else if (e instanceof FirebaseTooManyRequestsException) {
                     // SMS quota exceeded
+                    notif(e.getLocalizedMessage());
                 }
             }
 
@@ -419,7 +436,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onCodeAutoRetrievalTimeOut(@NonNull String s) {
                 progresshide();
-                notif2("Your Phone Number Verification is failed.Retry again!");
+                notif2("Your Phone Number Verification has failed, try again!");
 
                 Log.e("VERIFICATION_ID", s);
 
@@ -437,7 +454,7 @@ public class LoginActivity extends AppCompatActivity {
             PhoneAuthCredential credential = PhoneAuthProvider.getCredential(phoneVerificationId, code);
             signInWithPhoneAuthCredential(credential);
         } else {
-            notif2("kode verifikasi masih kosong");
+            notif2("Code not verified");
         }
 
     }
@@ -457,6 +474,8 @@ public class LoginActivity extends AppCompatActivity {
                             if (task.getException() instanceof
                                     FirebaseAuthInvalidCredentialsException) {
                                 progresshide();
+                                notif(task.getException().getLocalizedMessage());
+                                Toast.makeText(LoginActivity.this, task.getException().getLocalizedMessage(), Toast.LENGTH_LONG).show();
                             }
                         }
                     }
@@ -478,48 +497,56 @@ public class LoginActivity extends AppCompatActivity {
 
     private void onSignInClick() {
         progressshow();
-        LoginRequestJson request = new LoginRequestJson();
-        request.setNotelepon(countryCode.getText().toString().replace("+", "") + phoneText.getText().toString());
-        request.setPassword(password.getText().toString());
-        FirebaseInstanceId token = FirebaseInstanceId.getInstance();
-        request.setRegId(token.getToken());
+        String phoneNo = phoneText.getText().toString();
+        if (phoneNo.startsWith("0")){
+            phoneNo = phoneNo.replaceFirst("0", "");
+        }
+        if (phoneNo.length() != 10){
+            notif("Please enter phone correctly");
+        }else {
+            LoginRequestJson request = new LoginRequestJson();
+            request.setNotelepon(countryCode.getText().toString().replace("+", "") + phoneNo);
+            request.setPassword(password.getText().toString());
+            FirebaseInstanceId token = FirebaseInstanceId.getInstance();
+            request.setRegId(token.getToken());
 
-        Log.e("LOGIN_DETAILS", new Gson().toJson(request));
+            Log.e("LOGIN_DETAILS", new Gson().toJson(request));
 
-        UserService service = ServiceGenerator.createService(UserService.class, request.getNotelepon(), request.getPassword());
-        service.login(request).enqueue(new Callback<LoginResponseJson>() {
-            @Override
-            public void onResponse(Call<LoginResponseJson> call, Response<LoginResponseJson> response) {
-                progresshide();
-                if (response.isSuccessful()) {
-                    if (response.body().getMessage().equalsIgnoreCase("found")) {
-                        if (verify.equals("false")) {
-                            Nextbtn(viewFlipper);
+            UserService service = ServiceGenerator.createService(UserService.class, request.getNotelepon(), request.getPassword());
+            service.login(request).enqueue(new Callback<LoginResponseJson>() {
+                @Override
+                public void onResponse(Call<LoginResponseJson> call, Response<LoginResponseJson> response) {
+                    progresshide();
+                    if (response.isSuccessful()) {
+                        if (response.body().getMessage().equalsIgnoreCase("found")) {
+                            if (verify.equals("false")) {
+                                Nextbtn(viewFlipper);
+                            } else {
+                                User user = response.body().getData().get(0);
+                                saveUser(user);
+                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(intent);
+                                finish();
+                            }
+
                         } else {
-                            User user = response.body().getData().get(0);
-                            saveUser(user);
-                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                            startActivity(intent);
-                            finish();
+                            notif(getString(R.string.phoneemailwrong));
+                            notif(response.body().getMessage());
+                            Log.e("LoginActivity", response.body().getMessage());
                         }
-
-                    } else {
-                        notif(getString(R.string.phoneemailwrong));
-                        notif(response.body().getMessage());
-                        Log.e("LoginActivity", response.body().getMessage());
                     }
                 }
-            }
 
-            @Override
-            public void onFailure(Call<LoginResponseJson> call, Throwable t) {
-                notif("Failed!");
-                progresshide();
-                t.printStackTrace();
-                Utility.handleOnfailureException(t, LoginActivity.this);
-            }
-        });
+                @Override
+                public void onFailure(Call<LoginResponseJson> call, Throwable t) {
+                    notif("Failed!");
+                    progresshide();
+                    t.printStackTrace();
+                    Utility.handleOnfailureException(t, LoginActivity.this);
+                }
+            });
+        }
     }
 
     @Override

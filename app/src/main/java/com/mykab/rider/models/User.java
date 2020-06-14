@@ -71,6 +71,7 @@ public class User extends RealmObject implements Serializable {
     @Expose
     private String countrycode;
 
+
     private long walletSaldo;
 
     public String getId() {

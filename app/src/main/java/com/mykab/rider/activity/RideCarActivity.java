@@ -447,7 +447,7 @@ public class RideCarActivity extends AppCompatActivity
 
 //        diskontext.setText("Discount " + designedFitur.getDiskon() + " with Wallet");
         Picasso.with(this)
-                .load(Constants.IMAGESFITUR + ICONFITUR)
+                .load(ICONFITUR)
                 .placeholder(R.drawable.logo)
                 .resize(100, 100)
                 .into(icon);
@@ -465,7 +465,7 @@ public class RideCarActivity extends AppCompatActivity
             public void run() {
                 rlnotif.setVisibility(View.GONE);
             }
-        }, 4000);
+        }, 5000);
     }
 
     private void openAutocompleteActivity(int request_code) {
@@ -1276,7 +1276,7 @@ public class RideCarActivity extends AppCompatActivity
                     public void run() {
                         finish();
                     }
-                }, 3000);
+                }, 5000);
             }
         });
     }

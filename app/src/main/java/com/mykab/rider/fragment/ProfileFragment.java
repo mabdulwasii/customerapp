@@ -21,7 +21,6 @@ import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
@@ -84,6 +83,7 @@ public class ProfileFragment extends Fragment {
 
             }
         });
+
         rate.setText(sp.getSetting()[11]);
 
         contactPhone.setOnClickListener(new View.OnClickListener() {
@@ -106,7 +106,7 @@ public class ProfileFragment extends Fragment {
             intent.setData(Uri.parse("mailto:"+ Constants.CONTACT_EMAIL)); // only email apps should handle this
             intent.putExtra(Intent.EXTRA_SUBJECT, "Support required");
             if (intent.resolveActivity(context.getPackageManager()) != null) {
-                context.startActivity(Intent.createChooser(intent, "Send via"));
+                context.startActivity(Intent.createChooser(intent, "Send email via"));
             }
         });
 
@@ -240,7 +240,7 @@ public class ProfileFragment extends Fragment {
             public void onClick(View view) {
                 final int REQUEST_PHONE_CALL = 1;
                 Intent callIntent = new Intent(Intent.ACTION_CALL);
-                callIntent.setData(Uri.parse("tel:" + (sp.getSetting()[3])));
+                callIntent.setData(Uri.parse("tel:" + Constants.CONTACT_TELEPHONE));
                 if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
                         ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CALL_PHONE}, REQUEST_PHONE_CALL);
@@ -254,18 +254,11 @@ public class ProfileFragment extends Fragment {
         email.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String[] TO = {(sp.getSetting()[2])};
-                Intent emailIntent = new Intent(Intent.ACTION_SEND);
-                emailIntent.setType("text/plain");
-
-                emailIntent.putExtra(Intent.EXTRA_EMAIL, TO);
-                emailIntent.putExtra(Intent.EXTRA_SUBJECT, "halo");
-                emailIntent.putExtra(Intent.EXTRA_TEXT, "email" + "\n");
-                try {
-                    context.startActivity(Intent.createChooser(emailIntent, "Send mail..."));
-                } catch (android.content.ActivityNotFoundException ex) {
-                    Toast.makeText(getActivity(),
-                            "There is no email client installed.", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(Intent.ACTION_SENDTO);
+                intent.setData(Uri.parse("mailto:"+ Constants.CONTACT_EMAIL)); // only email apps should handle this
+                intent.putExtra(Intent.EXTRA_SUBJECT, "Support required");
+                if (intent.resolveActivity(context.getPackageManager()) != null) {
+                    context.startActivity(Intent.createChooser(intent, "Send email via"));
                 }
             }
         });
@@ -273,7 +266,7 @@ public class ProfileFragment extends Fragment {
         website.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String url = (sp.getSetting()[4]);
+                String url = (Constants.MYKAB_WEBSITE);
                 Intent i = new Intent(Intent.ACTION_VIEW);
                 i.setData(Uri.parse(url));
                 context.startActivity(i);

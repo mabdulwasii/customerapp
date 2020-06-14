@@ -139,7 +139,7 @@
                                 android:background="@color/transparent"
                                 android:hint="@string/hint_phone"
                                 android:maxLines="1"
-                                android:maxLength="10"
+                                android:maxLength="11"
                                 android:inputType="phone"
                                 android:textColor="@color/black"
                                 android:textColorHint="@color/gray"

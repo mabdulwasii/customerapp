@@ -80,10 +80,15 @@ public class LupapassActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     if (response.body().getMessage().equalsIgnoreCase("found")) {
                         notif("Email sent, please check tour email");
-                        Intent i = new Intent(LupapassActivity.this, LoginActivity.class);
-                        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivity(i);
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent i = new Intent(LupapassActivity.this, LoginActivity.class);
+                                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                startActivity(i);
 
+                            }
+                        }, 5000);
 
                     } else {
                         notif(getString(R.string.wrongemail));
@@ -127,7 +132,7 @@ public class LupapassActivity extends AppCompatActivity {
             public void run() {
                 rlnotif.setVisibility(View.GONE);
             }
-        }, 3000);
+        }, 5000);
     }
 
 
